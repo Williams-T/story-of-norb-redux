@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://d3o28qbr54rdd"]
+
+[ext_resource type="Script" uid="uid://0l1oulq76pfu" path="res://player.gd" id="1_3vyb7"]
+[ext_resource type="SpriteFrames" uid="uid://cnk6tlau0s367" path="res://art/characters/player/norb/norb.tres" id="2_g2els"]
+[ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="2_qhqgy"]
+
+[sub_resource type="Resource" id="Resource_dqkch"]
+script = ExtResource("2_qhqgy")
+character_name = "Norb"
+metadata/_custom_type_script = "uid://bck3giaak2qgo"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g2els"]
+size = Vector2(64, 32)
+
+[node name="Player" type="CharacterBody2D" unique_id=1122482979]
+collision_layer = 2
+motion_mode = 1
+script = ExtResource("1_3vyb7")
+stat_block = SubResource("Resource_dqkch")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1253918709]
+texture_filter = 1
+sprite_frames = ExtResource("2_g2els")
+animation = &"idle_down"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=629372083]
+position = Vector2(0, 16)
+shape = SubResource("RectangleShape2D_g2els")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=334418866]
+zoom = Vector2(2, 2)

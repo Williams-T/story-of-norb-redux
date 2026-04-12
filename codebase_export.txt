@@ -1,0 +1,893 @@
+StoryOfNorbRedux
+
+ROOT:
+	codebase_export.txt
+	debug_tileset.tres
+_______________
+(player.gd):
+class_name Player
+extends CharacterBody2D
+
+@export var stat_block: CharacterStatBlock
+
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+
+const AGI_SPEED_MODIFIER := 0.003
+
+var _last_direction := Vector2.DOWN
+
+func _ready() -> void:
+	sprite.play("idle_down")
+
+func _physics_process(delta: float) -> void:
+	_update_last_direction()
+	var direction := _get_input_direction()
+	_apply_movement(direction)
+	_update_animation(direction)
+	move_and_slide()
+
+func _update_last_direction():
+	if Input.is_action_pressed("move_up"):
+		_last_direction = Vector2.UP
+	elif Input.is_action_pressed("move_down"):
+		_last_direction = Vector2.DOWN
+	elif Input.is_action_pressed("move_left"):
+		_last_direction = Vector2.LEFT
+	elif Input.is_action_pressed("move_right"):
+		_last_direction = Vector2.RIGHT
+	var vert_strength = Input.get_axis("move_up", "move_down")
+	if vert_strength != 0:
+		if vert_strength < 0:
+			_last_direction = Vector2.UP
+		else:
+			_last_direction = Vector2.DOWN
+		
+func _get_input_direction() -> Vector2:
+	return Input.get_vector("move_left", "move_right", "move_up","move_down")
+
+func _apply_movement(direction: Vector2) -> void:
+	var agi_modifier := 1.0 + (stat_block.agi - 10) * AGI_SPEED_MODIFIER
+	velocity = direction * stat_block.base_move_speed * agi_modifier
+
+func _update_animation(direction : Vector2):
+	if direction == Vector2.ZERO:
+		_play_idle_animation()
+	else:
+		_play_walk_animation()
+
+func _play_walk_animation() -> void:
+	match _last_direction:
+		Vector2.UP:
+			sprite.animation = "walk_up"
+		Vector2.LEFT:
+			sprite.animation = "walk_left"
+		Vector2.DOWN:
+			sprite.animation = "walk_down"
+		Vector2.RIGHT:
+			sprite.animation = "walk_right"
+
+func _play_idle_animation():
+	match _last_direction:
+		Vector2.UP:
+			sprite.animation = "idle_up"
+		Vector2.LEFT:
+			sprite.animation = "idle_left"
+		Vector2.DOWN:
+			sprite.animation = "idle_down"
+		Vector2.RIGHT:
+			sprite.animation = "idle_right"
+
+_______________
+_______________
+(project.godot):
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="StoryOfNorbRedux"
+run/main_scene="uid://db3knhytalx0w"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+
+[autoload]
+
+EventBus="*uid://byh4hls7y8ayb"
+GameState="*uid://cmp1liobev0ks"
+SceneManager="*uid://cy7ln04as6jlf"
+AudioManager="*uid://boqnp0qs6ekfr"
+SaveManager="*uid://cojysb0jfm6w5"
+Codebase="*uid://c67q6k2f20o06"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/rpg_editors/plugin.cfg")
+
+[importer_defaults]
+
+texture={
+"compress/channel_pack": 0,
+"compress/hdr_compression": 1,
+"compress/high_quality": false,
+"compress/lossy_quality": 0.7,
+"compress/mode": 0,
+"compress/normal_map": 0,
+"compress/rdo_quality_loss": 0.0,
+"compress/uastc_level": 0,
+"detect_3d/compress_to": 0,
+"mipmaps/generate": true,
+"mipmaps/limit": -1,
+"process/channel_remap/alpha": 3,
+"process/channel_remap/blue": 2,
+"process/channel_remap/green": 1,
+"process/channel_remap/red": 0,
+"process/fix_alpha_border": true,
+"process/hdr_as_srgb": false,
+"process/hdr_clamp_exposure": false,
+"process/normal_map_invert_y": false,
+"process/premult_alpha": false,
+"process/size_limit": 0,
+"roughness/mode": 0,
+"roughness/src_normal": ""
+}
+
+[input]
+
+move_up={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":87,"key_label":0,"unicode":119,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194320,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_down={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":83,"key_label":0,"unicode":115,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194322,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_left={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":65,"key_label":0,"unicode":97,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194319,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_right={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":68,"key_label":0,"unicode":100,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194321,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+interact={
+"deadzone": 0.2,
+"events": []
+}
+menu_open={
+"deadzone": 0.2,
+"events": []
+}
+menu_back={
+"deadzone": 0.2,
+"events": []
+}
+combat_confirm={
+"deadzone": 0.2,
+"events": []
+}
+combat_cancel={
+"deadzone": 0.2,
+"events": []
+}
+combat_next={
+"deadzone": 0.2,
+"events": []
+}
+combat_prev={
+"deadzone": 0.2,
+"events": []
+}
+
+[layer_names]
+
+2d_physics/layer_1="world"
+2d_physics/layer_2="player"
+2d_physics/layer_3="npc"
+2d_physics/layer_4="enemy"
+2d_physics/layer_5="interactable"
+2d_physics/layer_6="hitbox"
+2d_physics/layer_7="hurtbox"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+
+_______________
+  ADDONS:
+    RPG_EDITORS:
+        plugin.cfg
+    _______________
+    (RpgEditorPlugin.gd):
+    @tool
+    extends EditorPlugin
+    
+    var _sprite_importer_dock
+    
+    func _enter_tree() -> void:
+    	# Called when the plugin is enabled.
+    	# Future editors will add their docks and panels here.
+    	_sprite_importer_dock = preload("res://addons/rpg_editors/sprite_importer/SpriteImporterDock.tscn").instantiate()
+    	add_control_to_dock(DOCK_SLOT_LEFT_BR, _sprite_importer_dock)
+    	
+    	print("RPG Editors: loaded")
+    
+    
+    func _exit_tree() -> void:
+    	# Called when the plugin is disabled or the project closes.
+    	# Everything added in _enter_tree must be removed here.
+    	remove_control_from_docks(_sprite_importer_dock)
+    	_sprite_importer_dock.free()
+    	
+    	print("RPG Editors: unloaded")
+    
+    _______________
+      SPRITE_IMPORTER:
+      _______________
+      (SpriteImporterDock.tscn):
+      [gd_scene format=3 uid="uid://b64exo2c5wutq"]
+      
+      [ext_resource type="Script" uid="uid://buwefu3r530tn" path="res://addons/rpg_editors/sprite_importer/sprite_importer_dock.gd" id="1_nssw8"]
+      
+      [node name="SpriteImporter" type="PanelContainer" unique_id=1687023918]
+      anchors_preset = 15
+      anchor_right = 1.0
+      anchor_bottom = 1.0
+      grow_horizontal = 2
+      grow_vertical = 2
+      script = ExtResource("1_nssw8")
+      
+      [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2101825443]
+      layout_mode = 2
+      
+      [node name="Label" type="Label" parent="VBoxContainer" unique_id=683106430]
+      layout_mode = 2
+      text = "Sprite Importer"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="HSeparator" type="HSeparator" parent="VBoxContainer" unique_id=113273441]
+      layout_mode = 2
+      
+      [node name="Label2" type="Label" parent="VBoxContainer" unique_id=1330933999]
+      layout_mode = 2
+      text = "Folder"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="FolderPath" type="LineEdit" parent="VBoxContainer" unique_id=784307434]
+      layout_mode = 2
+      
+      [node name="BrowseButton" type="Button" parent="VBoxContainer" unique_id=246102097]
+      layout_mode = 2
+      text = "Browse..."
+      
+      [node name="ImportButton" type="Button" parent="VBoxContainer" unique_id=1198115715]
+      layout_mode = 2
+      text = "Import"
+      
+      [node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=993461049]
+      layout_mode = 2
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="HSeparator2" type="HSeparator" parent="VBoxContainer" unique_id=1551706623]
+      layout_mode = 2
+      
+      [node name="Label4" type="Label" parent="VBoxContainer" unique_id=1410820846]
+      layout_mode = 2
+      text = "Preview"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="AnimationSelector" type="OptionButton" parent="VBoxContainer" unique_id=1226742774]
+      layout_mode = 2
+      
+      [node name="FrameDisplay" type="TextureRect" parent="VBoxContainer" unique_id=1765193210]
+      layout_mode = 2
+      size_flags_vertical = 3
+      expand_mode = 3
+      stretch_mode = 5
+      
+      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=2124533056]
+      layout_mode = 2
+      size_flags_vertical = 4
+      
+      [node name="PrevButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=1517402534]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 4
+      disabled = true
+      text = "<"
+      
+      [node name="FrameCounter" type="Label" parent="VBoxContainer/HBoxContainer" unique_id=1143224070]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="NextButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=1021498235]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 4
+      disabled = true
+      text = ">"
+      
+      [node name="PlayButton" type="Button" parent="VBoxContainer" unique_id=499225090]
+      layout_mode = 2
+      disabled = true
+      text = "Play"
+      
+      [node name="Timer" type="Timer" parent="." unique_id=577464373]
+      
+      [connection signal="pressed" from="VBoxContainer/BrowseButton" to="." method="_on_browse_button_pressed"]
+      [connection signal="pressed" from="VBoxContainer/ImportButton" to="." method="_on_import_button_pressed"]
+      [connection signal="item_selected" from="VBoxContainer/AnimationSelector" to="." method="_on_animation_selector_item_selected"]
+      [connection signal="pressed" from="VBoxContainer/HBoxContainer/PrevButton" to="." method="_on_prev_button_pressed"]
+      [connection signal="pressed" from="VBoxContainer/HBoxContainer/NextButton" to="." method="_on_next_button_pressed"]
+      [connection signal="pressed" from="VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
+      
+      _______________
+      _______________
+      (sprite_importer_dock.gd):
+      @tool
+      extends PanelContainer
+      
+      @onready var folder_path := $VBoxContainer/FolderPath
+      @onready var browse_button := $VBoxContainer/BrowseButton
+      @onready var import_button := $VBoxContainer/ImportButton
+      @onready var status_label := $VBoxContainer/StatusLabel
+      @onready var animation_selector := $VBoxContainer/AnimationSelector
+      @onready var frame_display := $VBoxContainer/FrameDisplay
+      @onready var prev_button := $VBoxContainer/HBoxContainer/PrevButton
+      @onready var frame_counter := $VBoxContainer/HBoxContainer/FrameCounter
+      @onready var next_button := $VBoxContainer/HBoxContainer/NextButton
+      @onready var play_button := $VBoxContainer/PlayButton
+      @onready var play_timer := $Timer
+      var browse_dialog : EditorFileDialog
+      
+      const DEFAULT_FPS = 4.0
+      
+      var current_animation = ""
+      var current_frame_index = -1
+      var playing = false
+      var _loaded_sprite_frames: SpriteFrames = null
+      
+      func _ready() -> void:
+      	browse_dialog = EditorFileDialog.new()
+      	browse_dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_DIR
+      	browse_dialog.access = EditorFileDialog.ACCESS_RESOURCES
+      	add_child(browse_dialog)
+      	browse_dialog.dir_selected.connect(_on_browse_dialog_dir_selected)
+      	play_timer.timeout.connect(_on_play_timer_timeout)
+      	play_timer.one_shot = false
+      	prev_button.disabled = true
+      	next_button.disabled = true
+      	play_button.disabled = true
+      
+      
+      # --- Importer ---
+      
+      func _on_browse_button_pressed() -> void:
+      	browse_dialog.popup_file_dialog()
+      
+      
+      func _on_browse_dialog_dir_selected(dir: String) -> void:
+      	folder_path.text = dir
+      
+      
+      func _on_import_button_pressed() -> void:
+      	var path : String = folder_path.text
+      	if path == "":
+      		status_label.text = "No folder selected"
+      		return
+      	elif DirAccess.get_directories_at(path).size() == 0:
+      		status_label.text = "No subfolders in directory"
+      	else:
+      		_build_sprite_frames(path)
+      		if _loaded_sprite_frames != null:
+      			animation_selector.clear()
+      			for anim in _loaded_sprite_frames.get_animation_names():
+      				animation_selector.add_item(anim)
+      			current_animation = _loaded_sprite_frames.get_animation_names()[0]
+      			current_frame_index = 0
+      			_update_frame_display()
+      
+      
+      func _build_sprite_frames(character_folder: String) -> void:
+      	var folder_name = character_folder.split("/")[-1]
+      	var folders : PackedStringArray = DirAccess.get_directories_at(character_folder)
+      	var sprite_frames = SpriteFrames.new()
+      	sprite_frames.remove_animation("default")
+      	#print(character_folder)
+      	#print(folders)
+      	for folder in folders:
+      		var subdir = "%s/%s"%[character_folder, folder]
+      		sprite_frames.add_animation(folder)
+      		sprite_frames.set_animation_speed(folder, DEFAULT_FPS)
+      		sprite_frames.set_animation_loop(folder, true)
+      		var files : PackedStringArray = DirAccess.get_files_at(subdir)
+      		for file in files:
+      			if file.get_extension() == "png":
+      				var texture = load("%s/%s" % [subdir, file])
+      				sprite_frames.add_frame(folder, texture)
+      	var resource_path = "%s/%s.tres" % [character_folder, folder_name]
+      	if sprite_frames.get_animation_names().size() == 0:
+      		status_label.text = "Something went wrong, check directories."
+      		return
+      	ResourceSaver.save(sprite_frames, resource_path)
+      	EditorInterface.get_resource_filesystem().scan()
+      	_loaded_sprite_frames = sprite_frames
+      	prev_button.disabled = false
+      	next_button.disabled = false
+      	play_button.disabled = false
+      	status_label.text = "%s imported successfully" % folder_name
+      
+      # --- Preview ---
+      
+      func _on_animation_selector_item_selected(index: int) -> void:
+      	current_animation = _loaded_sprite_frames.get_animation_names()[index]
+      	current_frame_index = 0
+      	_update_frame_display()
+      
+      
+      func _on_prev_button_pressed() -> void:
+      	if playing:
+      		_on_play_button_pressed()
+      	current_frame_index = wrapi(current_frame_index - 1, 0, _loaded_sprite_frames.get_frame_count(current_animation))
+      	_update_frame_display()
+      
+      func _on_next_button_pressed() -> void:
+      	if playing:
+      		_on_play_button_pressed()
+      	current_frame_index = wrapi(current_frame_index + 1, 0, _loaded_sprite_frames.get_frame_count(current_animation))
+      	_update_frame_display()
+      
+      func _on_play_button_pressed() -> void:
+      	if !playing:
+      		play_timer.start(1.0 / DEFAULT_FPS)
+      		playing = true
+      		play_button.text = "Stop"
+      	else:
+      		play_timer.stop()
+      		playing = false
+      		play_button.text = "Play"
+      
+      
+      func _on_play_timer_timeout() -> void:
+      	current_frame_index = wrapi(current_frame_index + 1, 0, _loaded_sprite_frames.get_frame_count(current_animation))
+      	_update_frame_display()
+      
+      
+      func _update_frame_display() -> void:
+      	frame_display.texture = _loaded_sprite_frames.get_frame_texture(current_animation, current_frame_index)
+      	frame_counter.text = "%s / %s" % [current_frame_index + 1, _loaded_sprite_frames.get_frame_count(current_animation)]
+      
+      _______________
+  ART:
+    CHARACTERS:
+      ENEMIES:
+      NPCS:
+      PLAYER:
+        NORB:
+            norb.tres
+          IDLE_DOWN:
+              player_idle_down_01.png
+              player_idle_down_02.png
+          IDLE_LEFT:
+              player_idle_left_01.png
+              player_idle_left_02.png
+          IDLE_RIGHT:
+              player_idle_right_01.png
+              player_idle_right_02.png
+          IDLE_UP:
+              player_idle_up_01.png
+              player_idle_up_02.png
+          WALK_DOWN:
+              player_walk_down_01.png
+              player_walk_down_02.png
+          WALK_LEFT:
+              player_walk_left_01.png
+              player_walk_left_02.png
+          WALK_RIGHT:
+              player_walk_right_01.png
+              player_walk_right_02.png
+          WALK_UP:
+              player_walk_up_01.png
+              player_walk_up_02.png
+    EFFECTS:
+    UI:
+    WORLD:
+      OVERWORLD:
+      TILESETS:
+          ground_tiles.png
+          tiles.png
+          wall_tiles.png
+  AUDIO:
+    MUSIC:
+    SFX:
+  DATA:
+    DIALOGUE:
+    ENEMIES:
+    ITEMS:
+    MAPS:
+    SHOPS:
+  SCENES:
+  _______________
+  (boot.tscn):
+  [gd_scene format=4 uid="uid://db3knhytalx0w"]
+  
+  [ext_resource type="Texture2D" uid="uid://b5rj10oa1hwns" path="res://art/world/tilesets/ground_tiles.png" id="1_n61mk"]
+  [ext_resource type="Texture2D" uid="uid://c2ex7o3lei0ng" path="res://art/world/tilesets/wall_tiles.png" id="2_r2kcx"]
+  [ext_resource type="PackedScene" uid="uid://d3o28qbr54rdd" path="res://scenes/player.tscn" id="3_r2kcx"]
+  
+  [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_j20pb"]
+  texture = ExtResource("1_n61mk")
+  texture_region_size = Vector2i(64, 64)
+  0:0/0 = 0
+  1:0/0 = 0
+  2:0/0 = 0
+  3:0/0 = 0
+  4:0/0 = 0
+  5:0/0 = 0
+  6:0/0 = 0
+  
+  [sub_resource type="TileSet" id="TileSet_fbohu"]
+  tile_size = Vector2i(64, 64)
+  sources/1 = SubResource("TileSetAtlasSource_j20pb")
+  
+  [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jo0fb"]
+  texture = ExtResource("2_r2kcx")
+  texture_region_size = Vector2i(64, 64)
+  0:0/0 = 0
+  0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, 32, -32, -32, 32, -32, 32, 32)
+  1:0/0 = 0
+  1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, 32, -32, -32, 32, -32, 32, 32)
+  2:0/0 = 0
+  2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, 32, -32, -32, 32, -32, 32, 32)
+  3:0/0 = 0
+  3:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, 32, -32, -32, 32, -32, 32, 32)
+  4:0/0 = 0
+  4:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, 32, -32, -32, 32, -32, 32, 32)
+  5:0/0 = 0
+  5:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-32, 32, -32, -32, 32, -32, 32, 32)
+  
+  [sub_resource type="TileSet" id="TileSet_ok243"]
+  tile_size = Vector2i(64, 64)
+  physics_layer_0/collision_layer = 1
+  physics_layer_0/collision_mask = 6
+  sources/0 = SubResource("TileSetAtlasSource_jo0fb")
+  
+  [node name="Boot" type="Node2D" unique_id=724134701]
+  
+  [node name="GroundTileMapLayer" type="TileMapLayer" parent="." unique_id=97631375]
+  texture_filter = 1
+  tile_map_data = PackedByteArray("AAABAAEAAQAAAAAAAAABAAIAAQAAAAAAAAACAAEAAQAAAAAAAAACAAIAAQAAAAAAAAADAAEAAQAAAAAAAAADAAIAAQAAAAAAAAAEAAEAAQABAAAAAAAEAAIAAQABAAAAAAAFAAEAAQABAAAAAAAFAAIAAQABAAAAAAAGAAEAAQABAAAAAAAGAAIAAQABAAAAAAAHAAEAAQACAAAAAAAHAAIAAQACAAAAAAAIAAEAAQACAAAAAAAIAAIAAQACAAAAAAAJAAEAAQACAAAAAAAJAAIAAQACAAAAAAAKAAEAAQADAAAAAAAKAAIAAQADAAAAAAALAAEAAQADAAAAAAALAAIAAQADAAAAAAABAAQAAQAEAAAAAAABAAUAAQAEAAAAAAACAAQAAQAEAAAAAAACAAUAAQAEAAAAAAADAAQAAQAEAAAAAAADAAUAAQAEAAAAAAAEAAMAAQABAAAAAAAEAAQAAQAFAAAAAAAEAAUAAQAFAAAAAAAFAAMAAQABAAAAAAAFAAQAAQAFAAAAAAAFAAUAAQAFAAAAAAAGAAMAAQABAAAAAAAGAAQAAQAFAAAAAAAGAAUAAQAFAAAAAAAHAAMAAQACAAAAAAAHAAQAAQAGAAAAAAAHAAUAAQAGAAAAAAAIAAMAAQACAAAAAAAIAAQAAQAGAAAAAAAIAAUAAQAGAAAAAAAJAAMAAQACAAAAAAAJAAQAAQAGAAAAAAAJAAUAAQAGAAAAAAAHAAYAAQAGAAAAAAAIAAYAAQAGAAAAAAAJAAYAAQAGAAAAAAAEAAYAAQAFAAAAAAAFAAYAAQAFAAAAAAAGAAYAAQAFAAAAAAABAAYAAQAEAAAAAAACAAYAAQAEAAAAAAADAAYAAQAEAAAAAAABAAMAAQAAAAAAAAACAAMAAQAAAAAAAAADAAMAAQAAAAAAAAAKAAMAAQADAAAAAAAKAAQAAQADAAAAAAALAAMAAQADAAAAAAALAAQAAQADAAAAAAAMAAEAAQADAAAAAAAMAAIAAQADAAAAAAAMAAMAAQADAAAAAAAMAAQAAQADAAAAAAAKAAUAAQADAAAAAAAKAAYAAQADAAAAAAALAAUAAQADAAAAAAALAAYAAQADAAAAAAAMAAUAAQADAAAAAAAMAAYAAQADAAAAAAA=")
+  tile_set = SubResource("TileSet_fbohu")
+  
+  [node name="WallTileMapLayer" type="TileMapLayer" parent="." unique_id=1706691483]
+  texture_filter = 1
+  tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAACAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAEAAAAAAABAAAAAAAFAAAAAAABAAAAAAAAAAEAAAAAAAAAAAAGAAAAAAABAAAAAAAHAAAAAAABAAAAAAAIAAAAAAABAAAAAAAJAAAAAAABAAAAAAAKAAAAAAACAAAAAAALAAAAAAACAAAAAAAMAAAAAAACAAAAAAANAAAAAAACAAAAAAANAAEAAAACAAAAAAANAAIAAAACAAAAAAANAAMAAAACAAAAAAAAAAIAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAQAAAADAAAAAAAAAAUAAAADAAAAAAAAAAYAAAADAAAAAAAAAAcAAAADAAAAAAABAAcAAAADAAAAAAACAAcAAAADAAAAAAADAAcAAAADAAAAAAAEAAcAAAAEAAAAAAAFAAcAAAAEAAAAAAAGAAcAAAAEAAAAAAAHAAcAAAAEAAAAAAAIAAcAAAAEAAAAAAAJAAcAAAAEAAAAAAAKAAcAAAAFAAAAAAALAAcAAAAFAAAAAAAMAAcAAAAFAAAAAAANAAcAAAAFAAAAAAANAAQAAAAFAAAAAAANAAUAAAAFAAAAAAANAAYAAAAFAAAAAAA=")
+  tile_set = SubResource("TileSet_ok243")
+  
+  [node name="Player" parent="." unique_id=1122482979 instance=ExtResource("3_r2kcx")]
+  position = Vector2(196, 373)
+  
+  _______________
+  _______________
+  (player.tscn):
+  [gd_scene format=3 uid="uid://d3o28qbr54rdd"]
+  
+  [ext_resource type="Script" uid="uid://0l1oulq76pfu" path="res://player.gd" id="1_3vyb7"]
+  [ext_resource type="SpriteFrames" uid="uid://cnk6tlau0s367" path="res://art/characters/player/norb/norb.tres" id="2_g2els"]
+  [ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="2_qhqgy"]
+  
+  [sub_resource type="Resource" id="Resource_dqkch"]
+  script = ExtResource("2_qhqgy")
+  character_name = "Norb"
+  metadata/_custom_type_script = "uid://bck3giaak2qgo"
+  
+  [sub_resource type="RectangleShape2D" id="RectangleShape2D_g2els"]
+  size = Vector2(64, 32)
+  
+  [node name="Player" type="CharacterBody2D" unique_id=1122482979]
+  collision_layer = 2
+  motion_mode = 1
+  script = ExtResource("1_3vyb7")
+  stat_block = SubResource("Resource_dqkch")
+  
+  [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1253918709]
+  texture_filter = 1
+  sprite_frames = ExtResource("2_g2els")
+  animation = &"idle_down"
+  
+  [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=629372083]
+  position = Vector2(0, 16)
+  shape = SubResource("RectangleShape2D_g2els")
+  
+  [node name="Camera2D" type="Camera2D" parent="." unique_id=334418866]
+  zoom = Vector2(2, 2)
+  
+  _______________
+    BATTLE:
+    DUNGEONS:
+    TOWNS:
+    UI:
+    WORLD:
+  SRC:
+    AUTOLOADS:
+        codebase.gd
+    _______________
+    (AudioManager.gd):
+    extends Node
+    
+    # Bus structure is defined in the Godot Audio panel, not here.
+    # Musicians: your files go in res://audio/music/ and res://audio/sfx/
+    
+    func play_music(track_path: String, transition: String = "crossfade") -> void:
+    	pass
+    
+    
+    func play_sfx(sfx_path: String) -> void:
+    	pass
+    
+    
+    func _ready() -> void:
+    	EventBus.music_change_requested.connect(
+    		func(path, transition): play_music(path, transition)
+    	)
+    	EventBus.sfx_requested.connect(
+    		func(path): play_sfx(path)
+    	)
+    
+    _______________
+    _______________
+    (EventBus.gd):
+    extends Node
+    
+    # Scene/world signals
+    signal scene_transition_requested(scene_path: String, transition: String)
+    signal scene_transition_finished()
+    
+    # Combat signals
+    signal combat_started(enemy_group: Resource)
+    signal combat_ended(result: String)   # "victory", "defeat", "fled"
+    
+    # Dialogue signals
+    signal dialogue_started(dialogue_path: String)
+    signal dialogue_finished()
+    
+    # Inventory signals
+    signal item_acquired(item: Resource)
+    signal item_used(item: Resource)
+    signal item_dropped(item: Resource)
+    
+    # Game state signals
+    signal flag_changed(flag_name: String, value: Variant)
+    signal gold_changed(new_amount: int)
+    
+    # Audio signals
+    signal music_change_requested(track_path: String, transition: String)
+    signal sfx_requested(sfx_path: String)
+    
+    _______________
+    _______________
+    (GameState.gd):
+    extends Node
+    
+    # World flags — anything that "happened": doors opened, quests advanced,
+    # NPCs talked to. Key is a string, value is bool/int/String.
+    var flags: Dictionary = {}
+    
+    # Economy
+    var gold: int = 0
+    
+    # Party
+    var party: Array = []
+    
+    # Tracking
+    var current_map_path: String = ""
+    var save_slot: int = 0
+    
+    
+    func set_flag(flag_name: String, value: Variant) -> void:
+    	flags[flag_name] = value
+    	EventBus.flag_changed.emit(flag_name, value)
+    
+    
+    func get_flag(flag_name: String, default: Variant = false) -> Variant:
+    	return flags.get(flag_name, default)
+    
+    
+    func add_gold(amount: int) -> void:
+    	gold += amount
+    	EventBus.gold_changed.emit(gold)
+    
+    
+    func spend_gold(amount: int) -> bool:
+    	if gold < amount:
+    		return false
+    	gold -= amount
+    	EventBus.gold_changed.emit(gold)
+    	return true
+    
+    _______________
+    _______________
+    (SaveManager.gd):
+    extends Node
+    
+    func save(slot: int) -> void:
+    	pass  # Phase 9
+    
+    
+    func load_save(slot: int) -> void:
+    	pass  # Phase 9
+    
+    
+    func save_exists(slot: int) -> bool:
+    	return false  # Phase 9
+    
+    _______________
+    _______________
+    (SceneManager.gd):
+    extends Node
+    
+    var _is_transitioning: bool = false
+    
+    
+    func travel_to(scene_path: String, transition: String = "fade") -> void:
+    	if _is_transitioning:
+    		return
+    	_is_transitioning = true
+    	EventBus.scene_transition_requested.emit(scene_path, transition)
+    	# Transition animation plays, then calls _do_scene_change()
+    	# For now, skip the animation and swap directly
+    	_do_scene_change(scene_path)
+    
+    
+    func _do_scene_change(scene_path: String) -> void:
+    	get_tree().change_scene_to_file(scene_path)
+    	_is_transitioning = false
+    	EventBus.scene_transition_finished.emit()
+    
+    
+    func start_combat(enemy_group: Resource) -> void:
+    	# Store the return scene so we can come back after combat
+    	GameState.current_map_path = get_tree().current_scene.scene_file_path
+    	EventBus.combat_started.emit(enemy_group)
+    	travel_to("res://scenes/battle/Battle.tscn", "flash")
+    
+    
+    func end_combat(result: String) -> void:
+    	EventBus.combat_ended.emit(result)
+    	travel_to(GameState.current_map_path, "fade")
+    
+    _______________
+    COMBAT:
+    ENTITIES:
+    RESOURCES:
+    _______________
+    (CharacterStatBlock.gd):
+    class_name CharacterStatBlock
+    extends Resource
+    
+    @export var character_name: String = ""
+    @export var level: int = 1
+    @export var base_move_speed: float = 150.0
+    
+    @export_group("Primary Stats")
+    @export var str: int = 10   # Physical attack, carry weight
+    @export var agi: int = 10   # Turn order, evasion, accuracy
+    @export var vit: int = 10   # Max HP, physical defense
+    @export var intelligence: int = 10  # Magic attack, item effectiveness
+    @export var wil: int = 10   # Max MP, magic resist, status resist
+    
+    _______________
+    _______________
+    (DialogueChoice.gd):
+    class_name DialogueChoice
+    extends Resource
+    
+    @export var label: String = ""  # What the player sees in the menu
+    
+    # Condition — leave flag_required empty for always-available choices
+    @export var flag_required: String = ""
+    @export var required_value: Variant = true
+    
+    # Consequence
+    @export var sets_flag: String = ""
+    @export var sets_value: Variant = true
+    
+    # Where this choice leads
+    @export var next_lines: Array[DialogueLine] = []
+    
+    _______________
+    _______________
+    (DialogueLine.gd):
+    class_name DialogueLine
+    extends Resource
+    
+    @export var speaker_name: String = ""
+    @export var portrait: Texture2D  # null = no portrait shown
+    @export var text: String = ""
+    
+    # Empty array = linear advance. Populated = show choice menu.
+    @export var choices: Array[DialogueChoice] = []
+    
+    _______________
+    _______________
+    (EnemyGroupResource.gd):
+    class_name EnemyGroupResource
+    extends Resource
+    
+    @export var enemies: Array[EnemyResource] = []
+    @export var encounter_music: String = ""  # res://audio/music/... path
+    
+    _______________
+    _______________
+    (EnemyResource.gd):
+    class_name EnemyResource
+    extends Resource
+    
+    @export var enemy_name: String = ""
+    @export var sprite_frames: SpriteFrames
+    @export var stats: CharacterStatBlock
+    
+    @export_group("Rewards")
+    @export var experience_reward: int = 0
+    @export var gold_reward: int = 0
+    @export var drop_table: Array[ItemResource] = []
+    
+    _______________
+    _______________
+    (ItemResource.gd):
+    class_name ItemResource
+    extends Resource
+    
+    enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM }
+    
+    @export var item_name: String = ""
+    @export var description: String = ""
+    @export var icon: Texture2D
+    @export var item_type: ItemType = ItemType.CONSUMABLE
+    @export var value: int = 0       # Gold value for shops
+    @export var stackable: bool = true
+    @export var max_stack: int = 99
+    
+    _______________
+    _______________
+    (WarpDefinition.gd):
+    class_name WarpDefinition
+    extends Resource
+    
+    @export var target_scene: String = ""    # res://scenes/... path
+    @export var target_warp_id: String = ""  # ID of the arrival warp in target scene
+    @export var transition: String = "fade"  # matches SceneManager transition names
+    
+    _______________
+    UI:
+    WORLD:
