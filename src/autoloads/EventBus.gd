@@ -24,3 +24,6 @@ signal gold_changed(new_amount: int)
 # Audio signals
 signal music_change_requested(track_path: String, transition: String)
 signal sfx_requested(sfx_path: String)
+
+# Manipulation signals
+signal interact_pressed

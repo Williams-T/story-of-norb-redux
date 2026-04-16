@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://b0jw6cq16goiy"]
+
+[ext_resource type="Script" uid="uid://rbdtx2yo6vyf" path="res://scenes/shared/warp_point.gd" id="1_0a7i1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1j1qh"]
+size = Vector2(32, 32)
+
+[node name="WarpPoint" type="Area2D" unique_id=1105175947]
+collision_mask = 3
+script = ExtResource("1_0a7i1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=57997453]
+shape = SubResource("RectangleShape2D_1j1qh")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

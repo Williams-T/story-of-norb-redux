@@ -13,6 +13,7 @@ var party: Array = []
 # Tracking
 var current_map_path: String = ""
 var save_slot: int = 0
+var pending_warp_id : String = "test_town_entrance"
 
 
 func set_flag(flag_name: String, value: Variant) -> void:

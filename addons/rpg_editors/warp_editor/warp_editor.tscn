@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://cs3165cxhcdnp"]
+
+[ext_resource type="Script" uid="uid://du3amxkaoi7ex" path="res://addons/rpg_editors/warp_editor/warp_editor.gd" id="1_yg2yu"]
+
+[node name="WarpEditor" type="PanelContainer" unique_id=260236878]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_yg2yu")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1599574051]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBoxContainer" unique_id=466244589]
+layout_mode = 2
+text = "Map Warps"
+horizontal_alignment = 1
+
+[node name="WarpContainer" type="VBoxContainer" parent="VBoxContainer" unique_id=1928112498]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="ErrorLabel" type="Label" parent="VBoxContainer/WarpContainer" unique_id=808150914]
+layout_mode = 2
+text = "No warps found"
+horizontal_alignment = 1
+vertical_alignment = 1

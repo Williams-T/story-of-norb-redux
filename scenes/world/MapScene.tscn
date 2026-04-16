@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://bjif7jwax4nid"]
+
+[ext_resource type="TileSet" uid="uid://c4ud3h5ggwebv" path="res://ground_tiles.tres" id="1_lq374"]
+[ext_resource type="Script" uid="uid://3jhcfyj08wdl" path="res://scenes/world/map_controller.gd" id="1_yxw6e"]
+[ext_resource type="PackedScene" uid="uid://d3o28qbr54rdd" path="res://scenes/player.tscn" id="2_lq374"]
+[ext_resource type="TileSet" uid="uid://cwyyum82v6v2w" path="res://wall_tiles.tres" id="2_oocq6"]
+
+[sub_resource type="TileSet" id="TileSet_4jb3m"]
+tile_size = Vector2i(64, 64)
+
+[node name="MapScene" type="Node2D" unique_id=1952397873]
+texture_filter = 1
+
+[node name="TileMapLayers" type="Node2D" parent="." unique_id=103524705]
+
+[node name="GroundLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=1731891896]
+tile_set = ExtResource("1_lq374")
+
+[node name="DetailLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=414661615]
+tile_set = SubResource("TileSet_4jb3m")
+
+[node name="WallLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=582539627]
+tile_set = ExtResource("2_oocq6")
+
+[node name="Warps" type="Node2D" parent="." unique_id=1008206038]
+
+[node name="YSort" type="Node2D" parent="." unique_id=719166860]
+y_sort_enabled = true
+
+[node name="NPCs" type="Node2D" parent="YSort" unique_id=1354959080]
+
+[node name="Entities" type="Node2D" parent="YSort" unique_id=561890850]
+
+[node name="Player" parent="YSort" unique_id=1122482979 instance=ExtResource("2_lq374")]
+
+[node name="MapController" type="Node" parent="." unique_id=690899599]
+script = ExtResource("1_yxw6e")

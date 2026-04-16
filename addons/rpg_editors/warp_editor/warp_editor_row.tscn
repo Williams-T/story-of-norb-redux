@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://4shy4wl5w8rm"]
+
+[ext_resource type="Script" uid="uid://dra5q53y2mjna" path="res://addons/rpg_editors/warp_editor/warp_editor_row.gd" id="1_ilcpc"]
+
+[node name="WarpEditorRow" type="PanelContainer" unique_id=827101380]
+custom_minimum_size = Vector2(0, 40)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+script = ExtResource("1_ilcpc")
+
+[node name="VFlowContainer" type="VBoxContainer" parent="." unique_id=213053063]
+layout_mode = 2
+
+[node name="WarpIdEdit" type="TextEdit" parent="VFlowContainer" unique_id=666620208]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "warp_id"
+
+[node name="TargetSceneEdit" type="TextEdit" parent="VFlowContainer" unique_id=1866281124]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "target_scene"
+
+[node name="TargetWarpIdEdit" type="TextEdit" parent="VFlowContainer" unique_id=425129456]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "target_warp_id"
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="text_changed" from="VFlowContainer/WarpIdEdit" to="." method="_on_warp_id_edit_text_set"]
+[connection signal="text_set" from="VFlowContainer/WarpIdEdit" to="." method="_on_warp_id_edit_text_set"]
+[connection signal="text_changed" from="VFlowContainer/TargetSceneEdit" to="." method="_on_target_scene_edit_text_set"]
+[connection signal="text_set" from="VFlowContainer/TargetSceneEdit" to="." method="_on_target_scene_edit_text_set"]
+[connection signal="text_changed" from="VFlowContainer/TargetWarpIdEdit" to="." method="_on_target_warp_id_edit_text_set"]
+[connection signal="text_set" from="VFlowContainer/TargetWarpIdEdit" to="." method="_on_target_warp_id_edit_text_set"]

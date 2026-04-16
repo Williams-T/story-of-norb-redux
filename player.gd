@@ -4,6 +4,7 @@ extends CharacterBody2D
 @export var stat_block: CharacterStatBlock
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var cam : Camera2D = $Camera2D
 
 const AGI_SPEED_MODIFIER := 0.003
 
@@ -13,27 +14,21 @@ func _ready() -> void:
 	sprite.play("idle_down")
 
 func _physics_process(delta: float) -> void:
-	_update_last_direction()
 	var direction := _get_input_direction()
+	_update_last_direction()
 	_apply_movement(direction)
 	_update_animation(direction)
 	move_and_slide()
 
 func _update_last_direction():
+	if Input.is_action_pressed("move_left"):
+		_last_direction = Vector2.LEFT
+	elif Input.is_action_pressed("move_right"):
+		_last_direction = Vector2.RIGHT
 	if Input.is_action_pressed("move_up"):
 		_last_direction = Vector2.UP
 	elif Input.is_action_pressed("move_down"):
 		_last_direction = Vector2.DOWN
-	elif Input.is_action_pressed("move_left"):
-		_last_direction = Vector2.LEFT
-	elif Input.is_action_pressed("move_right"):
-		_last_direction = Vector2.RIGHT
-	var vert_strength = Input.get_axis("move_up", "move_down")
-	if vert_strength != 0:
-		if vert_strength < 0:
-			_last_direction = Vector2.UP
-		else:
-			_last_direction = Vector2.DOWN
 		
 func _get_input_direction() -> Vector2:
 	return Input.get_vector("move_left", "move_right", "move_up","move_down")
@@ -69,3 +64,9 @@ func _play_idle_animation():
 			sprite.animation = "idle_down"
 		Vector2.RIGHT:
 			sprite.animation = "idle_right"
+
+func set_camera_limits(rect : Rect2):
+	cam.limit_top = rect.position.y
+	cam.limit_left = rect.position.x
+	cam.limit_bottom = rect.position.y + rect.size.y
+	cam.limit_right = rect.position.x + rect.size.x
