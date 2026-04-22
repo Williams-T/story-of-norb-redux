@@ -1,0 +1,189 @@
+[gd_scene format=3 uid="uid://be7nw8e4ra3m3"]
+
+[ext_resource type="Script" uid="uid://x3wfqy7hge71" path="res://addons/rpg_editors/dialogue_editor/dialogue_editor_panel.gd" id="1_r4g4s"]
+[ext_resource type="Texture2D" uid="uid://06qhkbpxdkln" path="res://art/NULL.png" id="2_esd1h"]
+
+[node name="DialogueEditorPanel" type="PanelContainer" unique_id=357779528]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_r4g4s")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2058924293]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=238517059]
+layout_mode = 2
+text = "Dialogue Editor"
+horizontal_alignment = 1
+
+[node name="FileBar" type="HBoxContainer" parent="VBoxContainer" unique_id=1307388335]
+layout_mode = 2
+alignment = 2
+
+[node name="Control" type="Control" parent="VBoxContainer/FileBar" unique_id=1499754639]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="SequenceNameLabel" type="LineEdit" parent="VBoxContainer/FileBar" unique_id=1827445770]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Sequence Name"
+alignment = 1
+
+[node name="NewButton" type="Button" parent="VBoxContainer/FileBar" unique_id=231256719]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "New"
+
+[node name="Control2" type="Control" parent="VBoxContainer/FileBar" unique_id=1950905702]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+
+[node name="SaveButton" type="Button" parent="VBoxContainer/FileBar" unique_id=838366118]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "Save"
+
+[node name="Control3" type="Control" parent="VBoxContainer/FileBar" unique_id=1649745552]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="MainContent" type="HBoxContainer" parent="VBoxContainer" unique_id=1147954245]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LineList" type="PanelContainer" parent="VBoxContainer/MainContent" unique_id=344293063]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/MainContent/LineList" unique_id=262833118]
+layout_mode = 2
+
+[node name="LineContainer" type="VBoxContainer" parent="VBoxContainer/MainContent/LineList/ScrollContainer" unique_id=1866087770]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AddLineButton" type="Button" parent="VBoxContainer/MainContent/LineList/ScrollContainer/LineContainer" unique_id=845883128]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "    Add Line    "
+
+[node name="LineDetail" type="PanelContainer" parent="VBoxContainer/MainContent" unique_id=1844138593]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/MainContent/LineDetail" unique_id=852512542]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer" unique_id=1422166317]
+layout_mode = 2
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=2089327606]
+layout_mode = 2
+alignment = 2
+
+[node name="SpeakerLabel" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer" unique_id=50891577]
+layout_mode = 2
+text = "Speaker Name: "
+
+[node name="SpeakerEdit" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer" unique_id=993229391]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=2053337611]
+layout_mode = 2
+alignment = 2
+
+[node name="TextLabel" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=216942688]
+layout_mode = 2
+text = "                   Text: "
+
+[node name="TextEdit" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1085255905]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=761915439]
+layout_mode = 2
+alignment = 2
+
+[node name="PortraitLabel" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer3" unique_id=1015235528]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.5
+text = "             Portrait:"
+
+[node name="PortraitButton" type="TextureButton" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer3" unique_id=1656441633]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+texture_normal = ExtResource("2_esd1h")
+
+[node name="Control" type="Control" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer3" unique_id=1837393030]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=1069664076]
+layout_mode = 2
+alignment = 2
+
+[node name="ChoicesLabel" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4" unique_id=23961417]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "              Choices: "
+
+[node name="ChoicesContainer" type="VBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4" unique_id=1131826491]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="AddChoiceButton" type="Button" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoicesContainer" unique_id=803391300]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "[ Add choice ]"
+
+[node name="ChoiceAdvanced" type="VBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4" unique_id=1280832195]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="Label" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=75097396]
+layout_mode = 2
+text = "Choice Details:"
+horizontal_alignment = 1
+
+[node name="FlagRequiredField" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=396896495]
+layout_mode = 2
+placeholder_text = "Required Flag"
+alignment = 1
+
+[node name="ValueRequiredField" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=1141981602]
+layout_mode = 2
+placeholder_text = "Required Value"
+alignment = 1
+
+[node name="SetsFlagField" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=844203703]
+layout_mode = 2
+placeholder_text = "Sets Flag"
+alignment = 1
+
+[node name="SetsValueField" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=350250048]
+layout_mode = 2
+placeholder_text = "Sets Value"
+alignment = 1
+
+[node name="NextSequenceID" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=74886403]
+layout_mode = 2
+placeholder_text = "Next Sequence ID"
+alignment = 1

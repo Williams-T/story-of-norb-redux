@@ -1,0 +1,87 @@
+[gd_scene format=3 uid="uid://bhvjql71xc4d4"]
+
+[ext_resource type="Script" uid="uid://ckaeq1dh8pgh2" path="res://scenes/ui/dialogue_ui.gd" id="1_6snq5"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_wjgy6"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_70hjk"]
+noise = SubResource("FastNoiseLite_wjgy6")
+
+[node name="DialogueUi" type="CanvasLayer" unique_id=425951853]
+script = ExtResource("1_6snq5")
+
+[node name="Panel" type="Panel" parent="." unique_id=2038726739]
+visible = false
+clip_contents = true
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.75
+anchor_right = 0.95
+anchor_bottom = 0.95
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel" unique_id=176138327]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.03
+anchor_top = 0.05
+anchor_right = 0.97
+anchor_bottom = 0.95
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Portrait" type="TextureRect" parent="Panel/HBoxContainer" unique_id=289682475]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.2
+texture = SubResource("NoiseTexture2D_70hjk")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="LineContainer" type="VBoxContainer" parent="Panel/HBoxContainer" unique_id=338094560]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Name" type="Label" parent="Panel/HBoxContainer/LineContainer" unique_id=119802924]
+layout_mode = 2
+text = "Name:"
+
+[node name="Dialogue" type="Label" parent="Panel/HBoxContainer/LineContainer" unique_id=1870058130]
+layout_mode = 2
+size_flags_vertical = 3
+text = "All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. "
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+clip_text = true
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/HBoxContainer" unique_id=1345519857]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ChoiceContainer" type="VBoxContainer" parent="Panel/HBoxContainer/ScrollContainer" unique_id=408444412]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Choice1" type="Button" parent="Panel/HBoxContainer/ScrollContainer/ChoiceContainer" unique_id=1874769200]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Choice 1"
+
+[node name="Choice2" type="Button" parent="Panel/HBoxContainer/ScrollContainer/ChoiceContainer" unique_id=169166718]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Choice 2"
+
+[node name="Choice3" type="Button" parent="Panel/HBoxContainer/ScrollContainer/ChoiceContainer" unique_id=1925214393]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Choice 3"
+
+[node name="Choice4" type="Button" parent="Panel/HBoxContainer/ScrollContainer/ChoiceContainer" unique_id=711682974]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Choice 4"

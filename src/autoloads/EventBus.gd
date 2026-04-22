@@ -9,7 +9,10 @@ signal combat_started(enemy_group: Resource)
 signal combat_ended(result: String)   # "victory", "defeat", "fled"
 
 # Dialogue signals
-signal dialogue_started(dialogue_path: String)
+signal dialogue_started(sequence: DialogueSequence)
+signal dialogue_line_advanced(line : DialogueLine)
+signal dialogue_choices_available(choices: Array[DialogueChoice])
+signal dialogue_choice_selected(choice : DialogueChoice)
 signal dialogue_finished()
 
 # Inventory signals

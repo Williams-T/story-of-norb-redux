@@ -6,7 +6,8 @@
 size = Vector2(32, 32)
 
 [node name="WarpPoint" type="Area2D" unique_id=1105175947]
-collision_mask = 3
+collision_layer = 4
+collision_mask = 2
 script = ExtResource("1_0a7i1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=57997453]

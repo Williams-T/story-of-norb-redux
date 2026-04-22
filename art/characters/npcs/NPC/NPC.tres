@@ -1,0 +1,109 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://dyolvw4m6y32x"]
+
+[ext_resource type="Texture2D" uid="uid://bqj3p11xv3se2" path="res://art/characters/npcs/NPC/idle_down/npc_idle_down_01.png" id="1_v4456"]
+[ext_resource type="Texture2D" uid="uid://cyg6sxhgcu38" path="res://art/characters/npcs/NPC/idle_down/npc_idle_down_02.png" id="2_pfnc6"]
+[ext_resource type="Texture2D" uid="uid://dylyinroshkji" path="res://art/characters/npcs/NPC/idle_left/npc_idle_left_01.png" id="3_u2hsj"]
+[ext_resource type="Texture2D" uid="uid://bm43gmle4us8x" path="res://art/characters/npcs/NPC/idle_left/npc_idle_left_02.png" id="4_yyjf8"]
+[ext_resource type="Texture2D" uid="uid://nv3ihg38thiq" path="res://art/characters/npcs/NPC/idle_right/npc_idle_right_01.png" id="5_8un3x"]
+[ext_resource type="Texture2D" uid="uid://divnr11cwrvkh" path="res://art/characters/npcs/NPC/idle_right/npc_idle_right_02.png" id="6_tprlx"]
+[ext_resource type="Texture2D" uid="uid://djp35dkrdcwor" path="res://art/characters/npcs/NPC/idle_up/npc_idle_up_01.png" id="7_dy470"]
+[ext_resource type="Texture2D" uid="uid://b1ck270pqkndy" path="res://art/characters/npcs/NPC/idle_up/npc_idle_up_02.png" id="8_yqrt5"]
+[ext_resource type="Texture2D" uid="uid://bbdj0t1ucgfh5" path="res://art/characters/npcs/NPC/walk_down/npc_walk_down_01.png" id="9_d4gw8"]
+[ext_resource type="Texture2D" uid="uid://e5oybhnrw2qe" path="res://art/characters/npcs/NPC/walk_down/npc_walk_down_02.png" id="10_b3g3r"]
+[ext_resource type="Texture2D" uid="uid://bhmpl4l3sa3jr" path="res://art/characters/npcs/NPC/walk_left/npc_walk_left_01.png" id="11_ja3ms"]
+[ext_resource type="Texture2D" uid="uid://d2qyej63owesq" path="res://art/characters/npcs/NPC/walk_left/npc_walk_left_02.png" id="12_6qhol"]
+[ext_resource type="Texture2D" uid="uid://dj3y1mnua5dpi" path="res://art/characters/npcs/NPC/walk_right/npc_walk_right_01.png" id="13_vhvvo"]
+[ext_resource type="Texture2D" uid="uid://b145x1h1sfqay" path="res://art/characters/npcs/NPC/walk_right/npc_walk_right_02.png" id="14_xk7le"]
+[ext_resource type="Texture2D" uid="uid://c01vscnwl8qfp" path="res://art/characters/npcs/NPC/walk_up/npc_walk_up_01.png" id="15_7fsh1"]
+[ext_resource type="Texture2D" uid="uid://h5xft6c03jtn" path="res://art/characters/npcs/NPC/walk_up/npc_walk_up_02.png" id="16_83c28"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_v4456")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_pfnc6")
+}],
+"loop": true,
+"name": &"idle_down",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_u2hsj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_yyjf8")
+}],
+"loop": true,
+"name": &"idle_left",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_8un3x")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_tprlx")
+}],
+"loop": true,
+"name": &"idle_right",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_dy470")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_yqrt5")
+}],
+"loop": true,
+"name": &"idle_up",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_d4gw8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_b3g3r")
+}],
+"loop": true,
+"name": &"walk_down",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_ja3ms")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_6qhol")
+}],
+"loop": true,
+"name": &"walk_left",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("13_vhvvo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_xk7le")
+}],
+"loop": true,
+"name": &"walk_right",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("15_7fsh1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_83c28")
+}],
+"loop": true,
+"name": &"walk_up",
+"speed": 4.0
+}]

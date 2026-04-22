@@ -1,0 +1,72 @@
+[gd_resource type="Resource" script_class="DialogueSequence" format=3 uid="uid://b8rw64td7brgu"]
+
+[ext_resource type="Script" uid="uid://dtjevhceewfsc" path="res://src/resources/DialogueLine.gd" id="1_qxy11"]
+[ext_resource type="Script" uid="uid://6tgeb37pkkm" path="res://src/resources/DialogueChoice.gd" id="2_8mp7c"]
+[ext_resource type="Script" uid="uid://dff5q2m8wjs4f" path="res://src/resources/DialogueSequence.gd" id="2_n0gaq"]
+
+[sub_resource type="Resource" id="Resource_hl8w0"]
+script = ExtResource("1_qxy11")
+speaker_name = "NPC"
+text = "This is a line."
+metadata/_custom_type_script = "uid://dtjevhceewfsc"
+
+[sub_resource type="Resource" id="Resource_bl8sa"]
+script = ExtResource("1_qxy11")
+speaker_name = "NPC"
+text = "This is another line."
+metadata/_custom_type_script = "uid://dtjevhceewfsc"
+
+[sub_resource type="Resource" id="Resource_4j0t1"]
+script = ExtResource("1_qxy11")
+speaker_name = "NPC"
+text = "I agree."
+metadata/_custom_type_script = "uid://dtjevhceewfsc"
+
+[sub_resource type="Resource" id="Resource_y8pj8"]
+script = ExtResource("2_8mp7c")
+label = "Cool."
+required_value = null
+sets_value = null
+next_lines = Array[ExtResource("1_qxy11")]([SubResource("Resource_4j0t1")])
+metadata/_custom_type_script = "uid://6tgeb37pkkm"
+
+[sub_resource type="Resource" id="Resource_nnyob"]
+script = ExtResource("1_qxy11")
+speaker_name = "NPC"
+text = "I disagree."
+metadata/_custom_type_script = "uid://dtjevhceewfsc"
+
+[sub_resource type="Resource" id="Resource_kln5e"]
+script = ExtResource("2_8mp7c")
+label = "Not cool."
+required_value = null
+sets_value = null
+next_lines = Array[ExtResource("1_qxy11")]([SubResource("Resource_nnyob")])
+metadata/_custom_type_script = "uid://6tgeb37pkkm"
+
+[sub_resource type="Resource" id="Resource_tcvpu"]
+script = ExtResource("1_qxy11")
+speaker_name = "NPC"
+text = "That's weird"
+metadata/_custom_type_script = "uid://dtjevhceewfsc"
+
+[sub_resource type="Resource" id="Resource_qydh1"]
+script = ExtResource("2_8mp7c")
+label = "I don't know"
+required_value = null
+sets_value = null
+next_lines = Array[ExtResource("1_qxy11")]([SubResource("Resource_tcvpu")])
+metadata/_custom_type_script = "uid://6tgeb37pkkm"
+
+[sub_resource type="Resource" id="Resource_spt26"]
+script = ExtResource("1_qxy11")
+speaker_name = "NPC"
+text = "What do you think?"
+choices = Array[ExtResource("2_8mp7c")]([SubResource("Resource_y8pj8"), SubResource("Resource_kln5e"), SubResource("Resource_qydh1")])
+metadata/_custom_type_script = "uid://dtjevhceewfsc"
+
+[resource]
+script = ExtResource("2_n0gaq")
+sequence_id = "test_dialogue"
+lines = Array[ExtResource("1_qxy11")]([SubResource("Resource_hl8w0"), SubResource("Resource_bl8sa"), SubResource("Resource_spt26")])
+metadata/_custom_type_script = "uid://dff5q2m8wjs4f"

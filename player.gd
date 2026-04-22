@@ -13,6 +13,10 @@ var _last_direction := Vector2.DOWN
 func _ready() -> void:
 	sprite.play("idle_down")
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed('interact'):
+		EventBus.interact_pressed.emit()
+
 func _physics_process(delta: float) -> void:
 	var direction := _get_input_direction()
 	_update_last_direction()

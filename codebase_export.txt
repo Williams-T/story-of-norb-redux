@@ -1,11 +1,11 @@
 StoryOfNorbRedux
 
 ROOT:
-    codebase_export.txt
-    debug_tileset.tres
-    ground_tiles.tres
-    README.md
-    wall_tiles.tres
+	codebase_export.txt
+	debug_tileset.tres
+	ground_tiles.tres
+	README.md
+	wall_tiles.tres
 _______________
 (player.gd):
 class_name Player
@@ -22,6 +22,10 @@ var _last_direction := Vector2.DOWN
 
 func _ready() -> void:
 	sprite.play("idle_down")
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed('interact'):
+		EventBus.interact_pressed.emit()
 
 func _physics_process(delta: float) -> void:
 	var direction := _get_input_direction()
@@ -107,6 +111,7 @@ GameState="*uid://cmp1liobev0ks"
 SceneManager="*uid://cy7ln04as6jlf"
 AudioManager="*uid://boqnp0qs6ekfr"
 SaveManager="*uid://cojysb0jfm6w5"
+DialogueManager="*uid://drd42r3odtlk5"
 Codebase="*uid://c67q6k2f20o06"
 
 [display]
@@ -238,33 +243,505 @@ _______________
     
     var _sprite_importer_dock
     var _warp_editor_dock
-    
+    var _dialogue_panel
     func _enter_tree() -> void:
     	scene_changed.connect(_on_scene_changed)
     	# Called when the plugin is enabled.
     	# Future editors will add their docks and panels here.
     	_sprite_importer_dock = preload("res://addons/rpg_editors/sprite_importer/SpriteImporterDock.tscn").instantiate()
     	_warp_editor_dock = preload("res://addons/rpg_editors/warp_editor/warp_editor.tscn").instantiate()
-    	add_control_to_dock(DOCK_SLOT_BOTTOM, _sprite_importer_dock)
-    	add_control_to_dock(DOCK_SLOT_BOTTOM, _warp_editor_dock)
+    	_dialogue_panel =  preload("res://addons/rpg_editors/dialogue_editor/dialogue_editor_panel.tscn").instantiate()
+    	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, _sprite_importer_dock)
+    	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, _warp_editor_dock)
+    	add_control_to_bottom_panel(_dialogue_panel, "Dialogue Editor")
+    	_dialogue_panel.plugin = self
     	
     	print("RPG Editors: loaded")
-    
     
     func _exit_tree() -> void:
     	# Called when the plugin is disabled or the project closes.
     	# Everything added in _enter_tree must be removed here.
-    	remove_control_from_docks(_sprite_importer_dock)
-    	remove_control_from_docks(_warp_editor_dock)
-    	_sprite_importer_dock.free()
-    	_warp_editor_dock.free()
+    	remove_control_from_bottom_panel(_sprite_importer_dock)
+    	remove_control_from_bottom_panel(_warp_editor_dock)
+    	remove_control_from_bottom_panel(_dialogue_panel)
+    	_dialogue_panel.queue_free()
+    	_sprite_importer_dock.queue_free()
+    	_warp_editor_dock.queue_free()
     	
     	print("RPG Editors: unloaded")
+    
+    func _handles(object: Object) -> bool:
+    	if object is DialogueSequence or WarpPoint:
+    		return true
+    	return false
+    
+    func _edit(object: Object) -> void:
+    	if object is DialogueSequence:
+    		_dialogue_panel.refresh(object)
+    
+    func save_dialogue(sequence : DialogueSequence):
+    	var path = sequence.resource_path
+    	if path.is_empty():
+    		path = "res://data/dialogue/%s.tres" % sequence.sequence_id
+    	ResourceSaver.save(sequence, path)
     
     func _on_scene_changed(root):
     	_warp_editor_dock.refresh(root)
     
     _______________
+      DIALOGUE_EDITOR:
+      _______________
+      (dialogue_editor_panel.gd):
+      @tool
+      extends PanelContainer
+      
+      @onready var sequence_name_label := $VBoxContainer/FileBar/SequenceNameLabel
+      @onready var new_button := $VBoxContainer/FileBar/NewButton
+      @onready var save_button := $VBoxContainer/FileBar/SaveButton
+      @onready var line_container := $VBoxContainer/MainContent/LineList/ScrollContainer/LineContainer
+      @onready var speaker_edit := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer/SpeakerEdit
+      @onready var text_edit := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer2/TextEdit
+      @onready var portrait_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer3/PortraitButton
+      @onready var choices_container := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoicesContainer
+      @onready var add_choice_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoicesContainer/AddChoiceButton
+      @onready var add_line_button := $VBoxContainer/MainContent/LineList/ScrollContainer/LineContainer/AddLineButton
+      
+      # Choice Details
+      @onready var required_flag_field := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced/FlagRequiredField
+      @onready var required_value_field := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced/ValueRequiredField
+      @onready var sets_flag_field := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced/SetsFlagField
+      @onready var sets_value_field := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced/SetsValueField
+      @onready var next_sequence_id_field := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced/NextSequenceID
+      
+      var current_sequence : DialogueSequence
+      var current_choice_index : int = -1
+      var selected_choice_node : LineEdit
+      var plugin : EditorPlugin
+      var _portrait_dialog : EditorFileDialog
+      var _confirmation_dialog : ConfirmationDialog
+      var sequence_edit : LineEdit
+      
+      func _enter_tree() -> void:
+      	_portrait_dialog = EditorFileDialog.new()
+      	_portrait_dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_FILE
+      	_portrait_dialog.access = EditorFileDialog.ACCESS_RESOURCES
+      	_portrait_dialog.add_filter("*.png,*.jpg,*.webp", "Images")
+      	add_child(_portrait_dialog)
+      	_confirmation_dialog = ConfirmationDialog.new()
+      	_confirmation_dialog.dialog_text = "Input Sequence ID:"
+      	add_child(_confirmation_dialog)
+      	sequence_edit = LineEdit.new()
+      	sequence_edit.placeholder_text = "Sequence ID"
+      	_confirmation_dialog.add_child(sequence_edit)
+      	_confirmation_dialog.confirmed.connect(save_dialogue)
+      	#portrait_button.pressed.connect(change_portrait)
+      	#add_choice_button.pressed.connect(add_choice)
+      
+      func _ready() -> void:
+      	new_button.pressed.connect(new_dialogue)
+      	save_button.pressed.connect(save_prompt)
+      	add_line_button.pressed.connect(add_line)
+      	sequence_name_label.text_changed.connect(update_sequence_id)
+      	new_dialogue()
+      
+      func refresh(sequence : DialogueSequence):
+      	clear_details()
+      	current_sequence = sequence
+      	sequence_name_label.text = current_sequence.sequence_id
+      	for child in line_container.get_children():
+      		if child.name != "AddLineButton":
+      			line_container.remove_child(child)
+      			child.queue_free()
+      	if !sequence.lines.is_empty():
+      		for i in sequence.lines.size():
+      			var current_line : DialogueLine = current_sequence.lines[i]
+      			var hbox = HBoxContainer.new()
+      			var button = Button.new()
+      			var delete_button = Button.new()
+      			button.text = current_line.text
+      			button.pressed.connect(refresh_detail.bind(i))
+      			delete_button.pressed.connect(delete_line.bind(i))
+      			delete_button.text = "x"
+      			line_container.add_child(hbox)
+      			hbox.add_child(button)
+      			hbox.add_child(delete_button)
+      			hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+      			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+      			button.custom_minimum_size = Vector2(0.0, 31.0)
+      		line_container.move_child(add_line_button, -1)
+      
+      func update_sequence_id(text : String):
+      	current_sequence.sequence_id = text
+      
+      func add_line():
+      	if !current_sequence:
+      		current_sequence = DialogueSequence.new()
+      	var lines = current_sequence.lines.duplicate()
+      	lines.append(DialogueLine.new())
+      	current_sequence.lines = lines
+      	refresh(current_sequence)
+      
+      func delete_line(index : int):
+      	var lines = current_sequence.lines.duplicate()
+      	lines.remove_at(index)
+      	current_sequence.lines = lines
+      	refresh(current_sequence)
+      
+      func refresh_detail(index : int):
+      	clear_details()
+      	var line : DialogueLine = current_sequence.lines[index]
+      	speaker_edit.text = line.speaker_name
+      	if speaker_edit.text_changed.is_connected(change_speaker):
+      		speaker_edit.text_changed.disconnect(change_speaker)
+      	speaker_edit.text_changed.connect(change_speaker.bind(index))
+      	text_edit.text = line.text
+      	if text_edit.text_changed.is_connected(text_changed):
+      		text_edit.text_changed.disconnect(text_changed)
+      	text_edit.text_changed.connect(text_changed.bind(index))
+      	if line.portrait != null:
+      		portrait_button.texture_normal = line.portrait
+      	else:
+      		portrait_button.texture_normal = preload("res://art/NULL.png")
+      	if portrait_button.pressed.is_connected(change_portrait):
+      		portrait_button.pressed.disconnect(change_portrait)
+      	portrait_button.pressed.connect(change_portrait.bind(index))
+      	for child in choices_container.get_children():
+      		if child.name != "AddChoiceButton":
+      			choices_container.remove_child(child)
+      			child.queue_free()
+      	if !line.choices.is_empty():
+      		for choice_index in line.choices.size():
+      			var choice : DialogueChoice = line.choices[choice_index]
+      			var choice_field = LineEdit.new()
+      			var delete_button = Button.new()
+      			var hbox = HBoxContainer.new()
+      			hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+      			choice_field.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+      			delete_button.pressed.connect(delete_choice.bind(index, choice_index))
+      			choice_field.text = choice.label
+      			delete_button.text = "[ x ]"
+      			choice_field.text_changed.connect(text_changed.bind(index, choice_index))
+      			choice_field.editing_toggled.connect(choice_selected.bind(index, choice_index, choice_field))
+      			choices_container.add_child(hbox)
+      			hbox.add_child(choice_field)
+      			hbox.add_child(delete_button)
+      		choices_container.move_child(add_choice_button, -1)
+      	if add_choice_button.pressed.is_connected(add_choice):
+      		add_choice_button.pressed.disconnect(add_choice)
+      	add_choice_button.pressed.connect(add_choice.bind(index))
+      
+      func new_dialogue():
+      	current_sequence = DialogueSequence.new()
+      	refresh(current_sequence)
+      
+      func save_prompt():
+      	if !current_sequence:
+      		return
+      	if current_sequence.sequence_id == "" or current_sequence.sequence_id == null:
+      		_confirmation_dialog.popup_centered()
+      	else:
+      		save_dialogue()
+      
+      func save_dialogue():
+      	if current_sequence.sequence_id == "":
+      		if sequence_edit.text != "":
+      			current_sequence.sequence_id = sequence_edit.text
+      		else:
+      			current_sequence.sequence_id = "New_Dialogue_%s" % randi_range(1000, 9999)
+      	plugin.save_dialogue(current_sequence)
+      
+      func change_portrait(line_index: int) -> void:
+      	if _portrait_dialog.file_selected.is_connected(_on_portrait_selected):
+      		_portrait_dialog.file_selected.disconnect(_on_portrait_selected)
+      	_portrait_dialog.file_selected.connect(_on_portrait_selected.bind(line_index))
+      	_portrait_dialog.filters = ["*.png"]
+      	_portrait_dialog.popup_file_dialog()
+      
+      func _on_portrait_selected(path: String, line_index: int) -> void:
+      	var texture = load(path)
+      	current_sequence.lines[line_index].portrait = texture
+      	portrait_button.texture_normal = texture
+      
+      func add_choice(line_index : int):
+      	var choices = current_sequence.lines[line_index].choices.duplicate()
+      	choices.append(DialogueChoice.new())
+      	current_sequence.lines[line_index].choices = choices
+      	refresh_detail(line_index)
+      
+      func choice_selected(_toggled : bool, line_index : int, choice_index : int, choice_node : Node):
+      	current_choice_index = choice_index
+      	if selected_choice_node != null:
+      		selected_choice_node.remove_theme_color_override("font_color")
+      	selected_choice_node = choice_node
+      	selected_choice_node.add_theme_color_override("font_color", Color.YELLOW)
+      	refresh_choice_details(line_index, choice_index)
+      
+      func delete_choice(line_index: int, choice_index: int) -> void:
+      	var choices = current_sequence.lines[line_index].choices.duplicate()
+      	choices.remove_at(choice_index)
+      	current_sequence.lines[line_index].choices = choices
+      	refresh_detail(line_index)
+      
+      func refresh_choice_details(line_index : int, choice_index : int):
+      	var current_choice : DialogueChoice = current_sequence.lines[line_index].choices[choice_index]
+      	if required_flag_field.text_changed.is_connected(update_choice):
+      		required_flag_field.text_changed.disconnect(update_choice)
+      	if required_value_field.text_changed.is_connected(update_choice):
+      		required_value_field.text_changed.disconnect(update_choice)
+      	if sets_flag_field.text_changed.is_connected(update_choice):
+      		sets_flag_field.text_changed.disconnect(update_choice)
+      	if sets_value_field.text_changed.is_connected(update_choice):
+      		sets_value_field.text_changed.disconnect(update_choice)
+      	if next_sequence_id_field.text_changed.is_connected(update_choice):
+      		next_sequence_id_field.text_changed.disconnect(update_choice)
+      	if current_choice.flag_required != null:
+      		required_flag_field.text = "%s" % current_choice.flag_required
+      	if current_choice.required_value != null:
+      		required_value_field.text = "%s" % current_choice.required_value
+      	if current_choice.sets_flag != null:
+      		sets_flag_field.text = "%s" % current_choice.sets_flag
+      	if current_choice.sets_value != null:
+      		sets_value_field.text = "%s" % current_choice.sets_value
+      	if current_choice.next_lines != null:
+      		next_sequence_id_field.text = "%s" % current_choice.next_sequence_id
+      	required_flag_field.text_changed.connect(update_choice.bind(line_index, choice_index, "required_flag"))
+      	required_value_field.text_changed.connect(update_choice.bind(line_index, choice_index, "required_value"))
+      	sets_flag_field.text_changed.connect(update_choice.bind(line_index, choice_index, "sets_flag"))
+      	sets_value_field.text_changed.connect(update_choice.bind(line_index, choice_index, "sets_value"))
+      	next_sequence_id_field.text_changed.connect(update_choice.bind(line_index, choice_index, "next_id"))
+      
+      func clear_details():
+      	speaker_edit.text = ""
+      	text_edit.text = ""
+      	portrait_button.texture_normal = preload("res://art/NULL.png")
+      	for child in choices_container.get_children():
+      		if child.name != "AddChoiceButton":
+      			choices_container.remove_child(child)
+      			child.queue_free()
+      	required_flag_field.text = ""
+      	required_value_field.text = ""
+      	sets_flag_field.text = ""
+      	sets_value_field.text = ""
+      	next_sequence_id_field.text = ""
+      
+      func update_choice(field_value : String, line_index:int, choice_index: int, field_name : String):
+      	var current_choice = current_sequence.lines[line_index].choices[choice_index]
+      	match field_name:
+      		"required_flag":
+      			current_choice.flag_required = field_value
+      		"required_value":
+      			current_choice.required_value = field_value
+      		"sets_flag":
+      			current_choice.sets_flag = field_value
+      		"sets_value":
+      			current_choice.sets_value = field_value
+      		"next_id":
+      			current_choice.next_sequence_id = field_value
+      
+      func text_changed(text : String, line_index : int, choice_index : int = -1):
+      	if choice_index != -1:
+      		current_sequence.lines[line_index].choices[choice_index].label = text
+      	else:
+      		current_sequence.lines[line_index].text = text
+      		line_container.get_child(line_index).get_child(0).text = text
+      
+      func change_speaker(text : String, line_index : int):
+      	current_sequence.lines[line_index].speaker_name = text
+      
+      _______________
+      _______________
+      (dialogue_editor_panel.tscn):
+      [gd_scene format=3 uid="uid://be7nw8e4ra3m3"]
+      
+      [ext_resource type="Script" uid="uid://x3wfqy7hge71" path="res://addons/rpg_editors/dialogue_editor/dialogue_editor_panel.gd" id="1_r4g4s"]
+      [ext_resource type="Texture2D" uid="uid://06qhkbpxdkln" path="res://art/NULL.png" id="2_esd1h"]
+      
+      [node name="DialogueEditorPanel" type="PanelContainer" unique_id=357779528]
+      anchors_preset = 15
+      anchor_right = 1.0
+      anchor_bottom = 1.0
+      grow_horizontal = 2
+      grow_vertical = 2
+      script = ExtResource("1_r4g4s")
+      
+      [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2058924293]
+      layout_mode = 2
+      theme_override_constants/separation = 4
+      
+      [node name="Label" type="Label" parent="VBoxContainer" unique_id=238517059]
+      layout_mode = 2
+      text = "Dialogue Editor"
+      horizontal_alignment = 1
+      
+      [node name="FileBar" type="HBoxContainer" parent="VBoxContainer" unique_id=1307388335]
+      layout_mode = 2
+      alignment = 2
+      
+      [node name="Control" type="Control" parent="VBoxContainer/FileBar" unique_id=1499754639]
+      custom_minimum_size = Vector2(20, 0)
+      layout_mode = 2
+      
+      [node name="SequenceNameLabel" type="LineEdit" parent="VBoxContainer/FileBar" unique_id=1827445770]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      placeholder_text = "Sequence Name"
+      alignment = 1
+      
+      [node name="NewButton" type="Button" parent="VBoxContainer/FileBar" unique_id=231256719]
+      custom_minimum_size = Vector2(50, 0)
+      layout_mode = 2
+      text = "New"
+      
+      [node name="Control2" type="Control" parent="VBoxContainer/FileBar" unique_id=1950905702]
+      custom_minimum_size = Vector2(10, 0)
+      layout_mode = 2
+      
+      [node name="SaveButton" type="Button" parent="VBoxContainer/FileBar" unique_id=838366118]
+      custom_minimum_size = Vector2(50, 0)
+      layout_mode = 2
+      text = "Save"
+      
+      [node name="Control3" type="Control" parent="VBoxContainer/FileBar" unique_id=1649745552]
+      custom_minimum_size = Vector2(20, 0)
+      layout_mode = 2
+      
+      [node name="MainContent" type="HBoxContainer" parent="VBoxContainer" unique_id=1147954245]
+      layout_mode = 2
+      size_flags_vertical = 3
+      
+      [node name="LineList" type="PanelContainer" parent="VBoxContainer/MainContent" unique_id=344293063]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/MainContent/LineList" unique_id=262833118]
+      layout_mode = 2
+      
+      [node name="LineContainer" type="VBoxContainer" parent="VBoxContainer/MainContent/LineList/ScrollContainer" unique_id=1866087770]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="AddLineButton" type="Button" parent="VBoxContainer/MainContent/LineList/ScrollContainer/LineContainer" unique_id=845883128]
+      layout_mode = 2
+      size_flags_horizontal = 4
+      text = "    Add Line    "
+      
+      [node name="LineDetail" type="PanelContainer" parent="VBoxContainer/MainContent" unique_id=1844138593]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_stretch_ratio = 2.0
+      
+      [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/MainContent/LineDetail" unique_id=852512542]
+      layout_mode = 2
+      theme_override_constants/margin_left = 12
+      theme_override_constants/margin_top = 12
+      theme_override_constants/margin_right = 12
+      theme_override_constants/margin_bottom = 12
+      
+      [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer" unique_id=1422166317]
+      layout_mode = 2
+      alignment = 1
+      
+      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=2089327606]
+      layout_mode = 2
+      alignment = 2
+      
+      [node name="SpeakerLabel" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer" unique_id=50891577]
+      layout_mode = 2
+      text = "Speaker Name: "
+      
+      [node name="SpeakerEdit" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer" unique_id=993229391]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      alignment = 1
+      
+      [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=2053337611]
+      layout_mode = 2
+      alignment = 2
+      
+      [node name="TextLabel" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=216942688]
+      layout_mode = 2
+      text = "                   Text: "
+      
+      [node name="TextEdit" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer2" unique_id=1085255905]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      alignment = 1
+      
+      [node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=761915439]
+      layout_mode = 2
+      alignment = 2
+      
+      [node name="PortraitLabel" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer3" unique_id=1015235528]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_stretch_ratio = 1.5
+      text = "             Portrait:"
+      
+      [node name="PortraitButton" type="TextureButton" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer3" unique_id=1656441633]
+      custom_minimum_size = Vector2(128, 128)
+      layout_mode = 2
+      size_flags_horizontal = 3
+      texture_normal = ExtResource("2_esd1h")
+      
+      [node name="Control" type="Control" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer3" unique_id=1837393030]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="HBoxContainer4" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=1069664076]
+      layout_mode = 2
+      alignment = 2
+      
+      [node name="ChoicesLabel" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4" unique_id=23961417]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      text = "              Choices: "
+      
+      [node name="ChoicesContainer" type="VBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4" unique_id=1131826491]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      alignment = 1
+      
+      [node name="AddChoiceButton" type="Button" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoicesContainer" unique_id=803391300]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      text = "[ Add choice ]"
+      
+      [node name="ChoiceAdvanced" type="VBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4" unique_id=1280832195]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      alignment = 1
+      
+      [node name="Label" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=75097396]
+      layout_mode = 2
+      text = "Choice Details:"
+      horizontal_alignment = 1
+      
+      [node name="FlagRequiredField" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=396896495]
+      layout_mode = 2
+      placeholder_text = "Required Flag"
+      alignment = 1
+      
+      [node name="ValueRequiredField" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=1141981602]
+      layout_mode = 2
+      placeholder_text = "Required Value"
+      alignment = 1
+      
+      [node name="SetsFlagField" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=844203703]
+      layout_mode = 2
+      placeholder_text = "Sets Flag"
+      alignment = 1
+      
+      [node name="SetsValueField" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=350250048]
+      layout_mode = 2
+      placeholder_text = "Sets Value"
+      alignment = 1
+      
+      [node name="NextSequenceID" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoiceAdvanced" unique_id=74886403]
+      layout_mode = 2
+      placeholder_text = "Next Sequence ID"
+      alignment = 1
+      
+      _______________
       SPRITE_IMPORTER:
       _______________
       (SpriteImporterDock.tscn):
@@ -519,12 +996,12 @@ _______________
       # Called when the node enters the scene tree for the first time.
       func refresh(scene_root : Node):
       	for i in warp_container.get_children():
-      		if i.name != 'ErrorLabel':
+	  		if i.name != 'ErrorLabel':
       			warp_container.remove_child(i)
       			i.queue_free()
-      	if scene_root.has_node('Warps') and scene_root.get_node('Warps').get_child_count() > 0:
+	  	if scene_root.has_node('Warps') and scene_root.get_node('Warps').get_child_count() > 0:
       		error_label.hide()
-      		for warp in scene_root.get_node('Warps').get_children():
+	  		for warp in scene_root.get_node('Warps').get_children():
       			if warp is WarpPoint:
       				var new_row = row.instantiate()
       				warp_container.add_child(new_row)
@@ -590,19 +1067,19 @@ _______________
       
       func _on_warp_id_edit_text_set() -> void:
       	if warp_point:
-      		#field_changed.emit(warp_point, 'warp_id', warp_id_field.text)
+	  		#field_changed.emit(warp_point, 'warp_id', warp_id_field.text)
       		warp_point.warp_id = warp_id_field.text
       
       
       func _on_target_scene_edit_text_set() -> void:
       	if warp_point:
-      		#field_changed.emit(warp_point, 'target_scene', target_scene_field.text)
+	  		#field_changed.emit(warp_point, 'target_scene', target_scene_field.text)
       		warp_point.warp_definition.target_scene = target_scene_field.text
       
       
       func _on_target_warp_id_edit_text_set() -> void:
       	if warp_point:
-      		#field_changed.emit(warp_point, 'target_warp_id', target_warp_id_field.text)
+	  		#field_changed.emit(warp_point, 'target_warp_id', target_warp_id_field.text)
       		warp_point.warp_definition.target_warp_id = target_warp_id_field.text
       
       
@@ -660,9 +1137,36 @@ _______________
       
       _______________
   ART:
+      NULL.png
     CHARACTERS:
       ENEMIES:
       NPCS:
+        NPC:
+            NPC.tres
+          IDLE_DOWN:
+              npc_idle_down_01.png
+              npc_idle_down_02.png
+          IDLE_LEFT:
+              npc_idle_left_01.png
+              npc_idle_left_02.png
+          IDLE_RIGHT:
+              npc_idle_right_01.png
+              npc_idle_right_02.png
+          IDLE_UP:
+              npc_idle_up_01.png
+              npc_idle_up_02.png
+          WALK_DOWN:
+              npc_walk_down_01.png
+              npc_walk_down_02.png
+          WALK_LEFT:
+              npc_walk_left_01.png
+              npc_walk_left_02.png
+          WALK_RIGHT:
+              npc_walk_right_01.png
+              npc_walk_right_02.png
+          WALK_UP:
+              npc_walk_up_01.png
+              npc_walk_up_02.png
       PLAYER:
         NORB:
             norb.tres
@@ -703,6 +1207,8 @@ _______________
     SFX:
   DATA:
     DIALOGUE:
+        test1.tres
+        test_dialogue.tres
     ENEMIES:
     ITEMS:
     MAPS:
@@ -730,6 +1236,149 @@ _______________
   
   [node name="Player" parent="." unique_id=1122482979 instance=ExtResource("3_r2kcx")]
   position = Vector2(196, 373)
+  
+  _______________
+  _______________
+  (npc.gd):
+  extends CharacterBody2D
+  class_name NPC
+  
+  #@export var inventory = [ItemResource]
+  @export var stats : CharacterStatBlock = null
+  @export var queued_dialogue : DialogueSequence = null
+  @export_range(0.0, 999.99, 0.1) var wander_radius := 0.0
+  
+  @onready var sprite : AnimatedSprite2D = $Sprite
+  @onready var interaction_area :Area2D = $InteractionArea
+  @onready var timer : Timer = $Timer
+  
+  enum Directions {NORTH, EAST, SOUTH, WEST}
+  var facing : Directions = Directions.SOUTH
+  var _wander_origin : Vector2
+  var _target_position : Vector2
+  var _wander_delay = 10.0
+  var _wander_max_interval = 15.0
+  var _player_in_range := false
+  var _interactable_entity : Node2D = null
+  var _wandering := false
+  
+  func _ready() -> void:
+  	interaction_area.body_entered.connect(_on_body_entered)
+  	interaction_area.body_exited.connect(_on_body_exit)
+  	timer.timeout.connect(wander)
+  	EventBus.dialogue_started.connect(_on_dialogue_started)
+  	EventBus.dialogue_finished.connect(_on_dialogue_finished)
+  	EventBus.interact_pressed.connect(try_interact)
+  	_wander_origin = position
+  	orient_facing(Vector2.DOWN)
+  	if wander_radius > 0.0:
+  		timer.start(randf_range(6.0, 12.0))
+  
+  func _on_dialogue_started(_sequence : DialogueSequence):
+  	timer.stop()
+  	_wandering = false
+  func _on_dialogue_finished():
+  	if wander_radius > 0.0:
+  		timer.start(randf_range(6.0, 12.0))
+  
+  func _on_body_entered(body : Node2D):
+  	if body is Player:
+  		_player_in_range = true
+  		_interactable_entity = body
+  
+  func _on_body_exit(body : Node2D):
+  	if body is Player:
+  		_player_in_range = false
+  		_interactable_entity = null
+  
+  func try_interact():
+  	if _player_in_range and queued_dialogue:
+  		orient_facing(position.direction_to(_interactable_entity.position))
+  		DialogueManager.start_dialogue(queued_dialogue)
+  
+  func orient_facing(dir : Vector2):
+  	if abs(dir.y) > abs(dir.x):
+  		facing = Directions.SOUTH if dir.y > 0 else Directions.NORTH
+  	else:
+  		facing = Directions.EAST if dir.x > 0 else Directions.WEST
+  	if !_wandering:
+  		match facing:
+  			Directions.NORTH:
+  				sprite.play("idle_up")
+  			Directions.SOUTH:
+  				sprite.play("idle_down")
+  			Directions.EAST:
+  				sprite.play("idle_right")
+  			Directions.WEST:
+  				sprite.play("idle_left")
+  	else:
+  		match facing:
+  			Directions.NORTH:
+  				sprite.play("walk_up")
+  			Directions.SOUTH:
+  				sprite.play("walk_down")
+  			Directions.EAST:
+  				sprite.play("walk_right")
+  			Directions.WEST:
+  				sprite.play("walk_left")
+  
+  func wander():
+  	_wandering = true
+  	randomize()
+  	var t = randf() * TAU # Random angle
+  	var r = sqrt(randf()) * wander_radius # Uniform radius
+  	_target_position = _wander_origin + Vector2(r * cos(t), r * sin(t))
+  	orient_facing(_wander_origin.direction_to(_target_position))
+  	if stats:
+  		velocity = _wander_origin.direction_to(_target_position) * stats.base_move_speed 
+  	else:
+  		velocity = _wander_origin.direction_to(_target_position) * 120.0
+  
+  func _physics_process(_delta: float) -> void:
+  	if _wandering and (position.distance_to(_target_position) < 8.0 \
+  or position.distance_to(_wander_origin) >= wander_radius):
+  		_wandering = false
+  		orient_facing(velocity)
+  		velocity = Vector2.ZERO
+  		timer.start(randf_range(6.0, 12.0))
+  	if wander_radius > 0.0 and _wandering:
+  		move_and_slide()
+  
+  _______________
+  _______________
+  (NPC.tscn):
+  [gd_scene format=3 uid="uid://dv8dvat866384"]
+  
+  [ext_resource type="Script" uid="uid://drs30yrpmyepa" path="res://scenes/npc.gd" id="1_mhefn"]
+  [ext_resource type="SpriteFrames" uid="uid://dyolvw4m6y32x" path="res://art/characters/npcs/NPC/NPC.tres" id="2_6xvi5"]
+  [ext_resource type="Resource" uid="uid://b8rw64td7brgu" path="res://data/dialogue/test_dialogue.tres" id="2_ktgr7"]
+  
+  [sub_resource type="RectangleShape2D" id="RectangleShape2D_6xvi5"]
+  size = Vector2(64, 32)
+  
+  [sub_resource type="CircleShape2D" id="CircleShape2D_6xvi5"]
+  radius = 80.0
+  
+  [node name="Npc" type="CharacterBody2D" unique_id=1190844843]
+  script = ExtResource("1_mhefn")
+  queued_dialogue = ExtResource("2_ktgr7")
+  
+  [node name="Sprite" type="AnimatedSprite2D" parent="." unique_id=831517534]
+  sprite_frames = ExtResource("2_6xvi5")
+  animation = &"walk_down"
+  
+  [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1030248553]
+  position = Vector2(0, 16)
+  shape = SubResource("RectangleShape2D_6xvi5")
+  
+  [node name="InteractionArea" type="Area2D" parent="." unique_id=489352828]
+  collision_layer = 4
+  collision_mask = 2
+  
+  [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=171826875]
+  shape = SubResource("CircleShape2D_6xvi5")
+  
+  [node name="Timer" type="Timer" parent="." unique_id=80511229]
   
   _______________
   _______________
@@ -838,7 +1487,8 @@ _______________
     size = Vector2(32, 32)
     
     [node name="WarpPoint" type="Area2D" unique_id=1105175947]
-    collision_mask = 3
+    collision_layer = 4
+    collision_mask = 2
     script = ExtResource("1_0a7i1")
     
     [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=57997453]
@@ -866,14 +1516,14 @@ _______________
     func _on_body_entered(body: Node2D) -> void:
     	if just_spawned:
     		return
-    	if require_interact == false and body.is_in_group('player'):
+		if require_interact == false and body.is_in_group('player'):
     		_execute_warp()
     
     func try_interact():
     	if not require_interact:
     		return
     	for body in get_overlapping_bodies():
-    		if body.is_in_group('player'):
+			if body.is_in_group('player'):
     			_execute_warp()
     			return
     
@@ -898,6 +1548,8 @@ _______________
     [ext_resource type="PackedScene" uid="uid://b0jw6cq16goiy" path="res://scenes/shared/WarpPoint.tscn" id="3_r720c"]
     [ext_resource type="Script" uid="uid://drag68vt7goeq" path="res://src/resources/WarpDefinition.gd" id="4_3jy7c"]
     [ext_resource type="Script" uid="uid://3jhcfyj08wdl" path="res://scenes/world/map_controller.gd" id="4_r720c"]
+    [ext_resource type="PackedScene" uid="uid://dv8dvat866384" path="res://scenes/NPC.tscn" id="5_7vg7e"]
+    [ext_resource type="Resource" uid="uid://ce0tqxb746j5v" path="res://data/dialogue/test1.tres" id="6_at1v2"]
     
     [sub_resource type="TileSet" id="TileSet_4jb3m"]
     tile_size = Vector2i(64, 64)
@@ -935,10 +1587,18 @@ _______________
     y_sort_enabled = true
     
     [node name="NPCs" type="Node2D" parent="YSort" unique_id=1354959080]
+    y_sort_enabled = true
+    
+    [node name="Npc" parent="YSort/NPCs" unique_id=1190844843 instance=ExtResource("5_7vg7e")]
+    y_sort_enabled = true
+    position = Vector2(1056, 597)
+    queued_dialogue = ExtResource("6_at1v2")
+    wander_radius = 640.0
     
     [node name="Entities" type="Node2D" parent="YSort" unique_id=561890850]
     
     [node name="Player" parent="YSort" unique_id=1122482979 instance=ExtResource("3_5wika")]
+    y_sort_enabled = true
     
     [node name="MapController" type="Node" parent="." unique_id=690899599]
     script = ExtResource("4_r720c")
@@ -946,6 +1606,165 @@ _______________
     
     _______________
     UI:
+    _______________
+    (DialogueUI.tscn):
+    [gd_scene format=3 uid="uid://bhvjql71xc4d4"]
+    
+    [ext_resource type="Script" uid="uid://ckaeq1dh8pgh2" path="res://scenes/ui/dialogue_ui.gd" id="1_6snq5"]
+    
+    [sub_resource type="FastNoiseLite" id="FastNoiseLite_wjgy6"]
+    
+    [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_70hjk"]
+    noise = SubResource("FastNoiseLite_wjgy6")
+    
+    [node name="DialogueUi" type="CanvasLayer" unique_id=425951853]
+    script = ExtResource("1_6snq5")
+    
+    [node name="Panel" type="Panel" parent="." unique_id=2038726739]
+    visible = false
+    clip_contents = true
+    anchors_preset = -1
+    anchor_left = 0.05
+    anchor_top = 0.75
+    anchor_right = 0.95
+    anchor_bottom = 0.95
+    grow_horizontal = 2
+    grow_vertical = 0
+    
+    [node name="HBoxContainer" type="HBoxContainer" parent="Panel" unique_id=176138327]
+    layout_mode = 1
+    anchors_preset = -1
+    anchor_left = 0.03
+    anchor_top = 0.05
+    anchor_right = 0.97
+    anchor_bottom = 0.95
+    grow_horizontal = 2
+    grow_vertical = 2
+    
+    [node name="Portrait" type="TextureRect" parent="Panel/HBoxContainer" unique_id=289682475]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_stretch_ratio = 0.2
+    texture = SubResource("NoiseTexture2D_70hjk")
+    expand_mode = 1
+    stretch_mode = 4
+    
+    [node name="LineContainer" type="VBoxContainer" parent="Panel/HBoxContainer" unique_id=338094560]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="Name" type="Label" parent="Panel/HBoxContainer/LineContainer" unique_id=119802924]
+    layout_mode = 2
+    text = "Name:"
+    
+    [node name="Dialogue" type="Label" parent="Panel/HBoxContainer/LineContainer" unique_id=1870058130]
+    layout_mode = 2
+    size_flags_vertical = 3
+    text = "All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. All work and no play makes jack a dull boy. "
+    horizontal_alignment = 1
+    vertical_alignment = 1
+    autowrap_mode = 3
+    clip_text = true
+    
+    [node name="ScrollContainer" type="ScrollContainer" parent="Panel/HBoxContainer" unique_id=1345519857]
+    visible = false
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="ChoiceContainer" type="VBoxContainer" parent="Panel/HBoxContainer/ScrollContainer" unique_id=408444412]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    
+    [node name="Choice1" type="Button" parent="Panel/HBoxContainer/ScrollContainer/ChoiceContainer" unique_id=1874769200]
+    layout_mode = 2
+    size_flags_vertical = 3
+    text = "Choice 1"
+    
+    [node name="Choice2" type="Button" parent="Panel/HBoxContainer/ScrollContainer/ChoiceContainer" unique_id=169166718]
+    layout_mode = 2
+    size_flags_vertical = 3
+    text = "Choice 2"
+    
+    [node name="Choice3" type="Button" parent="Panel/HBoxContainer/ScrollContainer/ChoiceContainer" unique_id=1925214393]
+    layout_mode = 2
+    size_flags_vertical = 3
+    text = "Choice 3"
+    
+    [node name="Choice4" type="Button" parent="Panel/HBoxContainer/ScrollContainer/ChoiceContainer" unique_id=711682974]
+    layout_mode = 2
+    size_flags_vertical = 3
+    text = "Choice 4"
+    
+    _______________
+    _______________
+    (dialogue_ui.gd):
+    extends CanvasLayer
+    
+    @onready var panel := $Panel
+    @onready var portrait := $Panel/HBoxContainer/Portrait
+    @onready var line_container := $Panel/HBoxContainer/LineContainer
+    @onready var name_label := $Panel/HBoxContainer/LineContainer/Name
+    @onready var dialogue_label := $Panel/HBoxContainer/LineContainer/Dialogue
+    @onready var choice_scroller := $Panel/HBoxContainer/ScrollContainer
+    @onready var choice_container := $Panel/HBoxContainer/ScrollContainer/ChoiceContainer
+    
+    func _ready() -> void:
+    	EventBus.dialogue_started.connect(start_dialogue)
+    	EventBus.dialogue_line_advanced.connect(line_advanced)
+    	EventBus.dialogue_choices_available.connect(choice_display)
+    	EventBus.dialogue_finished.connect(end_dialogue)
+    
+    
+    func start_dialogue(sequence : DialogueSequence):
+    	if !panel.visible:
+    		panel.show()
+    
+    func line_advanced(line : DialogueLine):
+    	if !line_container.visible:
+    		line_container.show()
+    	if choice_scroller.visible:
+    		choice_scroller.hide()
+    	dialogue_label.text = line.text
+    	name_label.text = line.speaker_name
+    	if !line.portrait:
+    		portrait.hide()
+    	else:
+    		portrait.show()
+    		portrait.texture = line.portrait
+    
+    func choice_display(choices : Array[DialogueChoice]):
+    	if !choice_scroller.visible:
+    		choice_scroller.show()
+    	if line_container.visible:
+    		line_container.hide()
+    	for child in choice_container.get_children():
+    		choice_container.remove_child(child)
+    		child.queue_free()
+    	for choice in choices:
+    		if choice.flag_required != "":
+    			if GameState.get_flag(choice.flag_required) != choice.required_value:
+    				continue
+    		var choice_button = Button.new()
+    		choice_container.add_child(choice_button)
+    		choice_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    		choice_button.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    		choice_button.text = choice.label
+    		choice_button.pressed.connect(choice_selected.bind(choice))
+    
+    func end_dialogue():
+    	panel.hide()
+    
+    func _unhandled_input(event: InputEvent) -> void:
+    	if panel.visible and line_container.visible:
+    		if event.is_action_pressed("interact"):
+    			DialogueManager.advance_dialogue()
+    			get_viewport().set_input_as_handled()
+    
+    func choice_selected(choice : DialogueChoice):
+    	DialogueManager.choice_selected(choice)
+    
+    _______________
     WORLD:
     _______________
     (MapScene.tscn):
@@ -999,7 +1818,7 @@ _______________
     var pending_warp : WarpPoint
     
     func _ready() -> void:
-    	player = get_tree().get_nodes_in_group('player')[0]
+		player = get_tree().get_nodes_in_group('player')[0]
     	for warp in warps.get_children():
     		if warp is WarpPoint and (warp as WarpPoint).warp_id == GameState.pending_warp_id:
     			pending_warp = warp
@@ -1106,6 +1925,78 @@ _______________
     
     _______________
     _______________
+    (DialogueManager.gd):
+    extends Node
+    
+    const DIALOGUE_UI_SCENE = preload("res://scenes/ui/DialogueUI.tscn")
+    var _dialogue_ui: CanvasLayer
+    
+    var _current_sequence : DialogueSequence
+    var _current_lines : Array[DialogueLine]
+    var _current_index : int
+    var _awaiting_choices : bool = false
+    
+    func _ready() -> void:
+    	EventBus.dialogue_choice_selected.connect(choice_selected)
+    	_dialogue_ui = DIALOGUE_UI_SCENE.instantiate()
+    	get_tree().root.add_child.call_deferred(_dialogue_ui)
+    
+    func start_dialogue(dialogue : DialogueSequence):
+    	if _current_sequence != null:
+    		return
+    	_current_sequence = dialogue
+    	_current_lines = dialogue.lines
+    	_current_index = 0
+    	EventBus.dialogue_started.emit(_current_sequence)
+    	advance_dialogue()
+    
+    func advance_dialogue():
+    	if _current_index >= _current_lines.size():
+    		end_dialogue()
+    	else:
+    		var current_line : DialogueLine = _current_lines[_current_index]
+    		if current_line.choices.is_empty():
+    			EventBus.dialogue_line_advanced.emit(current_line)
+    			_current_index += 1
+    		else:
+    			if _awaiting_choices == false:
+    				EventBus.dialogue_line_advanced.emit(current_line)
+    				_awaiting_choices = true
+    			else:
+    				EventBus.dialogue_choices_available.emit(current_line.choices)
+    				_awaiting_choices = false
+    
+    func choice_selected(choice : DialogueChoice):
+    	if choice.sets_flag != "":
+    		GameState.set_flag(choice.sets_flag, choice.sets_value)
+    	if choice.next_lines.is_empty():
+    		if choice.next_sequence_id != "":
+    			var sequence_path = "res://data/dialogue/%s.tres" % choice.next_sequence_id
+    			if FileAccess.file_exists(sequence_path):
+    				var next = load(sequence_path)
+    				if next is DialogueSequence:
+    					_current_lines = next.lines
+    					_current_index = 0
+    					advance_dialogue()
+    				else:
+    					end_dialogue()
+    			else:
+    				end_dialogue()
+    		else:
+    			end_dialogue()
+    	else:
+    		_current_lines = choice.next_lines
+    		_current_index = 0
+    		advance_dialogue()
+    
+    func end_dialogue():
+    	_current_sequence = null
+    	_current_lines = []
+    	_current_index = 0
+    	EventBus.dialogue_finished.emit()
+    
+    _______________
+    _______________
     (EventBus.gd):
     extends Node
     
@@ -1118,7 +2009,10 @@ _______________
     signal combat_ended(result: String)   # "victory", "defeat", "fled"
     
     # Dialogue signals
-    signal dialogue_started(dialogue_path: String)
+    signal dialogue_started(sequence: DialogueSequence)
+    signal dialogue_line_advanced(line : DialogueLine)
+    signal dialogue_choices_available(choices: Array[DialogueChoice])
+    signal dialogue_choice_selected(choice : DialogueChoice)
     signal dialogue_finished()
     
     # Inventory signals
@@ -1215,7 +2109,7 @@ _______________
     
     
     func _do_scene_change(scene_path: String) -> void:
-    	get_tree().call_deferred('change_scene_to_file',scene_path)
+		get_tree().call_deferred('change_scene_to_file',scene_path)
     	_is_transitioning = false
     	EventBus.scene_transition_finished.emit()
     
@@ -1261,14 +2155,15 @@ _______________
     
     # Condition — leave flag_required empty for always-available choices
     @export var flag_required: String = ""
-    @export var required_value: Variant = true
+    @export var required_value: Variant = null
     
     # Consequence
     @export var sets_flag: String = ""
-    @export var sets_value: Variant = true
+    @export var sets_value: Variant = null
     
     # Where this choice leads
     @export var next_lines: Array[DialogueLine] = []
+    @export var next_sequence_id : String = ""
     
     _______________
     _______________
@@ -1282,6 +2177,15 @@ _______________
     
     # Empty array = linear advance. Populated = show choice menu.
     @export var choices: Array[DialogueChoice] = []
+    
+    _______________
+    _______________
+    (DialogueSequence.gd):
+    class_name DialogueSequence
+    extends Resource
+    
+    @export var sequence_id: String = ""
+    @export var lines: Array[DialogueLine] = []
     
     _______________
     _______________

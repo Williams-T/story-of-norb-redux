@@ -21,6 +21,7 @@ GameState="*uid://cmp1liobev0ks"
 SceneManager="*uid://cy7ln04as6jlf"
 AudioManager="*uid://boqnp0qs6ekfr"
 SaveManager="*uid://cojysb0jfm6w5"
+DialogueManager="*uid://drd42r3odtlk5"
 Codebase="*uid://c67q6k2f20o06"
 
 [display]

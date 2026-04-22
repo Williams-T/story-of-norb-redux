@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://dv8dvat866384"]
+
+[ext_resource type="Script" uid="uid://drs30yrpmyepa" path="res://scenes/npc.gd" id="1_mhefn"]
+[ext_resource type="SpriteFrames" uid="uid://dyolvw4m6y32x" path="res://art/characters/npcs/NPC/NPC.tres" id="2_6xvi5"]
+[ext_resource type="Resource" uid="uid://b8rw64td7brgu" path="res://data/dialogue/test_dialogue.tres" id="2_ktgr7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6xvi5"]
+size = Vector2(64, 32)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6xvi5"]
+radius = 80.0
+
+[node name="Npc" type="CharacterBody2D" unique_id=1190844843]
+script = ExtResource("1_mhefn")
+queued_dialogue = ExtResource("2_ktgr7")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="." unique_id=831517534]
+sprite_frames = ExtResource("2_6xvi5")
+animation = &"walk_down"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1030248553]
+position = Vector2(0, 16)
+shape = SubResource("RectangleShape2D_6xvi5")
+
+[node name="InteractionArea" type="Area2D" parent="." unique_id=489352828]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=171826875]
+shape = SubResource("CircleShape2D_6xvi5")
+
+[node name="Timer" type="Timer" parent="." unique_id=80511229]
