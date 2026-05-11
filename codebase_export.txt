@@ -7,11 +7,66 @@ ROOT:
 	README.md
 	wall_tiles.tres
 _______________
+(indicator.gd):
+extends Control
+class_name Indicator
+
+@onready var hp_bar : TextureProgressBar = $PanelContainer/VBoxContainer/HPBar
+@onready var mp_bar : TextureProgressBar = $PanelContainer/VBoxContainer/MPBar
+@onready var panel : PanelContainer = $PanelContainer
+@onready var status_label : RichTextLabel = $PanelContainer/VBoxContainer/StatusLabel
+@onready var label : Label = $PanelContainer/Label
+var color : Color = Color(0.145, 0.145, 0.145)
+var stylebox = preload("res://art/ui/indicator_stylebox.tres")
+
+func _ready() -> void:
+	hp_bar.min_value = 0
+	mp_bar.min_value = 0
+	hp_bar.max_value = 100
+	mp_bar.max_value = 100
+	change_text("")
+
+func visibility(is_visible : bool):
+	#visible = is_visible
+	var tween = create_tween()
+	if is_visible:
+		if !visible:
+			visible = true
+		tween.tween_property(self, "modulate", Color(1,1,1,1), 0.2)
+	else:
+		tween.tween_property(self, "modulate", Color(1,1,1,0), 0.6)
+
+func change_color(_color : Color):
+	#var color_mod : Color = Color(color.r, color.g, color.b, 0.1)
+	#var new_stylebox : StyleBoxFlat = stylebox.duplicate()
+	#new_stylebox.bg_color = color_mod
+	#panel.remove_theme_stylebox_override("panel")
+	#panel.add_theme_stylebox_override('panel', new_stylebox)
+	label.modulate = _color
+
+func update_hp(new_value : int):
+	var tween = create_tween()
+	tween.tween_property(hp_bar, "value", new_value, 0.3)
+
+func update_mp(new_value : int):
+	var tween = create_tween()
+	tween.tween_property(mp_bar, "value", new_value, 0.3)
+
+func change_text(text : String):
+	status_label.text = text
+	if text == "":
+		status_label.hide()
+	else:
+		status_label.show()
+
+_______________
+_______________
 (player.gd):
 class_name Player
 extends CharacterBody2D
 
-@export var stat_block: CharacterStatBlock
+#@export var stat_block: CharacterStatBlock
+@export var party_member : PartyMemberResource
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var cam : Camera2D = $Camera2D
@@ -22,12 +77,14 @@ var _last_direction := Vector2.DOWN
 
 func _ready() -> void:
 	sprite.play("idle_down")
+	print(party_member.stats.current_hp)
+	
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed('interact'):
 		EventBus.interact_pressed.emit()
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	var direction := _get_input_direction()
 	_update_last_direction()
 	_apply_movement(direction)
@@ -48,8 +105,8 @@ func _get_input_direction() -> Vector2:
 	return Input.get_vector("move_left", "move_right", "move_up","move_down")
 
 func _apply_movement(direction: Vector2) -> void:
-	var agi_modifier := 1.0 + (stat_block.agi - 10) * AGI_SPEED_MODIFIER
-	velocity = direction * stat_block.base_move_speed * agi_modifier
+	var agi_modifier :float = 1.0 + (party_member.stats.agi - 10) * AGI_SPEED_MODIFIER
+	velocity = direction * party_member.stats.base_move_speed * agi_modifier
 
 func _update_animation(direction : Vector2):
 	if direction == Vector2.ZERO:
@@ -80,6 +137,7 @@ func _play_idle_animation():
 			sprite.animation = "idle_right"
 
 func set_camera_limits(rect : Rect2):
+	@warning_ignore_start("narrowing_conversion")
 	cam.limit_top = rect.position.y
 	cam.limit_left = rect.position.x
 	cam.limit_bottom = rect.position.y + rect.size.y
@@ -101,7 +159,7 @@ config_version=5
 [application]
 
 config/name="StoryOfNorbRedux"
-run/main_scene="uid://db3knhytalx0w"
+run/main_scene="uid://bmqoe0sya3knp"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [autoload]
@@ -197,19 +255,25 @@ menu_back={
 }
 combat_confirm={
 "deadzone": 0.2,
-"events": []
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194309,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
 }
 combat_cancel={
 "deadzone": 0.2,
-"events": []
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194305,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
 }
 combat_next={
 "deadzone": 0.2,
-"events": []
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194321,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":68,"key_label":0,"unicode":100,"location":0,"echo":false,"script":null)
+]
 }
 combat_prev={
 "deadzone": 0.2,
-"events": []
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194319,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":65,"key_label":0,"unicode":97,"location":0,"echo":false,"script":null)
+]
 }
 
 [layer_names]
@@ -244,6 +308,7 @@ _______________
     var _sprite_importer_dock
     var _warp_editor_dock
     var _dialogue_panel
+    var _combat_editor_dock
     func _enter_tree() -> void:
     	scene_changed.connect(_on_scene_changed)
     	# Called when the plugin is enabled.
@@ -251,9 +316,11 @@ _______________
     	_sprite_importer_dock = preload("res://addons/rpg_editors/sprite_importer/SpriteImporterDock.tscn").instantiate()
     	_warp_editor_dock = preload("res://addons/rpg_editors/warp_editor/warp_editor.tscn").instantiate()
     	_dialogue_panel =  preload("res://addons/rpg_editors/dialogue_editor/dialogue_editor_panel.tscn").instantiate()
+    	_combat_editor_dock = preload("res://addons/rpg_editors/combat_editor/combat_editor.tscn").instantiate()
     	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, _sprite_importer_dock)
     	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, _warp_editor_dock)
     	add_control_to_bottom_panel(_dialogue_panel, "Dialogue Editor")
+    	add_control_to_bottom_panel(_combat_editor_dock, "Combat Editor")
     	_dialogue_panel.plugin = self
     	
     	print("RPG Editors: loaded")
@@ -289,6 +356,630 @@ _______________
     	_warp_editor_dock.refresh(root)
     
     _______________
+      COMBAT_EDITOR:
+      _______________
+      (action_editor.gd):
+      @tool
+      extends PanelContainer
+      
+      var current_action : BattleAction = null
+      
+      @onready var file_list : VBoxContainer = $HBoxContainer/FileList
+      @onready var new_button : Button = $HBoxContainer/ActionForm/NewButton
+      @onready var save_button : Button = $HBoxContainer/ActionForm/SaveButton
+      @onready var name_label : Label = $HBoxContainer/ActionForm/ActionNameLabel
+      @onready var name_field : LineEdit = $HBoxContainer/ActionForm/ActionNameField
+      @onready var description_label : Label = $HBoxContainer/ActionForm/DescriptionLabel
+      @onready var description_field : LineEdit = $HBoxContainer/ActionForm/DescriptionField
+      @onready var category_label : Label = $HBoxContainer/ActionForm/CategoryLabel
+      @onready var category_options : OptionButton = $HBoxContainer/ActionForm/CategoryOptions
+      @onready var damage_type_label : Label = $HBoxContainer/ActionForm/DamageTypeLabel
+      @onready var damage_type_options : OptionButton = $HBoxContainer/ActionForm/DamageTypeOptions
+      @onready var target_type_label : Label = $HBoxContainer/ActionForm/TargetTypeLabel
+      @onready var target_type_options : OptionButton = $HBoxContainer/ActionForm/TargetTypeOptions
+      @onready var power_label : Label = $HBoxContainer/ActionForm/PowerLabel
+      @onready var power_spin_box : SpinBox = $HBoxContainer/ActionForm/PowerSpinBox
+      @onready var mp_cost_label : Label = $HBoxContainer/ActionForm/MPCostLabel
+      @onready var mp_cost_spin_box : SpinBox = $HBoxContainer/ActionForm/MPSpinBox
+      @onready var status_chance_label : Label = $HBoxContainer/ActionForm/StatusChanceLabel
+      @onready var status_chance_slider : HSlider = $HBoxContainer/ActionForm/StatusChanceSlider
+      @onready var status_to_apply_label : Label = $HBoxContainer/ActionForm/StatusToApplyLabel
+      @onready var status_field : LineEdit =  $HBoxContainer/ActionForm/HBoxContainer/StatusField
+      @onready var status_browse_button : Button = $HBoxContainer/ActionForm/HBoxContainer/BrowseButton
+      @onready var animation_key_label : Label = $HBoxContainer/ActionForm/AnimationKeyLabel
+      @onready var animation_key_field : LineEdit = $HBoxContainer/ActionForm/AnimationKeyField
+      var editor_dialog : EditorFileDialog
+      
+      # Called when the node enters the scene tree for the first time.
+      func _ready() -> void:
+      	editor_dialog = EditorFileDialog.new()
+      	editor_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+      	#editor_dialog.access =FileDialog.ACCESS_RESOURCES
+      	editor_dialog.root_subfolder = "res://data/statuses/"
+      	refresh_file_list()
+      	category_options.add_item("ATTACK")
+      	category_options.add_item("MAGIC")
+      	category_options.add_item("SKILL")
+      	target_type_options.add_item("SINGLE_ENEMY")
+      	target_type_options.add_item("ALL_ENEMIES")
+      	target_type_options.add_item("SINGLE_ALLY")
+      	target_type_options.add_item("ALL_ALLIES")
+      	target_type_options.add_item("SELF")
+      	damage_type_options.add_item("PHYSICAL")
+      	damage_type_options.add_item("MAGICAL")
+      	damage_type_options.add_item("HEALING")
+      	damage_type_options.add_item("NONE")
+      	status_browse_button.pressed.connect(func(): editor_dialog.popup())
+      	pass
+      
+      func refresh_file_list():
+      	var files = DirAccess.get_files_at("res://data/actions/")
+      	for file : String in files:
+      		var button = Button.new()
+      		button.flat = true
+      		button.text = file.get_basename().replace("_", " ")
+      		file_list.add_child(button)
+      		button.pressed.connect(populate_fields.bind(button, file))
+      
+      func populate_fields(button : Button, path):
+      	var action :BattleAction = load("res://data/actions/"+path)
+      	current_action = action
+      	for _button : Button in file_list.get_children():
+      		if _button != button:
+      			_button.add_theme_color_override("font_color", Color.WHITE)
+      			_button.add_theme_color_override("font_hover_color", Color.WHITE)
+      		else:
+      			_button.add_theme_color_override("font_color", Color.GOLD)
+      			_button.add_theme_color_override("font_hover_color", Color.GOLD)
+      	name_field.text = action.action_name
+      	description_field.text = action.description
+      	category_options.select(action.category)
+      	damage_type_options.select(action.damage_type)
+      	target_type_options.select(action.target_type)
+      	power_spin_box.value = action.power
+      	mp_cost_spin_box.value = action.mp_cost
+      	status_chance_slider.value = action.status_chance
+      	if action.status_to_apply != null:
+      		status_field.text = action.status_to_apply.status_name
+      	else:
+      		status_field.text = ""
+      
+	  # Called every frame. 'delta' is the elapsed time since the previous frame.
+      func _process(delta: float) -> void:
+      	pass
+      
+      _______________
+      _______________
+      (combat_editor.tscn):
+      [gd_scene format=3 uid="uid://ch411l83fwahy"]
+      
+      [ext_resource type="Script" uid="uid://d2dse8wklmds" path="res://addons/rpg_editors/combat_editor/action_editor.gd" id="1_5a2mq"]
+      
+      [node name="CombatEditor" type="PanelContainer" unique_id=174759538]
+      anchors_preset = 15
+      anchor_right = 1.0
+      anchor_bottom = 1.0
+      grow_horizontal = 2
+      grow_vertical = 2
+      
+      [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1717787334]
+      layout_mode = 2
+      
+      [node name="Label" type="Label" parent="VBoxContainer" unique_id=1879932802]
+      layout_mode = 2
+      text = "Combat Editor"
+      horizontal_alignment = 1
+      
+      [node name="TabContainer" type="TabContainer" parent="VBoxContainer" unique_id=22079451]
+      layout_mode = 2
+      size_flags_vertical = 3
+      tab_alignment = 1
+      current_tab = 0
+      
+      [node name="Actions" type="PanelContainer" parent="VBoxContainer/TabContainer" unique_id=1334327336]
+      layout_mode = 2
+      script = ExtResource("1_5a2mq")
+      metadata/_tab_index = 0
+      
+      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Actions" unique_id=433608027]
+      layout_mode = 2
+      
+      [node name="FileList" type="VBoxContainer" parent="VBoxContainer/TabContainer/Actions/HBoxContainer" unique_id=263951869]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_stretch_ratio = 0.3
+      
+      [node name="ActionForm" type="GridContainer" parent="VBoxContainer/TabContainer/Actions/HBoxContainer" unique_id=1676993335]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      columns = 2
+      
+      [node name="NewButton" type="Button" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=1576530550]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "New Action"
+      
+      [node name="SaveButton" type="Button" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=20481060]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      theme_override_colors/font_color = Color(0.875, 0.875, 0.875, 1)
+      theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+      text = "Save Action"
+      
+      [node name="ActionNameLabel" type="Label" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=599092667]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Action Name:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="ActionNameField" type="LineEdit" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=1706844111]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="DescriptionLabel" type="Label" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=311255530]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Description:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="DescriptionField" type="LineEdit" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=579866568]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="CategoryLabel" type="Label" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=2005568795]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Category:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="CategoryOptions" type="OptionButton" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=405797395]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      selected = 0
+      item_count = 3
+      popup/item_0/text = "ATTACK"
+      popup/item_0/id = 0
+      popup/item_1/text = "MAGIC"
+      popup/item_1/id = 1
+      popup/item_2/text = "SKILL"
+      popup/item_2/id = 2
+      
+      [node name="DamageTypeLabel" type="Label" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=1395568454]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Damage Type:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="DamageTypeOptions" type="OptionButton" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=1548514064]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      selected = 0
+      item_count = 4
+      popup/item_0/text = "PHYSICAL"
+      popup/item_0/id = 0
+      popup/item_1/text = "MAGICAL"
+      popup/item_1/id = 1
+      popup/item_2/text = "HEALING"
+      popup/item_2/id = 2
+      popup/item_3/text = "NONE"
+      popup/item_3/id = 3
+      
+      [node name="TargetTypeLabel" type="Label" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=2080916727]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Target Type:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="TargetTypeOptions" type="OptionButton" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=222689357]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      selected = 0
+      item_count = 5
+      popup/item_0/text = "SINGLE_ENEMY"
+      popup/item_0/id = 0
+      popup/item_1/text = "ALL_ENEMIES"
+      popup/item_1/id = 1
+      popup/item_2/text = "SINGLE_ALLY"
+      popup/item_2/id = 2
+      popup/item_3/text = "ALL_ALLIES"
+      popup/item_3/id = 3
+      popup/item_4/text = "SELF"
+      popup/item_4/id = 4
+      
+      [node name="PowerLabel" type="Label" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=684159047]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Power:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="PowerSpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=996169932]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="MPCostLabel" type="Label" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=300680057]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "MP Cost:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="MPSpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=76584702]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="StatusChanceLabel" type="Label" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=2116256932]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Status Chance:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="StatusChanceSlider" type="HSlider" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=2130145314]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="StatusToApplyLabel" type="Label" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=404180905]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Status To Apply:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=544714706]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="StatusField" type="LineEdit" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm/HBoxContainer" unique_id=1691469895]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="BrowseButton" type="Button" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm/HBoxContainer" unique_id=156821954]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_stretch_ratio = 0.2
+      text = " Browse "
+      
+      [node name="AnimationKeyLabel" type="Label" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=2034191541]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Animation Key:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="AnimationKeyField" type="LineEdit" parent="VBoxContainer/TabContainer/Actions/HBoxContainer/ActionForm" unique_id=566061043]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="Enemies" type="PanelContainer" parent="VBoxContainer/TabContainer" unique_id=1410637518]
+      visible = false
+      layout_mode = 2
+      metadata/_tab_index = 1
+      
+      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Enemies" unique_id=782194624]
+      layout_mode = 2
+      
+      [node name="FileLlist" type="VBoxContainer" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer" unique_id=350711232]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_stretch_ratio = 0.3
+      
+      [node name="EnemyForm" type="GridContainer" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer" unique_id=876803911]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      columns = 2
+      
+      [node name="NewButton" type="Button" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1911697588]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "New"
+      
+      [node name="SaveButton" type="Button" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1095154427]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Save"
+      
+      [node name="EnemyNameLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1058346460]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Enemy Name:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="EnemyNameField" type="LineEdit" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=433889543]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      
+      [node name="BehaviorLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1702282926]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Behavior:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="BehaviorOptions" type="OptionButton" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1042642059]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      
+      [node name="SpriteFramesLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1541421019]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Sprite Frames:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1119617785]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      
+      [node name="SpriteFramesField" type="LineEdit" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm/HBoxContainer" unique_id=1230791171]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="FramesButton" type="Button" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm/HBoxContainer" unique_id=1084165093]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_stretch_ratio = 0.3
+      text = "Browse"
+      
+      [node name="StrLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=333957517]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "STR"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="StrSpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1020350938]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      alignment = 1
+      
+      [node name="AgiLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1506353994]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "AGI"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="AgiSpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=219563219]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      alignment = 1
+      
+      [node name="VitLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1004461208]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "VIT"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="VitSpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=382200947]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      alignment = 1
+      
+      [node name="IntLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=855328052]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "INT"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="IntSpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=981880542]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      alignment = 1
+      
+      [node name="WilLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1984302331]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "WIL"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="WilSpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=17153215]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      alignment = 1
+      
+      [node name="LevelLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=256739754]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Level:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="LevelSpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=837565071]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      alignment = 1
+      
+      [node name="ExperienceRewardLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=2113591366]
+      layout_mode = 2
+      text = "Experience Reward:"
+      horizontal_alignment = 1
+      
+      [node name="ExpSpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1744524455]
+      layout_mode = 2
+      alignment = 1
+      
+      [node name="GoldRewardLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=853341336]
+      layout_mode = 2
+      text = "Gold Reward:"
+      horizontal_alignment = 1
+      
+      [node name="GoldSpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=2052066617]
+      layout_mode = 2
+      alignment = 1
+      
+      [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=2142345245]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      
+      [node name="ActionsLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm/HBoxContainer2" unique_id=1830505442]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Actions:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="Add" type="Button" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm/HBoxContainer2" unique_id=900904901]
+      layout_mode = 2
+      text = "Add"
+      
+      [node name="Remove" type="Button" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm/HBoxContainer2" unique_id=1387869702]
+      layout_mode = 2
+      text = "Remove"
+      
+      [node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1469419862]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      
+      [node name="DropTableLabel" type="Label" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm/HBoxContainer3" unique_id=424250039]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Drop Table:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="Add" type="Button" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm/HBoxContainer3" unique_id=1528665507]
+      layout_mode = 2
+      text = "Add"
+      
+      [node name="Remove" type="Button" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm/HBoxContainer3" unique_id=543395289]
+      layout_mode = 2
+      text = "Remove"
+      
+      [node name="ActionsList" type="ItemList" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=627044658]
+      custom_minimum_size = Vector2(0, 256)
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      
+      [node name="DropTableList" type="ItemList" parent="VBoxContainer/TabContainer/Enemies/HBoxContainer/EnemyForm" unique_id=1093384520]
+      custom_minimum_size = Vector2(0, 256)
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      
+      [node name="Groups" type="PanelContainer" parent="VBoxContainer/TabContainer" unique_id=469096573]
+      visible = false
+      layout_mode = 2
+      metadata/_tab_index = 2
+      
+      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Groups" unique_id=1217275730]
+      layout_mode = 2
+      
+      [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/Groups/HBoxContainer" unique_id=354514062]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_stretch_ratio = 0.3
+      
+      [node name="GridContainer" type="GridContainer" parent="VBoxContainer/TabContainer/Groups/HBoxContainer" unique_id=1057785782]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      theme_override_constants/h_separation = 16
+      theme_override_constants/v_separation = 30
+      columns = 2
+      
+      [node name="NewButton" type="Button" parent="VBoxContainer/TabContainer/Groups/HBoxContainer/GridContainer" unique_id=2145079402]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      text = "NEW"
+      
+      [node name="SaveButton" type="Button" parent="VBoxContainer/TabContainer/Groups/HBoxContainer/GridContainer" unique_id=857012218]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      text = "SAVE"
+      
+      [node name="EncounterMusicLabel" type="Label" parent="VBoxContainer/TabContainer/Groups/HBoxContainer/GridContainer" unique_id=63754577]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 1
+      text = "Encounter Music:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/TabContainer/Groups/HBoxContainer/GridContainer" unique_id=1249972980]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="LineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Groups/HBoxContainer/GridContainer/HBoxContainer" unique_id=1808297794]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="Button" type="Button" parent="VBoxContainer/TabContainer/Groups/HBoxContainer/GridContainer/HBoxContainer" unique_id=571564788]
+      layout_mode = 2
+      text = " Browse "
+      
+      [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/TabContainer/Groups/HBoxContainer/GridContainer" unique_id=2066801830]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      
+      [node name="EnemiesLabel" type="Label" parent="VBoxContainer/TabContainer/Groups/HBoxContainer/GridContainer/HBoxContainer2" unique_id=1730695519]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      text = "Enemies:"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="Button" type="Button" parent="VBoxContainer/TabContainer/Groups/HBoxContainer/GridContainer/HBoxContainer2" unique_id=2144387823]
+      layout_mode = 2
+      size_flags_vertical = 4
+      text = "Add"
+      
+      [node name="Button2" type="Button" parent="VBoxContainer/TabContainer/Groups/HBoxContainer/GridContainer/HBoxContainer2" unique_id=494256589]
+      layout_mode = 2
+      size_flags_vertical = 4
+      text = "Remove"
+      
+      [node name="ItemList" type="ItemList" parent="VBoxContainer/TabContainer/Groups/HBoxContainer/GridContainer" unique_id=1107098452]
+      layout_mode = 2
+      
+      _______________
       DIALOGUE_EDITOR:
       _______________
       (dialogue_editor_panel.gd):
@@ -1196,6 +1887,7 @@ _______________
               player_walk_up_02.png
     EFFECTS:
     UI:
+        indicator_stylebox.tres
     WORLD:
       OVERWORLD:
       TILESETS:
@@ -1206,13 +1898,24 @@ _______________
     MUSIC:
     SFX:
   DATA:
+    ACTIONS:
+        basic_attack.tres
+        slime_tackle.tres
+    CHARACTERS:
+        norb_party_member.tres
+        norb_stats.tres
     DIALOGUE:
         test1.tres
         test_dialogue.tres
     ENEMIES:
+        debug.tres
+        slime.tres
+        slime_group.tres
+        slime_stats.tres
     ITEMS:
     MAPS:
     SHOPS:
+    STATUSES:
   SCENES:
   _______________
   (boot.tscn):
@@ -1256,8 +1959,8 @@ _______________
   var facing : Directions = Directions.SOUTH
   var _wander_origin : Vector2
   var _target_position : Vector2
-  var _wander_delay = 10.0
-  var _wander_max_interval = 15.0
+  #var _wander_delay = 10.0
+  #var _wander_max_interval = 15.0
   var _player_in_range := false
   var _interactable_entity : Node2D = null
   var _wandering := false
@@ -1387,12 +2090,7 @@ _______________
   
   [ext_resource type="Script" uid="uid://0l1oulq76pfu" path="res://player.gd" id="1_3vyb7"]
   [ext_resource type="SpriteFrames" uid="uid://cnk6tlau0s367" path="res://art/characters/player/norb/norb.tres" id="2_g2els"]
-  [ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="2_qhqgy"]
-  
-  [sub_resource type="Resource" id="Resource_dqkch"]
-  script = ExtResource("2_qhqgy")
-  character_name = "Norb"
-  metadata/_custom_type_script = "uid://bck3giaak2qgo"
+  [ext_resource type="Resource" uid="uid://fnlnedirq0qx" path="res://data/characters/norb_party_member.tres" id="2_qhqgy"]
   
   [sub_resource type="RectangleShape2D" id="RectangleShape2D_g2els"]
   size = Vector2(64, 32)
@@ -1402,7 +2100,7 @@ _______________
   collision_mask = 125
   motion_mode = 1
   script = ExtResource("1_3vyb7")
-  stat_block = SubResource("Resource_dqkch")
+  party_member = ExtResource("2_qhqgy")
   
   [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1253918709]
   texture_filter = 1
@@ -1418,6 +2116,867 @@ _______________
   
   _______________
     BATTLE:
+    _______________
+    (Battle.tscn):
+    [gd_scene format=3 uid="uid://b2kda6hkkbhbf"]
+    
+    [ext_resource type="Script" uid="uid://cljmgnr4hqk48" path="res://src/combat/combat_manager.gd" id="1_g84ej"]
+    [ext_resource type="Script" uid="uid://dvdjeo31b6aw" path="res://scenes/battle/battle_ui.gd" id="2_jnwmo"]
+    
+    [sub_resource type="Gradient" id="Gradient_qmg44"]
+    colors = PackedColorArray(0.26293245, 0.26293245, 0.26293245, 1, 0.47397572, 0.47397572, 0.47397572, 1)
+    
+    [sub_resource type="GradientTexture2D" id="GradientTexture2D_omw3i"]
+    gradient = SubResource("Gradient_qmg44")
+    fill = 1
+    fill_from = Vector2(0.5478261, 0.5043478)
+    
+    [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w6b63"]
+    bg_color = Color(0.24313726, 0.24313726, 0.24313726, 0.13725491)
+    
+    [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g84ej"]
+    bg_color = Color(0, 0, 0, 0.24705882)
+    
+    [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jnwmo"]
+    bg_color = Color(1, 1, 1, 0.24705882)
+    
+    [node name="Battle" type="Control" unique_id=172547049]
+    layout_mode = 3
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    script = ExtResource("1_g84ej")
+    
+    [node name="Background" type="TextureRect" parent="." unique_id=1625852051]
+    layout_mode = 1
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    texture = SubResource("GradientTexture2D_omw3i")
+    
+    [node name="BattleUI" type="VBoxContainer" parent="." unique_id=1416184799]
+    layout_mode = 1
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    theme_override_constants/separation = 10
+    script = ExtResource("2_jnwmo")
+    
+    [node name="TopBar" type="Control" parent="BattleUI" unique_id=1894689668]
+    layout_mode = 2
+    size_flags_vertical = 3
+    size_flags_stretch_ratio = 0.25
+    
+    [node name="PanelContainer" type="PanelContainer" parent="BattleUI/TopBar" unique_id=310846959]
+    layout_mode = 1
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    
+    [node name="BattleLog" type="RichTextLabel" parent="BattleUI/TopBar/PanelContainer" unique_id=1142135405]
+    layout_mode = 2
+    theme_override_font_sizes/normal_font_size = 24
+    theme_override_font_sizes/bold_font_size = 24
+    theme_override_font_sizes/bold_italics_font_size = 24
+    theme_override_font_sizes/italics_font_size = 24
+    theme_override_font_sizes/mono_font_size = 24
+    theme_override_styles/normal = SubResource("StyleBoxFlat_w6b63")
+    bbcode_enabled = true
+    fit_content = true
+    horizontal_alignment = 1
+    vertical_alignment = 1
+    
+    [node name="EnemyRow" type="Control" parent="BattleUI" unique_id=2018250886]
+    layout_mode = 2
+    size_flags_vertical = 3
+    
+    [node name="HBoxContainer" type="HBoxContainer" parent="BattleUI/EnemyRow" unique_id=1152287589]
+    layout_mode = 1
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    offset_transform_enabled = true
+    offset_transform_pivot_ratio = Vector2(0.695, 0.5)
+    
+    [node name="SpacerLarge" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=1224325526]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_stretch_ratio = 2.0
+    
+    [node name="EnemyPosition5" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=1123938404]
+    custom_minimum_size = Vector2(128, 128)
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="EnemyPosition4" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=1487017779]
+    custom_minimum_size = Vector2(128, 128)
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="EnemyPosition3" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=641694808]
+    custom_minimum_size = Vector2(128, 128)
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="EnemyPosition2" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=1406195921]
+    custom_minimum_size = Vector2(128, 128)
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="EnemyPosition1" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=2022506410]
+    custom_minimum_size = Vector2(128, 128)
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="SpacerSmall" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=1653534871]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_stretch_ratio = 0.5
+    
+    [node name="PartyRow" type="Control" parent="BattleUI" unique_id=525631336]
+    layout_mode = 2
+    size_flags_vertical = 3
+    size_flags_stretch_ratio = 1.1
+    
+    [node name="HBoxContainer" type="HBoxContainer" parent="BattleUI/PartyRow" unique_id=961158221]
+    layout_mode = 1
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    offset_transform_enabled = true
+    offset_transform_pivot_ratio = Vector2(0.695, 0.5)
+    
+    [node name="SpacerSmall" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1337349881]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_stretch_ratio = 0.5
+    
+    [node name="PartyPosition1" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1935366684]
+    custom_minimum_size = Vector2(128, 128)
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="PartyPosition2" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1149472313]
+    custom_minimum_size = Vector2(128, 128)
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="PartyPosition3" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1708918297]
+    custom_minimum_size = Vector2(128, 128)
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="PartyPosition4" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1751003666]
+    custom_minimum_size = Vector2(128, 128)
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="PartyPosition5" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1475141904]
+    custom_minimum_size = Vector2(128, 128)
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="SpacerLarge" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=522807043]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_stretch_ratio = 2.0
+    
+    [node name="Controls" type="Control" parent="BattleUI" unique_id=265003600]
+    layout_mode = 2
+    size_flags_vertical = 3
+    size_flags_stretch_ratio = 0.8
+    
+    [node name="ActionMenu" type="GridContainer" parent="BattleUI/Controls" unique_id=318707880]
+    visible = false
+    layout_mode = 1
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    columns = 2
+    
+    [node name="AttackButton" type="Button" parent="BattleUI/Controls/ActionMenu" unique_id=2031585457]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Attack"
+    
+    [node name="SpellButton" type="Button" parent="BattleUI/Controls/ActionMenu" unique_id=1969935982]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Spell"
+    
+    [node name="ItemButton" type="Button" parent="BattleUI/Controls/ActionMenu" unique_id=1863947414]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Item"
+    
+    [node name="EscapeButton" type="Button" parent="BattleUI/Controls/ActionMenu" unique_id=515094351]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Escape"
+    
+    [node name="AttackMenu" type="GridContainer" parent="BattleUI/Controls" unique_id=412430082]
+    visible = false
+    layout_mode = 1
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    columns = 2
+    
+    [node name="Button1" type="Button" parent="BattleUI/Controls/AttackMenu" unique_id=2100826771]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Attack 1"
+    
+    [node name="Button2" type="Button" parent="BattleUI/Controls/AttackMenu" unique_id=1038766538]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Attack 2"
+    
+    [node name="Button3" type="Button" parent="BattleUI/Controls/AttackMenu" unique_id=1475108480]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Attack 3"
+    
+    [node name="Back" type="Button" parent="BattleUI/Controls/AttackMenu" unique_id=1566514260]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Back
+    "
+    
+    [node name="Navigation" type="HBoxContainer" parent="BattleUI/Controls/AttackMenu" unique_id=391702821]
+    visible = false
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    
+    [node name="NavNext" type="Button" parent="BattleUI/Controls/AttackMenu/Navigation" unique_id=1071796211]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Next
+    "
+    
+    [node name="NavBack" type="Button" parent="BattleUI/Controls/AttackMenu/Navigation" unique_id=702767971]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Back"
+    
+    [node name="SpellMenu" type="GridContainer" parent="BattleUI/Controls" unique_id=720988079]
+    visible = false
+    layout_mode = 1
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    columns = 2
+    
+    [node name="Button1" type="Button" parent="BattleUI/Controls/SpellMenu" unique_id=196314801]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Spell 1"
+    
+    [node name="Button2" type="Button" parent="BattleUI/Controls/SpellMenu" unique_id=1215769961]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Spell 2"
+    
+    [node name="Button3" type="Button" parent="BattleUI/Controls/SpellMenu" unique_id=401554443]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Spell 3"
+    
+    [node name="Back" type="Button" parent="BattleUI/Controls/SpellMenu" unique_id=769339207]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Back
+    "
+    
+    [node name="Navigation" type="HBoxContainer" parent="BattleUI/Controls/SpellMenu" unique_id=501503726]
+    visible = false
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    
+    [node name="NavNext" type="Button" parent="BattleUI/Controls/SpellMenu/Navigation" unique_id=569759108]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Next
+    "
+    
+    [node name="NavBack" type="Button" parent="BattleUI/Controls/SpellMenu/Navigation" unique_id=2004999115]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Back"
+    
+    [node name="ItemMenu" type="GridContainer" parent="BattleUI/Controls" unique_id=2069088840]
+    visible = false
+    layout_mode = 1
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    columns = 2
+    
+    [node name="Button1" type="Button" parent="BattleUI/Controls/ItemMenu" unique_id=94560201]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Item 1"
+    
+    [node name="Button2" type="Button" parent="BattleUI/Controls/ItemMenu" unique_id=1360057311]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Item 2"
+    
+    [node name="Button3" type="Button" parent="BattleUI/Controls/ItemMenu" unique_id=751970262]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Item 3"
+    
+    [node name="Back" type="Button" parent="BattleUI/Controls/ItemMenu" unique_id=1878377535]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Back
+    "
+    
+    [node name="Navigation" type="HBoxContainer" parent="BattleUI/Controls/ItemMenu" unique_id=1742595697]
+    visible = false
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    
+    [node name="NavNext" type="Button" parent="BattleUI/Controls/ItemMenu/Navigation" unique_id=1816126287]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Next
+    "
+    
+    [node name="NavBack" type="Button" parent="BattleUI/Controls/ItemMenu/Navigation" unique_id=1802000215]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+    theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+    theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+    theme_override_font_sizes/font_size = 32
+    theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+    theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+    text = "Back"
+    
+    _______________
+    _______________
+    (BattleOther.tscn):
+    [gd_scene format=3 uid="uid://ckmo3pionum2n"]
+    
+    [node name="BattleOther" type="Node2D" unique_id=1074364112]
+    
+    _______________
+    _______________
+    (battle_ui.gd):
+    extends VBoxContainer
+    
+    var _current_combatant : BattleCombatant
+    var _current_page := 0
+    var target_index = 0
+    var target_array = []
+    var all_targets = false
+    var party = []
+    var enemies = []
+    var positions = {}
+    var slots = {}
+    var selecting_targets : bool = false
+    
+    
+    @onready var battle_log_label : RichTextLabel = $TopBar/PanelContainer/BattleLog
+    @onready var action_menu = $Controls/ActionMenu
+    @onready var attack_menu = $Controls/AttackMenu
+    @onready var spell_menu = $Controls/SpellMenu
+    @onready var item_menu = $Controls/ItemMenu
+    @onready var attack_button : Button = $Controls/ActionMenu/AttackButton
+    @onready var spell_button : Button = $Controls/ActionMenu/SpellButton
+    @onready var item_button : Button = $Controls/ActionMenu/ItemButton
+    @onready var escape_button : Button = $Controls/ActionMenu/EscapeButton
+    
+    
+    @onready var enemy_position_1 : Control = $EnemyRow/HBoxContainer/EnemyPosition1
+    @onready var enemy_position_2 : Control = $EnemyRow/HBoxContainer/EnemyPosition2
+    @onready var enemy_position_3 : Control = $EnemyRow/HBoxContainer/EnemyPosition3
+    @onready var enemy_position_4 : Control = $EnemyRow/HBoxContainer/EnemyPosition4
+    @onready var enemy_position_5 : Control = $EnemyRow/HBoxContainer/EnemyPosition5
+    @onready var party_position_1 : Control = $PartyRow/HBoxContainer/PartyPosition1
+    @onready var party_position_2 : Control = $PartyRow/HBoxContainer/PartyPosition2
+    @onready var party_position_3 : Control = $PartyRow/HBoxContainer/PartyPosition3
+    @onready var party_position_4 : Control = $PartyRow/HBoxContainer/PartyPosition4
+    @onready var party_position_5 : Control = $PartyRow/HBoxContainer/PartyPosition5
+    
+    var current_menu : GridContainer = null
+    var _tweens_remaining = 0
+    var _animations_pending = 0
+    
+    @warning_ignore_start("unused_parameter")
+    # Called when the node enters the scene tree for the first time.
+    func _ready() -> void:
+    	EventBus.turn_started.connect(func(c : BattleCombatant): _current_combatant = c)
+    	EventBus.combat_queued.connect(set_positions)
+    	EventBus.player_turn_started.connect(set_up)
+    	EventBus.target_select_requested.connect(target_select)
+    	EventBus.all_targets.connect(func(): all_targets = true)
+    	EventBus.combatant_status_applied.connect(func(combatant : BattleCombatant, status : StatusEffect): (positions[combatant].get_child(1) as Indicator).change_text(status.status_name))
+    	EventBus.combatant_status_expired.connect(func(combatant : BattleCombatant, status : StatusEffect): (positions[combatant].get_child(1) as Indicator).change_text(""))
+    	action_menu.get_child(0).grab_focus()
+		attack_button.pressed.connect(_on_action_menu_pressed.bind('attack'))
+		spell_button.pressed.connect(_on_action_menu_pressed.bind('spell'))
+		item_button.pressed.connect(_on_action_menu_pressed.bind('item'))
+		escape_button.pressed.connect(_on_action_menu_pressed.bind('escape'))
+    	slots["enemy"]=[
+    		enemy_position_1,
+    		enemy_position_2,
+    		enemy_position_3,
+    		enemy_position_4,
+    		enemy_position_5,
+    	]
+    	slots["party"]=[
+    		party_position_1,
+    		party_position_2,
+    		party_position_3,
+    		party_position_4,
+    		party_position_5,
+    	]
+    	EventBus.combatant_damaged.connect(_on_combatant_damaged)
+    	EventBus.combatant_died.connect(_on_combatant_died)
+    	EventBus.combatant_healed.connect(_on_combatant_healed)
+    	EventBus.turn_started.connect(_on_turn_started)
+    	EventBus.combat_log_updated.connect(_on_combat_log_updated)
+    
+    func _on_combat_log_updated(text : String):
+    	battle_log_label.text = text
+    		
+    
+    func set_positions(combatants : Array[BattleCombatant]):
+    	party.clear()
+    	enemies.clear()
+    	for i in combatants:
+    		if i.is_player_controlled:
+    			party.append(i)
+    		else:
+    			enemies.append(i)
+    	for i in slots["enemy"].size():
+    		if i < enemies.size():
+    			positions[enemies[i]]=slots["enemy"][i]
+    		else:
+    			slots["enemy"][i].hide()
+    	for i in slots["party"].size():
+    		if i < party.size():
+    			positions[party[i]]=slots["party"][i]
+    		else:
+    			slots["party"][i].hide()
+    	_tweens_remaining = positions.keys().size()
+    	for i : BattleCombatant in positions.keys():
+    		var sprite = AnimatedSprite2D.new()
+    		#sprite.sprite_frames = i.source_resource.sprite_frames
+    		if i.source_resource is EnemyResource:
+    			sprite.sprite_frames = i.source_resource.sprite_frames
+    		elif i.source_resource is PartyMemberResource:
+    			sprite.sprite_frames = i.source_resource.battle_sprite_frames
+    		positions[i].add_child(sprite)
+    		var offset = Vector2(600, 0) if not i.is_player_controlled else Vector2(-600, 0)
+    		sprite.position = offset
+    		sprite.set_meta("dead", false)
+    		sprite.animation_finished.connect(func():
+    			if not sprite.get_meta("dead"):
+    				if sprite.sprite_frames.has_animation("idle"):
+    					sprite.play("idle")
+    			else:
+    				sprite.stop())
+    		#sprite.play("battle_entrance")
+    		if sprite.sprite_frames.has_animation("idle_down"):
+    			sprite.play("idle_down")
+    		var target_pos = positions[i].size
+    		var tween = create_tween()
+    		tween.tween_property(sprite, "position", target_pos, 0.4)
+    		tween.finished.connect(func():
+    			_tweens_remaining -= 1
+    			if _tweens_remaining <= 0:
+    				EventBus.combat_visuals_ready.emit()
+    				_tweens_remaining = positions.keys().size())
+    		var indicator : Indicator = preload("res://scenes/ui/indicator.tscn").instantiate()
+    		positions[i].add_child(indicator)
+    		positions[i].get_child(1).hide()
+    		indicator.hp_bar.min_value = 0
+    		indicator.mp_bar.min_value = 0
+    		indicator.hp_bar.max_value = i.max_hp()
+    		indicator.mp_bar.max_value = i.max_mp()
+    		indicator.hp_bar.value = i.stats.current_hp
+    		indicator.mp_bar.value = i.stats.current_mp
+    		#indicator.text = "v"
+    		indicator.offset_transform_enabled = true
+    		indicator.offset_transform_position = Vector2(80,20)
+    		##indicator.offset_transform_position_ratio = Vector2(1.8, -0.8)
+    		#indicator.offset_transform_position = Vector2(125,60)
+    		#indicator.name = "SelectionArrow"
+    func set_up(prev_node : GridContainer = null): 
+    	if prev_node != null:
+    		prev_node.hide()
+    	action_menu.show()
+    	current_menu = action_menu
+    	var button : Button = action_menu.get_child(0)
+    	button.grab_focus()
+    
+    func _on_action_menu_pressed(choice : String):
+    	match choice:
+			'attack':
+    			populate_attack_menu()
+			'spell':
+    			populate_spell_menu()
+			'item':
+    			populate_item_menu()
+			'escape':
+    			EventBus.player_flee_attempted.emit()
+    
+    func paginate(action_array : Array, base_node : GridContainer, page : int = 0):
+    	var button_1 : Button = base_node.find_child("Button1")
+    	button_1.grab_focus()
+    	var button_2 : Button = base_node.find_child("Button2")
+    	var button_3 : Button = base_node.find_child("Button3")
+    	var buttons = [button_1, button_2, button_3]
+    	var back : Button = base_node.find_child("Back")
+    	if back.pressed.is_connected(set_up):
+    		back.pressed.disconnect(set_up)
+    	back.pressed.connect(set_up.bind(base_node))
+    	var navigation := base_node.find_child("Navigation")
+    	var nav_next : Button = base_node.find_child("NavNext")
+    	var nav_back : Button = base_node.find_child("NavBack")
+    	if nav_back.pressed.is_connected(set_up):
+    		nav_back.pressed.disconnect(set_up)
+    	nav_back.pressed.connect(set_up.bind(base_node))
+    	if action_array.size() > 3:
+    		back.hide()
+    		navigation.show()
+    	else:
+    		back.show()
+    		navigation.hide()
+    	for i in range(3):
+    		var action_index = (page * 3)+i
+    		var button : Button = buttons[i]
+    		if action_index <= action_array.size() - 1:
+    			if action_array[action_index] is BattleAction:
+    				button.text = action_array[action_index].action_name
+    			elif action_array[action_index] is ItemResource:
+    				button.text = action_array[action_index].item_name
+    			if button.pressed.is_connected(send_action):
+    				button.pressed.disconnect(send_action)
+    			button.pressed.connect(send_action.bind(action_array[action_index]))
+    			if nav_next.pressed.is_connected(paginate):
+    				nav_next.pressed.disconnect(paginate)
+    			nav_next.pressed.connect(paginate.bind(action_array, base_node, page + 1))
+    		else:
+    			buttons[i].disabled = true
+    			if nav_next.pressed.is_connected(paginate):
+    				nav_next.pressed.disconnect(paginate)
+    			nav_next.pressed.connect(paginate.bind(action_array, base_node, 0))
+    func send_action(action):
+    	if action is BattleAction:
+    		EventBus.player_action_selected.emit(action)
+    	elif action is ItemResource:
+    		pass
+    
+    func target_select(valid_targets : Array[BattleCombatant]):
+    	current_menu.hide()
+    	selecting_targets = true
+    	target_array = valid_targets
+    	target_index = 0
+    	clear_arrows()
+    	var arrow = positions[target_array[target_index]].get_child(1)
+    	arrow.show()
+    	arrow.change_color(Color.RED)
+    
+    func _on_resolve_started():
+    	_animations_pending = 0
+    	await get_tree().process_frame
+    	if _animations_pending <= 0:
+    		EventBus.combat_animations_finished.emit()
+    
+    func _on_combatant_damaged(combatant : BattleCombatant, amount : int):
+    	var sprite : AnimatedSprite2D = positions[combatant].get_child(0)
+    	if sprite.sprite_frames.has_animation("hurt"):
+    		sprite.play("hurt")
+    	_animations_pending += 1
+    	var tween = create_tween()
+    	tween.tween_property(sprite, "modulate", Color.RED, 0.3)
+    	var indicator : Indicator = positions[combatant].get_child(1)
+    	indicator.update_hp(combatant.stats.current_hp)
+    	tween.tween_property(sprite, "modulate", Color.WHITE, 0.3)
+    	tween.finished.connect(func():
+    		_animations_pending -= 1
+    		if _animations_pending <= 0:
+    			EventBus.combat_animations_finished.emit())
+    	
+    	
+    func _on_combatant_died(combatant : BattleCombatant):
+    	var sprite : AnimatedSprite2D = positions[combatant].get_child(0)
+    	if sprite.sprite_frames.has_animation("died"):
+    		sprite.play("died")
+    	sprite.set_meta("dead",true)
+    	sprite.animation_finished.connect(func():
+    		_animations_pending += 1
+    		var tween = create_tween()
+    		tween.tween_property(positions[combatant], "custom_minimum_size.x", 0, 0.3)
+    		tween.tween_callback(positions[combatant].hide)
+    		tween.finished.connect(func():
+    			_animations_pending -= 1
+    			if _animations_pending <= 0:
+    				EventBus.combat_animations_finished.emit())
+    		)
+    	
+    func _on_combatant_healed(combatant : BattleCombatant, amount : int):
+    	var sprite : AnimatedSprite2D = positions[combatant].get_child(0)
+    	if sprite.sprite_frames.has_animation("healed"):
+    		sprite.play("healed")
+    	_animations_pending += 1
+    	var tween = create_tween()
+    	tween.tween_property(sprite, "modulate", Color.GREEN, 0.3)
+    	var indicator : Indicator = positions[combatant].get_child(1)
+    	indicator.update_hp(combatant.stats.current_hp)
+    	tween.tween_property(sprite, "modulate", Color.WHITE, 0.3)
+    	tween.finished.connect(func():
+    		_animations_pending -= 1
+    		if _animations_pending <= 0:
+    			EventBus.combat_animations_finished.emit())
+    
+    func _on_turn_started(combatant : BattleCombatant):
+    	clear_arrows()
+    	var arrow = positions[combatant].get_child(1)
+    	arrow.show()
+    	arrow.change_color(Color.YELLOW)
+    	pass # put arrow as child and control show/hide from this method
+    
+    func clear_arrows():
+    	for i : BattleCombatant in enemies + party:
+    		var node : Indicator = positions[i].get_child(1)
+    		#node.modulate = Color.WHITE
+    		node.hide()
+    
+    func populate_attack_menu():
+    	_current_page = 0
+    	action_menu.hide()
+    	attack_menu.show()
+    	current_menu = attack_menu
+    	paginate(_current_combatant.physical_actions, attack_menu, _current_page)
+    
+    func populate_spell_menu():
+    	_current_page = 0
+    	action_menu.hide()
+    	spell_menu.show()
+    	current_menu = spell_menu
+    	paginate(_current_combatant.return_available_magic_actions() + _current_combatant.return_available_healing_actions(), spell_menu, _current_page)
+    
+    func populate_item_menu():
+    	_current_page = 0
+    	action_menu.hide()
+    	item_menu.show()
+    	current_menu = item_menu
+    	paginate(_current_combatant.inventory, item_menu, _current_page)
+    
+    func _unhandled_input(event: InputEvent) -> void:
+    	if selecting_targets and !all_targets:
+    		if event.is_action_pressed("combat_confirm") or target_array.size() == 1:
+    			var targets :Array[BattleCombatant] = []
+    			targets.append(target_array[target_index])
+    			EventBus.player_targets_selected.emit(targets)
+    			selecting_targets = false
+			elif event.is_action_pressed('move_right') or event.is_action_pressed("move_down"):
+    			target_index = wrapi(target_index + 1, 0, target_array.size())
+    			update_target_arrow()
+			elif event.is_action_pressed('move_left') or event.is_action_pressed("move_up"):
+    			target_index = wrapi(target_index - 1, 0, target_array.size())
+    			update_target_arrow()
+    		elif event.is_action_pressed("combat_cancel"):
+    			selecting_targets = false
+    			all_targets = false
+    			set_up()
+    	elif selecting_targets:
+    		if event.is_action_pressed("combat_confirm") or target_array.size() == 1:
+    			EventBus.player_targets_selected.emit(target_array)
+    			selecting_targets = false
+    			all_targets = false
+    
+    func update_target_arrow():
+    	if !all_targets:
+    		clear_arrows()
+    		var arrow = positions[target_array[target_index]].get_child(1)
+    		arrow.show()
+    		arrow.change_color(Color.RED)
+    	else:
+    		clear_arrows()
+    		for i in target_array:
+    			var arrow = positions[i].get_child(1)
+    			arrow.show()
+    			arrow.change_color(Color.RED)
+    
+    _______________
     DUNGEONS:
     _______________
     (TestDungeon.tscn):
@@ -1531,7 +3090,7 @@ _______________
     	SceneManager.travel_to(warp_definition.target_scene, warp_definition.target_warp_id, warp_definition.transition)
     
     
-    func _on_body_exited(body: Node2D) -> void:
+    func _on_body_exited(_body: Node2D) -> void:
     	if just_spawned:
     		just_spawned = false
     	pass # Replace with function body.
@@ -1701,6 +3260,8 @@ _______________
     (dialogue_ui.gd):
     extends CanvasLayer
     
+    @warning_ignore_start("unused_parameter")
+    
     @onready var panel := $Panel
     @onready var portrait := $Panel/HBoxContainer/Portrait
     @onready var line_container := $Panel/HBoxContainer/LineContainer
@@ -1708,6 +3269,8 @@ _______________
     @onready var dialogue_label := $Panel/HBoxContainer/LineContainer/Dialogue
     @onready var choice_scroller := $Panel/HBoxContainer/ScrollContainer
     @onready var choice_container := $Panel/HBoxContainer/ScrollContainer/ChoiceContainer
+    
+    var _input_guard: bool = false
     
     func _ready() -> void:
     	EventBus.dialogue_started.connect(start_dialogue)
@@ -1719,6 +3282,9 @@ _______________
     func start_dialogue(sequence : DialogueSequence):
     	if !panel.visible:
     		panel.show()
+    	_input_guard = true
+    	await get_tree().process_frame
+    	_input_guard = false
     
     func line_advanced(line : DialogueLine):
     	if !line_container.visible:
@@ -1756,6 +3322,8 @@ _______________
     	panel.hide()
     
     func _unhandled_input(event: InputEvent) -> void:
+    	if _input_guard:
+    		return
     	if panel.visible and line_container.visible:
     		if event.is_action_pressed("interact"):
     			DialogueManager.advance_dialogue()
@@ -1763,6 +3331,87 @@ _______________
     
     func choice_selected(choice : DialogueChoice):
     	DialogueManager.choice_selected(choice)
+    
+    _______________
+    _______________
+    (indicator.tscn):
+    [gd_scene format=3 uid="uid://bov8a0685763p"]
+    
+    [ext_resource type="Script" uid="uid://darws7n7h1hoj" path="res://indicator.gd" id="1_k87p2"]
+    [ext_resource type="StyleBox" uid="uid://dks5m462iqgk7" path="res://art/ui/indicator_stylebox.tres" id="2_lf84i"]
+    
+    [sub_resource type="Gradient" id="Gradient_yayer"]
+    colors = PackedColorArray(0.29411766, 0, 0, 1, 1, 0, 0, 1)
+    
+    [sub_resource type="GradientTexture1D" id="GradientTexture1D_q4y6p"]
+    gradient = SubResource("Gradient_yayer")
+    width = 128
+    use_hdr = true
+    
+    [sub_resource type="Gradient" id="Gradient_df86d"]
+    colors = PackedColorArray(1.4439225e-06, 0, 0.56940395, 1, 0, 0, 1, 1)
+    
+    [sub_resource type="GradientTexture1D" id="GradientTexture1D_ywjrr"]
+    gradient = SubResource("Gradient_df86d")
+    width = 128
+    use_hdr = true
+    
+    [node name="Indicator" type="Control" unique_id=1104993]
+    layout_mode = 3
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    script = ExtResource("1_k87p2")
+    
+    [node name="PanelContainer" type="PanelContainer" parent="." unique_id=1647599026]
+    custom_minimum_size = Vector2(96, 32)
+    layout_mode = 0
+    offset_right = 40.0
+    offset_bottom = 40.0
+    theme_override_styles/panel = ExtResource("2_lf84i")
+    
+    [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=1290096109]
+    layout_mode = 2
+    theme_override_constants/separation = 2
+    
+    [node name="HPBar" type="TextureProgressBar" parent="PanelContainer/VBoxContainer" unique_id=631990444]
+    layout_mode = 2
+    size_flags_vertical = 3
+    value = 100.0
+    nine_patch_stretch = true
+    texture_progress = SubResource("GradientTexture1D_q4y6p")
+    
+    [node name="MPBar" type="TextureProgressBar" parent="PanelContainer/VBoxContainer" unique_id=1788672970]
+    layout_mode = 2
+    size_flags_vertical = 3
+    value = 100.0
+    nine_patch_stretch = true
+    texture_progress = SubResource("GradientTexture1D_ywjrr")
+    
+    [node name="StatusLabel" type="RichTextLabel" parent="PanelContainer/VBoxContainer" unique_id=571920457]
+    clip_contents = false
+    layout_mode = 2
+    size_flags_vertical = 3
+    offset_transform_enabled = true
+    offset_transform_position = Vector2(0, -3)
+    theme_override_font_sizes/normal_font_size = 9
+    theme_override_font_sizes/bold_font_size = 16
+    theme_override_font_sizes/bold_italics_font_size = 16
+    bbcode_enabled = true
+    scroll_active = false
+    shortcut_keys_enabled = false
+    horizontal_alignment = 1
+    
+    [node name="Label" type="Label" parent="PanelContainer" unique_id=657851751]
+    modulate = Color(0.67481464, 0.67481464, 0.6748146, 1)
+    layout_mode = 2
+    offset_transform_enabled = true
+    offset_transform_position_ratio = Vector2(0, 1.545)
+    offset_transform_scale = Vector2(1.75, 1.75)
+    text = "⛛"
+    horizontal_alignment = 1
     
     _______________
     WORLD:
@@ -1827,7 +3476,11 @@ _______________
     		pending_warp.just_spawned = true
     		player.set_camera_limits(camera_bounds)
     		player.global_position = pending_warp.global_position
-    	
+    
+    func _unhandled_input(event: InputEvent) -> void:
+    	if event.is_action_pressed("ui_accept"):
+    		var group = load("res://data/enemies/slime_group.tres")
+    		SceneManager.start_combat(group)
     
     _______________
     _______________
@@ -1903,7 +3556,7 @@ _______________
     _______________
     (AudioManager.gd):
     extends Node
-    
+    @warning_ignore_start("unused_parameter")
     # Bus structure is defined in the Godot Audio panel, not here.
     # Musicians: your files go in res://audio/music/ and res://audio/sfx/
     
@@ -1993,12 +3646,15 @@ _______________
     	_current_sequence = null
     	_current_lines = []
     	_current_index = 0
+    	_awaiting_choices = false
     	EventBus.dialogue_finished.emit()
     
     _______________
     _______________
     (EventBus.gd):
     extends Node
+    
+    @warning_ignore_start("unused_signal")
     
     # Scene/world signals
     signal scene_transition_requested(scene_path: String, transition: String)
@@ -2007,236 +3663,775 @@ _______________
     # Combat signals
     signal combat_started(enemy_group: Resource)
     signal combat_ended(result: String)   # "victory", "defeat", "fled"
-    
-    # Dialogue signals
-    signal dialogue_started(sequence: DialogueSequence)
-    signal dialogue_line_advanced(line : DialogueLine)
-    signal dialogue_choices_available(choices: Array[DialogueChoice])
-    signal dialogue_choice_selected(choice : DialogueChoice)
-    signal dialogue_finished()
-    
-    # Inventory signals
-    signal item_acquired(item: Resource)
-    signal item_used(item: Resource)
-    signal item_dropped(item: Resource)
-    
-    # Game state signals
-    signal flag_changed(flag_name: String, value: Variant)
-    signal gold_changed(new_amount: int)
-    
-    # Audio signals
-    signal music_change_requested(track_path: String, transition: String)
-    signal sfx_requested(sfx_path: String)
-    
-    # Manipulation signals
-    signal interact_pressed
-    
-    _______________
-    _______________
-    (GameState.gd):
-    extends Node
-    
-    # World flags — anything that "happened": doors opened, quests advanced,
-    # NPCs talked to. Key is a string, value is bool/int/String.
-    var flags: Dictionary = {}
-    
-    # Economy
-    var gold: int = 0
-    
-    # Party
-    var party: Array = []
-    
-    # Tracking
-    var current_map_path: String = ""
-    var save_slot: int = 0
-    var pending_warp_id : String = "test_town_entrance"
-    
-    
-    func set_flag(flag_name: String, value: Variant) -> void:
-    	flags[flag_name] = value
-    	EventBus.flag_changed.emit(flag_name, value)
-    
-    
-    func get_flag(flag_name: String, default: Variant = false) -> Variant:
-    	return flags.get(flag_name, default)
-    
-    
-    func add_gold(amount: int) -> void:
-    	gold += amount
-    	EventBus.gold_changed.emit(gold)
-    
-    
-    func spend_gold(amount: int) -> bool:
-    	if gold < amount:
-    		return false
-    	gold -= amount
-    	EventBus.gold_changed.emit(gold)
-    	return true
-    
-    _______________
-    _______________
-    (SaveManager.gd):
-    extends Node
-    
-    func save(slot: int) -> void:
-    	pass  # Phase 9
-    
-    
-    func load_save(slot: int) -> void:
-    	pass  # Phase 9
-    
-    
-    func save_exists(slot: int) -> bool:
-    	return false  # Phase 9
-    
-    _______________
-    _______________
-    (SceneManager.gd):
-    extends Node
-    
-    var _is_transitioning: bool = false
-    
-    
-    func travel_to(scene_path: String, warp_id : String = "", transition: String = "fade") -> void:
-    	if _is_transitioning:
-    		return
-    	_is_transitioning = true
-    	EventBus.scene_transition_requested.emit(scene_path, transition)
-    	# Transition animation plays, then calls _do_scene_change()
-    	# For now, skip the animation and swap directly
-    	GameState.pending_warp_id = warp_id
-    	_do_scene_change(scene_path)
-    
-    
-    func _do_scene_change(scene_path: String) -> void:
+    signal combat_queued(queue: Array[BattleCombatant])
+    signal combat_visuals_ready()
+    signal combat_animations_finished()
+    signal combat_action_resolving()
+    signal combat_log_updated(text: String) # anything that happens in battle gets narrated here: "Norb attacks!", "Slime is poisoned!", "Norb takes 14 damage!"
+	signal turn_started(combatant: BattleCombatant) # fired when a new combatant's turn begins, UI uses this to highlight whose turn it is
+	signal combatant_damaged(combatant: BattleCombatant, amount: int) # fired after damage is applied, HP bar animates in response
+	signal combatant_healed(combatant: BattleCombatant, amount: int) # same pattern for healing
+	signal combatant_status_applied(combatant: BattleCombatant, status: StatusEffect) # UI shows the status icon
+	signal combatant_status_expired(combatant: BattleCombatant, status: StatusEffect) # UI removes the status icon
+	signal combatant_died(combatant: BattleCombatant) # UI plays death state, CombatManager checks victory/defeat condition
+	signal player_turn_started()
+	signal player_action_selected(action: BattleAction)
+	signal player_targets_selected(targets: Array[BattleCombatant])
+	signal player_flee_attempted()
+	signal target_select_requested(targets: Array[BattleCombatant])
+	signal all_targets()
+	
+	
+	# Dialogue signals
+	signal dialogue_started(sequence: DialogueSequence)
+	signal dialogue_line_advanced(line : DialogueLine)
+	signal dialogue_choices_available(choices: Array[DialogueChoice])
+	signal dialogue_choice_selected(choice : DialogueChoice)
+	signal dialogue_finished()
+	
+	# Inventory signals
+	signal item_acquired(item: Resource)
+	signal item_used(item: Resource)
+	signal item_dropped(item: Resource)
+	
+	# Game state signals
+	signal flag_changed(flag_name: String, value: Variant)
+	signal gold_changed(new_amount: int)
+	
+	# Progression signals
+	signal level_increased(character : PartyMemberResource, new_value : int)
+	signal stat_increased(character : PartyMemberResource, stat : String, new_value : int)
+	
+	# Audio signals
+	signal music_change_requested(track_path: String, transition: String)
+	signal sfx_requested(sfx_path: String)
+	
+	# Manipulation signals
+	signal interact_pressed
+	
+	_______________
+	_______________
+	(GameState.gd):
+	extends Node
+	
+	# World flags — anything that "happened": doors opened, quests advanced,
+	# NPCs talked to. Key is a string, value is bool/int/String.
+	var flags: Dictionary = {}
+	
+	# Economy
+	var gold: int = 0
+	var pending_inventory: Array[ItemResource] = []
+	var inventory: Array[ItemResource] = []
+	
+	# Party
+	var party: Array[PartyMemberResource] = []
+	
+	# Tracking
+	var current_map_path: String = ""
+	var save_slot: int = 0
+	var pending_warp_id : String = "test_town_entrance"
+	
+	var pending_enemy_group : EnemyGroupResource = null
+	
+	func _ready() -> void:
+		party.append(load("res://data/characters/norb_party_member.tres"))
+	
+	func set_flag(flag_name: String, value: Variant) -> void:
+		flags[flag_name] = value
+		EventBus.flag_changed.emit(flag_name, value)
+	
+	
+	func get_flag(flag_name: String, default: Variant = false) -> Variant:
+		return flags.get(flag_name, default)
+	
+	
+	func add_gold(amount: int) -> void:
+		gold += amount
+		EventBus.gold_changed.emit(gold)
+	
+	func spend_gold(amount: int) -> bool:
+		if gold < amount:
+			return false
+		gold -= amount
+		EventBus.gold_changed.emit(gold)
+		return true
+	
+	func inventory_drop(drop_table : Array[ItemResource]):
+		if drop_table.is_empty():
+			return
+		var dropped_items = randi_range(0, drop_table.size())
+		for i in dropped_items:
+			pending_inventory.append(drop_table[i])
+			EventBus.item_dropped.emit(i)
+	
+	func inventory_transfer():
+		for i in pending_inventory:
+			inventory.append(i)
+			EventBus.item_acquired.emit(i)
+		pending_inventory = []
+	
+	_______________
+	_______________
+	(SaveManager.gd):
+	extends Node
+	@warning_ignore_start("unused_parameter")
+	func save(slot: int) -> void:
+		pass  # Phase 9
+	
+	
+	func load_save(slot: int) -> void:
+		pass  # Phase 9
+	
+	
+	func save_exists(slot: int) -> bool:
+		return false  # Phase 9
+	
+	_______________
+	_______________
+	(SceneManager.gd):
+	extends Node
+	
+	var _is_transitioning: bool = false
+	
+	
+	func travel_to(scene_path: String, warp_id : String = "", transition: String = "fade") -> void:
+		if _is_transitioning:
+			return
+		_is_transitioning = true
+		EventBus.scene_transition_requested.emit(scene_path, transition)
+		# Transition animation plays, then calls _do_scene_change()
+		# For now, skip the animation and swap directly
+		GameState.pending_warp_id = warp_id
+		_do_scene_change(scene_path)
+	
+	
+	func _do_scene_change(scene_path: String) -> void:
 		get_tree().call_deferred('change_scene_to_file',scene_path)
-    	_is_transitioning = false
-    	EventBus.scene_transition_finished.emit()
-    
-    
-    func start_combat(enemy_group: Resource) -> void:
-    	# Store the return scene so we can come back after combat
-    	GameState.current_map_path = get_tree().current_scene.scene_file_path
-    	EventBus.combat_started.emit(enemy_group)
-    	travel_to("res://scenes/battle/Battle.tscn", "", "flash")
-    
-    
-    func end_combat(result: String) -> void:
-    	EventBus.combat_ended.emit(result)
-    	travel_to(GameState.current_map_path, "", "fade")
-    
-    _______________
-    COMBAT:
-    ENTITIES:
-    RESOURCES:
-    _______________
-    (CharacterStatBlock.gd):
-    class_name CharacterStatBlock
-    extends Resource
-    
-    @export var character_name: String = ""
-    @export var level: int = 1
-    @export var base_move_speed: float = 150.0
-    
-    @export_group("Primary Stats")
-    @export var str: int = 10   # Physical attack, carry weight
-    @export var agi: int = 10   # Turn order, evasion, accuracy
-    @export var vit: int = 10   # Max HP, physical defense
-    @export var intelligence: int = 10  # Magic attack, item effectiveness
-    @export var wil: int = 10   # Max MP, magic resist, status resist
-    
-    _______________
-    _______________
-    (DialogueChoice.gd):
-    class_name DialogueChoice
-    extends Resource
-    
-    @export var label: String = ""  # What the player sees in the menu
-    
-    # Condition — leave flag_required empty for always-available choices
-    @export var flag_required: String = ""
-    @export var required_value: Variant = null
-    
-    # Consequence
-    @export var sets_flag: String = ""
-    @export var sets_value: Variant = null
-    
-    # Where this choice leads
-    @export var next_lines: Array[DialogueLine] = []
-    @export var next_sequence_id : String = ""
-    
-    _______________
-    _______________
-    (DialogueLine.gd):
-    class_name DialogueLine
-    extends Resource
-    
-    @export var speaker_name: String = ""
-    @export var portrait: Texture2D  # null = no portrait shown
-    @export var text: String = ""
-    
-    # Empty array = linear advance. Populated = show choice menu.
-    @export var choices: Array[DialogueChoice] = []
-    
-    _______________
-    _______________
-    (DialogueSequence.gd):
-    class_name DialogueSequence
-    extends Resource
-    
-    @export var sequence_id: String = ""
-    @export var lines: Array[DialogueLine] = []
-    
-    _______________
-    _______________
-    (EnemyGroupResource.gd):
-    class_name EnemyGroupResource
-    extends Resource
-    
-    @export var enemies: Array[EnemyResource] = []
-    @export var encounter_music: String = ""  # res://audio/music/... path
-    
-    _______________
-    _______________
-    (EnemyResource.gd):
-    class_name EnemyResource
-    extends Resource
-    
-    @export var enemy_name: String = ""
-    @export var sprite_frames: SpriteFrames
-    @export var stats: CharacterStatBlock
-    
-    @export_group("Rewards")
-    @export var experience_reward: int = 0
-    @export var gold_reward: int = 0
-    @export var drop_table: Array[ItemResource] = []
-    
-    _______________
-    _______________
-    (ItemResource.gd):
-    class_name ItemResource
-    extends Resource
-    
-    enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM }
-    
-    @export var item_name: String = ""
-    @export var description: String = ""
-    @export var icon: Texture2D
-    @export var item_type: ItemType = ItemType.CONSUMABLE
-    @export var value: int = 0       # Gold value for shops
-    @export var stackable: bool = true
-    @export var max_stack: int = 99
-    
-    _______________
-    _______________
-    (WarpDefinition.gd):
-    class_name WarpDefinition
-    extends Resource
-    
-    @export var target_scene: String = ""    # res://scenes/... path
-    @export var target_warp_id: String = ""  # ID of the arrival warp in target scene
-    @export var transition: String = "fade"  # matches SceneManager transition names
-    
-    _______________
-    UI:
-    WORLD:
+		_is_transitioning = false
+		EventBus.scene_transition_finished.emit()
+	
+	
+	func start_combat(enemy_group: Resource) -> void:
+		# Store the return scene so we can come back after combat
+		GameState.current_map_path = get_tree().current_scene.scene_file_path
+		#EventBus.combat_started.emit(enemy_group)
+		GameState.pending_enemy_group = enemy_group
+		travel_to("res://scenes/battle/Battle.tscn", "", "flash")
+	
+	
+	func end_combat(result: String) -> void:
+		EventBus.combat_ended.emit(result)
+		#for i : PartyMemberResource in GameState.party:
+			#GameState.hp_cache[i.stats.character_name] = i.stats.current_hp
+			#GameState.mp_cache[i.stats.character_name] = i.stats.current_mp
+		travel_to(GameState.current_map_path, "", "fade")
+	
+	_______________
+	COMBAT:
+	_______________
+	(BattleCombatant.gd):
+	class_name BattleCombatant
+	extends RefCounted
+	
+	var stats: CharacterStatBlock 
+	var is_player_controlled: bool
+	var active_statuses: Array[Dictionary] = []
+	var source_resource : Resource
+	var physical_actions: Array[BattleAction] = []
+	var magic_actions: Array[BattleAction] = []
+	var healing_actions: Array[BattleAction] = []
+	#var available_magic_actions: Array[BattleAction] = []
+	var other_actions: Array[BattleAction] = []
+	var inventory : Array = []
+	
+	func _init(char_stats : CharacterStatBlock) -> void:
+		stats = char_stats
+		if stats.current_hp == -1:
+			stats.current_hp = max_hp()
+		if stats.current_mp == -1:
+			stats.current_mp = max_mp()
+	
+	static func create_enemy(character : EnemyResource) -> BattleCombatant:
+		var combatant = BattleCombatant.new(character.stats)
+		combatant.is_player_controlled = false
+		combatant.source_resource = character
+		combatant.create_action_arrays(character.actions)
+		return combatant
+	
+	static func create_party_member(character : PartyMemberResource) -> BattleCombatant:
+		var combatant = BattleCombatant.new(character.stats)
+		combatant.is_player_controlled = true
+		combatant.source_resource = character
+		combatant.create_action_arrays(character.actions)
+		return combatant
+	
+	func create_action_arrays(actions : Array[BattleAction]):
+		for action : BattleAction in actions:
+			match action.damage_type:
+				action.DamageType.PHYSICAL:
+					physical_actions.append(action)
+				action.DamageType.MAGICAL:
+					magic_actions.append(action)
+				action.DamageType.HEALING:
+					healing_actions.append(action)
+				action.DamageType.NONE:
+					other_actions.append(action)
+	
+	func return_available_magic_actions() -> Array[BattleAction]:
+		var array : Array[BattleAction] = []
+		for action : BattleAction in magic_actions:
+			if action.mp_cost < stats.current_mp:
+				array.append(action)
+		return array
+	
+	func return_available_healing_actions() -> Array[BattleAction]:
+		var array : Array[BattleAction] = []
+		for action : BattleAction in healing_actions:
+			if action.mp_cost < stats.current_mp:
+				array.append(action)
+		return array
+	
+	func max_hp() -> int:
+		return 20 + (stats.vit * 8) + (stats.level * 5)
+	func max_mp() -> int:
+		return 10 + (stats.wil * 5) + (stats.level * 3)
+	func is_alive() -> bool: # reads stats.current_hp
+		return stats.current_hp > 0
+	func can_act() -> bool: # checks is_alive() and whether any active status blocks_action
+		if is_alive():
+			if active_statuses.is_empty():
+				return true
+			else:
+				for i in active_statuses:
+					if i["effect"].blocks_action == true:
+						return false
+				return true
+		else:
+			return false
+	func take_damage(amount: int) -> void: # subtracts from stats.current_hp, clamps to zero
+		stats.current_hp = clampi(stats.current_hp - amount, 0, max_hp())
+		print("%s HP: %s" % [stats.character_name, stats.current_hp])
+	func heal(amount: int) -> void: # adds to stats.current_hp, clamps to max_hp()
+		stats.current_hp = clampi(stats.current_hp + amount, 0, max_hp())
+	func apply_status(status: StatusEffect) -> bool: # appends to active_statuses, but only if not already present
+		var new = true
+		for i in active_statuses:
+			if i["effect"] == status:
+				new = false
+		if new == true:
+			active_statuses.append({"effect" = status, "turns_remaining" = status.duration_turns})
+		return new
+	func tick_statuses() -> void: #decrements duration_turns on each status, removes expired ones, applies damage_per_turn for POISON
+		var statuses = active_statuses.duplicate()
+		for status in statuses:
+			status["turns_remaining"] -= 1
+			take_damage(status["effect"].damage_per_turn)
+			if status["turns_remaining"] <= 0:
+				active_statuses.erase(status)
+	
+	_______________
+	_______________
+	(combat_manager.gd):
+	extends Node
+	
+	@warning_ignore_start("integer_division")
+	
+	enum State {
+		IDLE          , # waiting for something to happen (brief, between states)
+		PLAYER_INPUT  , # player is choosing an action
+		TARGET_SELECT , # player is choosing a target
+		RESOLVING     , # an action is executing (damage applied, log updated)
+		# STATUS_TICK   , # status effects proc at start/end of turn
+		ENEMY_TURN    , # AI is selecting and executing an action
+		VICTORY       , # all enemies dead, award EXP/gold
+		DEFEAT        , # all party members dead
+		FLED          , # ran successfully
+	}
+	
+	var _turn_queue: Array[BattleCombatant] = []
+	var _current_turn_index: int = -1
+	var current_combatant : BattleCombatant = null
+	var _state: State = State.IDLE
+	var _pending_action: BattleAction = null
+	var _pending_targets: Array[BattleCombatant] = []
+	var _enemy_group: EnemyGroupResource = null
+	var _party_members: Array[PartyMemberResource] = []
+	var _enemy_combatants : Array[BattleCombatant] = []
+	var _party_combatants: Array[BattleCombatant] = []
+	
+	func _ready() -> void:
+		#EventBus.combat_started.connect(start_battle)
+		EventBus.player_action_selected.connect(_on_player_action_selected)
+		EventBus.player_targets_selected.connect(_on_player_targets_selected)
+		EventBus.player_flee_attempted.connect(_on_player_flee_attempted)
+		EventBus.combat_visuals_ready.connect(start_next_turn)
+		if GameState.pending_enemy_group != null:
+			start_battle(GameState.pending_enemy_group)
+			GameState.pending_enemy_group = null
+	
+	func start_battle(enemy_group : EnemyGroupResource):
+		_enemy_group = enemy_group
+		_party_members = GameState.party
+		for entity in _party_members + _enemy_group.enemies:
+			var combatant : BattleCombatant
+			if entity is PartyMemberResource:
+				combatant = BattleCombatant.create_party_member(entity)
+				_party_combatants.append(combatant)
+			elif entity is EnemyResource:
+				combatant = BattleCombatant.create_enemy(entity)
+				_enemy_combatants.append(combatant)
+			_turn_queue.append(combatant)
+		_turn_queue.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.agi > b.stats.agi)
+		EventBus.combat_queued.emit(_turn_queue)
+		#start_next_turn()
+	
+	func start_next_turn():
+		await get_tree().create_timer(0.3).timeout
+		_state = State.IDLE
+		advance_index()
+		if !any_alive(true): # handle failure
+			_state = State.DEFEAT
+			#EventBus.combat_ended.emit("defeat")
+			_process_party_progression()
+			SceneManager.end_combat("defeat")
+			return
+		if !any_alive(false): # handle victory
+			_state = State.VICTORY
+			for i in _enemy_group.enemies:
+				GameState.add_gold(i.gold_reward)
+				for ii : PartyMemberResource in _party_members:
+					ii.pending_xp += i.experience_reward 
+				GameState.inventory_drop(i.drop_table)
+			GameState.inventory_transfer()
+			#EventBus.combat_ended.emit("victory")
+			_process_party_progression()
+			
+			SceneManager.end_combat("victory")
+			return
+		current_combatant = _turn_queue[_current_turn_index]
+		while not current_combatant.is_alive():
+			advance_index()
+			current_combatant = _turn_queue[_current_turn_index]
+		EventBus.turn_started.emit(current_combatant)
+		if current_combatant.is_player_controlled:
+			_state = State.PLAYER_INPUT
+			EventBus.player_turn_started.emit()
+		else:
+			_state = State.ENEMY_TURN
+			_run_enemy_turn()
+	
+	func _run_enemy_turn():
+		if !current_combatant.can_act():
+			var log_string = "%s is " % current_combatant.stats.character_name
+			for status in current_combatant.active_statuses:
+				if status["effect"].status_type == StatusEffect.StatusType.SLEEP:
+					log_string += "asleep"
+					break
+				elif status["effect"].status_type == StatusEffect.StatusType.STUN:
+					log_string += "stunned"
+					break
+			EventBus.combat_log_updated.emit(log_string)
+			start_next_turn()
+		else:
+			var enemy_data = current_combatant.source_resource as EnemyResource
+			var party = living_entities(_party_combatants)
+			party.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
+			var enemies = living_entities(_enemy_combatants)
+			enemies.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
+			var targets : Array[BattleCombatant] = []
+			var action : BattleAction
+			match enemy_data.behavior:
+				EnemyResource.AIBehavior.RANDOM: 
+					targets.append(party.pick_random())
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				EnemyResource.AIBehavior.AGGRESSIVE:
+					targets.append(party[0])
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				EnemyResource.AIBehavior.DEFENSIVE:
+					targets.append(party[-1])
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				EnemyResource.AIBehavior.HEALER:
+					targets.append(enemies[-1])
+					action = current_combatant.return_available_healing_actions().pick_random()
+				EnemyResource.AIBehavior.BERSERKER:
+					targets.append(party[0])
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+			if action == null:
+				EventBus.combat_log_updated.emit("%s does nothing" % current_combatant.stats.character_name)
+				start_next_turn()
+				return
+			_resolve_action(current_combatant, targets, action)
+	
+	func living_entities(array : Array[BattleCombatant]) -> Array[BattleCombatant]:
+		var new_array = array.duplicate()
+		for i in array:
+			if !i.is_alive():
+				new_array.erase(i)
+		return new_array
+	
+	func _resolve_action(attacker : BattleCombatant, targets : Array[BattleCombatant], action : BattleAction):
+		EventBus.combat_action_resolving.emit()
+		_state = State.RESOLVING
+		var healing = action.damage_type == BattleAction.DamageType.HEALING
+		if action.category == BattleAction.ActionCategory.MAGIC:
+			attacker.stats.current_mp -= action.mp_cost
+		for target in targets:
+			if action.category == BattleAction.ActionCategory.ATTACK:
+				EventBus.combat_log_updated.emit("%s attacks %s" % [attacker.stats.character_name, target.stats.character_name])
+				var damage = (attacker.stats.str * action.power) / target.stats.vit
+				if accuracy_check(attacker):
+					if attacker.is_player_controlled:
+						(attacker.source_resource as PartyMemberResource).accumulate("str", target.stats.vit)
+						(attacker.source_resource as PartyMemberResource).accumulate("agi", target.stats.agi)
+					elif target.is_player_controlled:
+						(target.source_resource as PartyMemberResource).accumulate("vit", damage)
+						(target.source_resource as PartyMemberResource).accumulate("agi", attacker.stats.agi)
+					target.take_damage(damage)
+					EventBus.combatant_damaged.emit(target, damage)
+				else:
+					EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+			elif action.category == BattleAction.ActionCategory.MAGIC:
+				if !healing:
+					var damage = (attacker.stats.intelligence * action.power) / target.stats.wil
+					EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+					if accuracy_check(attacker):
+						if attacker.is_player_controlled:
+							(attacker.source_resource as PartyMemberResource).accumulate("intelligence", target.stats.wil)
+						target.take_damage(damage)
+						EventBus.combatant_damaged.emit(target, damage)
+					else:
+						EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+				else:
+					var amount = (attacker.stats.intelligence * action.power)
+					EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+					if attacker.is_player_controlled:
+						(attacker.source_resource as PartyMemberResource).accumulate("wil", amount)
+						(attacker.source_resource as PartyMemberResource).accumulate("intelligence", amount * 0.5)
+					target.heal(amount)
+					EventBus.combatant_healed.emit(target, amount)
+			elif action.category == BattleAction.ActionCategory.SKILL:
+				EventBus.combat_log_updated.emit("%s uses %s" % [attacker.stats.character_name, action.action_name])
+			if action.status_to_apply != null:
+				if randf()<action.status_chance:
+					if target.apply_status(action.status_to_apply):
+						EventBus.combatant_status_applied.emit(target, action.status_to_apply)
+			if !target.is_alive():
+				EventBus.combatant_died.emit(target)
+				
+		attacker.tick_statuses()
+		#start_next_turn.call_deferred()
+		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
+	
+	func _resolve_item():
+		pass
+	
+	func _on_player_action_selected(action: BattleAction):
+		if _state == State.PLAYER_INPUT:
+			_pending_action = action
+			_state = State.TARGET_SELECT
+			if action.target_type == BattleAction.TargetType.ALL_ENEMIES or action.target_type == BattleAction.TargetType.ALL_ALLIES:
+				EventBus.all_targets.emit()
+			var valid_targets = get_targets(action.target_type)
+			EventBus.target_select_requested.emit(valid_targets)
+		
+	func get_targets(target_type : BattleAction.TargetType):
+		if target_type == BattleAction.TargetType.SINGLE_ENEMY or target_type == BattleAction.TargetType.ALL_ENEMIES:
+			if current_combatant.is_player_controlled:
+				return living_entities(_enemy_combatants)
+			else:
+				return living_entities(_party_combatants)
+		elif target_type == BattleAction.TargetType.SINGLE_ALLY or target_type == BattleAction.TargetType.ALL_ALLIES:
+			if current_combatant.is_player_controlled:
+				return living_entities(_party_combatants)
+			else:
+				return living_entities(_enemy_combatants)
+		elif target_type == BattleAction.TargetType.SELF:
+			return [current_combatant]
+	
+	func _on_player_targets_selected(targets: Array[BattleCombatant]):
+		if _state == State.TARGET_SELECT:
+			_pending_targets = targets
+			_resolve_action(current_combatant, targets, _pending_action)
+		
+	func _on_player_flee_attempted():
+		if _state == State.PLAYER_INPUT:
+			var player_agi = 0
+			var player_count = 0
+			var enemy_agi = 0
+			var enemy_count = 0
+			for i : BattleCombatant in _turn_queue:
+				if i.is_alive():
+					if i.is_player_controlled:
+						player_agi += i.stats.agi
+						player_count += 1
+					else:
+						enemy_agi += i.stats.agi
+						enemy_count += 1
+			for i : BattleCombatant in _turn_queue:
+				if i.is_alive() and i.is_player_controlled:
+					(i.source_resource as PartyMemberResource).accumulate("agi", enemy_agi / enemy_count)
+			EventBus.combat_log_updated.emit("%s attempted to flee" % current_combatant.stats.character_name)
+			if float(player_agi) / float(player_count) > (float(enemy_agi) / float(enemy_count) * 0.8):
+				_state = State.FLED
+				EventBus.combat_log_updated.emit("%s fled" % current_combatant.stats.character_name)
+				#EventBus.combat_ended.emit("fled")
+				_process_party_progression()
+				SceneManager.end_combat("fled")
+			else:
+				EventBus.combat_log_updated.emit("%s failed to escape" % current_combatant.stats.character_name)
+				start_next_turn()
+	
+	func _process_party_progression():
+		for i : BattleCombatant in _turn_queue:
+			if i.is_player_controlled:
+				(i.source_resource as PartyMemberResource).process_progression()
+	
+	func accuracy_check(attacker : BattleCombatant) -> bool:
+		var hit_roll = randf()
+		var accuracy = 1.0
+		# apply accuracy modifier from any BLIND status on attacker
+		for status in attacker.active_statuses:
+			accuracy *= status["effect"].accuracy_modifier
+		if hit_roll > accuracy:
+			return false
+		return true
+	
+	func advance_index() -> void:
+		_current_turn_index = (_current_turn_index + 1) % _turn_queue.size()
+	
+	func any_alive(player_controlled : bool) -> bool:
+		for i : BattleCombatant in _turn_queue:
+			if i.is_player_controlled == player_controlled and i.is_alive():
+				return true
+		return false
+	
+	_______________
+	ENTITIES:
+	RESOURCES:
+	_______________
+	(BattleAction.gd):
+	class_name BattleAction
+	extends Resource
+	
+	enum ActionCategory {ATTACK, MAGIC, SKILL}
+	enum TargetType {SINGLE_ENEMY, ALL_ENEMIES, SINGLE_ALLY, ALL_ALLIES, SELF}
+	enum DamageType {PHYSICAL, MAGICAL, HEALING, NONE}
+	
+	@export var action_name: String = ""
+	@export var description: String = ""
+	@export var category: ActionCategory = ActionCategory.ATTACK
+	@export var mp_cost: int = 0 # zero for physical attacks
+	@export var target_type: TargetType = TargetType.SINGLE_ENEMY
+	@export var damage_type: DamageType = DamageType.PHYSICAL
+	@export var power: int = 1 #the base value the damage formula will scale from
+	@export var status_to_apply: StatusEffect = null # null means no status, so no default needed
+	@export_range(0.0, 1.0, 0.1) var status_chance: float = 0.5 # probability the status applies, 0.0 to 1.0
+	@export var animation_key: String = ""
+	
+	_______________
+	_______________
+	(CharacterStatBlock.gd):
+	class_name CharacterStatBlock
+	extends Resource
+	
+	@warning_ignore_start("shadowed_global_identifier")
+	
+	@export var character_name: String = ""
+	@export var level: int = 1
+	@export var base_move_speed: float = 150.0
+	
+	@export_group("Primary Stats")
+	@export var str: int = 10   # Physical attack, carry weight
+	@export var agi: int = 10   # Turn order, evasion, accuracy
+	@export var vit: int = 10   # Max HP, physical defense
+	@export var intelligence: int = 10  # Magic attack, item effectiveness
+	@export var wil: int = 10   # Max MP, magic resist, status resist
+	
+	@export_group("Runtime State")
+	@export var current_hp : int = -1
+	@export var current_mp : int = -1
+	
+	_______________
+	_______________
+	(DialogueChoice.gd):
+	class_name DialogueChoice
+	extends Resource
+	
+	@export var label: String = ""  # What the player sees in the menu
+	
+	# Condition — leave flag_required empty for always-available choices
+	@export var flag_required: String = ""
+	@export var required_value: Variant = null
+	
+	# Consequence
+	@export var sets_flag: String = ""
+	@export var sets_value: Variant = null
+	
+	# Where this choice leads
+	@export var next_lines: Array[DialogueLine] = []
+	@export var next_sequence_id : String = ""
+	
+	_______________
+	_______________
+	(DialogueLine.gd):
+	class_name DialogueLine
+	extends Resource
+	
+	@export var speaker_name: String = ""
+	@export var portrait: Texture2D  # null = no portrait shown
+	@export var text: String = ""
+	
+	# Empty array = linear advance. Populated = show choice menu.
+	@export var choices: Array[DialogueChoice] = []
+	
+	_______________
+	_______________
+	(DialogueSequence.gd):
+	class_name DialogueSequence
+	extends Resource
+	
+	@export var sequence_id: String = ""
+	@export var lines: Array[DialogueLine] = []
+	
+	_______________
+	_______________
+	(EnemyGroupResource.gd):
+	class_name EnemyGroupResource
+	extends Resource
+	
+	@export var enemies: Array[EnemyResource] = []
+	@export var encounter_music: String = ""  # res://audio/music/... path
+	
+	_______________
+	_______________
+	(EnemyResource.gd):
+	# Stretch goal: this resource is intended to eventually extend
+	# a shared EntityResource base alongside EnemyResource.
+	# Keep shared fields structurally parallel to EnemyResource.
+	
+	class_name EnemyResource
+	extends EntityResource
+	
+	enum AIBehavior { RANDOM, AGGRESSIVE, DEFENSIVE, HEALER, BERSERKER }
+	
+	@export var enemy_name: String = ""
+	@export var sprite_frames: SpriteFrames
+	@export var stats: CharacterStatBlock
+	
+	@export_group("Rewards")
+	@export var experience_reward: int = 0
+	@export var gold_reward: int = 0
+	@export var drop_table: Array[ItemResource] = []
+	
+	@export_group("Battle")
+	@export var actions : Array[BattleAction] = []
+	@export var behavior: AIBehavior = AIBehavior.RANDOM
+	
+	_______________
+	_______________
+	(EntityResource.gd):
+	class_name EntityResource
+	extends Resource
+	
+	#@export var stats: CharacterStatBlock
+	
+	_______________
+	_______________
+	(ItemResource.gd):
+	class_name ItemResource
+	extends Resource
+	
+	enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM }
+	
+	@export var item_name: String = ""
+	@export var description: String = ""
+	@export var icon: Texture2D
+	@export var item_type: ItemType = ItemType.CONSUMABLE
+	@export var value: int = 0       # Gold value for shops
+	@export var stackable: bool = true
+	@export var max_stack: int = 99
+	
+	_______________
+	_______________
+	(PartyMemberResource.gd):
+	# Stretch goal: this resource is intended to eventually extend
+	# a shared EntityResource base alongside EnemyResource.
+	# Keep shared fields structurally parallel to EnemyResource.
+	
+	class_name PartyMemberResource
+	extends EntityResource
+	
+	@export var stats: CharacterStatBlock
+	@export var actions: Array[BattleAction] = []
+	@export var battle_sprite_frames: SpriteFrames
+	@export var portrait: Texture2D
+	@export var pending_xp : float = 0.0
+	@export var xp_gauge: float = 0.0
+	@export var xp_till_level_up : float = 100.0
+	
+	@export var stat_levels = {
+		"str" : [0.0, 100.0],
+		"agi" : [0.0, 100.0],
+		"vit" : [0.0, 100.0],
+		"intelligence" : [0.0, 100.0],
+		"wil" : [0.0, 100.0],
+	}
+	
+	func accumulate(stat_name : String, amount : float):
+		stat_levels[stat_name][0] += amount
+		pending_xp += amount * 0.5
+	
+	func process_progression():
+		for i in stat_levels.keys():
+			while stat_levels[i][0] >= stat_levels[i][1]:
+				stat_levels[i][0] -= stat_levels[i][1]
+				stat_levels[i][1] = stat_levels[i][1] * 1.2
+				stats.set(i, stats.get(i)+1)
+				EventBus.stat_increased.emit(self, i, stats.get(i))
+				print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
+		xp_gauge += pending_xp
+		pending_xp = 0
+		while xp_gauge >= xp_till_level_up:
+			xp_gauge -= xp_till_level_up
+			xp_till_level_up = int(xp_till_level_up * 1.2)
+			stats.level += 1
+			EventBus.level_increased.emit(self, stats.level)
+			print("%s's level raised to %s" % [stats.character_name, stats.level])
+			for i in stat_levels.keys():
+				stat_levels[i][0] = stat_levels[i][0] * 1.2
+				if stat_levels[i][0] >= stat_levels[i][1]:
+					stat_levels[i][0] -= stat_levels[i][1]
+					stat_levels[i][1] = stat_levels[i][1] * 1.2
+					stats.set(i, stats.get(i)+1)
+					EventBus.stat_increased.emit(self, i, stats.get(i))
+					print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
+		
+	
+	_______________
+	_______________
+	(StatusEffect.gd):
+	class_name StatusEffect
+	extends Resource
+	
+	enum StatusType {POISON, SLEEP, BLIND, STUN, BERSERK}
+	
+	@export var status_name : String = ""
+	@export var status_type : StatusType = StatusType.POISON
+	@export var duration_turns : int = -1
+	@export var damage_per_turn : int = 0
+	@export var blocks_action : bool = false
+	@export var accuracy_modifier : float = 1.0
+	
+	_______________
+	_______________
+	(WarpDefinition.gd):
+	class_name WarpDefinition
+	extends Resource
+	
+	@export var target_scene: String = ""    # res://scenes/... path
+	@export var target_warp_id: String = ""  # ID of the arrival warp in target scene
+	@export var transition: String = "fade"  # matches SceneManager transition names
+	
+	_______________
+	UI:
+	WORLD:

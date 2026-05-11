@@ -4,6 +4,7 @@ extends EditorPlugin
 var _sprite_importer_dock
 var _warp_editor_dock
 var _dialogue_panel
+var _combat_editor_dock
 func _enter_tree() -> void:
 	scene_changed.connect(_on_scene_changed)
 	# Called when the plugin is enabled.
@@ -11,9 +12,11 @@ func _enter_tree() -> void:
 	_sprite_importer_dock = preload("res://addons/rpg_editors/sprite_importer/SpriteImporterDock.tscn").instantiate()
 	_warp_editor_dock = preload("res://addons/rpg_editors/warp_editor/warp_editor.tscn").instantiate()
 	_dialogue_panel =  preload("res://addons/rpg_editors/dialogue_editor/dialogue_editor_panel.tscn").instantiate()
+	_combat_editor_dock = preload("res://addons/rpg_editors/combat_editor/combat_editor.tscn").instantiate()
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, _sprite_importer_dock)
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, _warp_editor_dock)
 	add_control_to_bottom_panel(_dialogue_panel, "Dialogue Editor")
+	add_control_to_bottom_panel(_combat_editor_dock, "Combat Editor")
 	_dialogue_panel.plugin = self
 	
 	print("RPG Editors: loaded")

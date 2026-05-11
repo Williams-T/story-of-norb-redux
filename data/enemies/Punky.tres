@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://m7cnxy6xs28v"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_anr6b"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="2_tjm8x"]
+[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="3_wrvco"]
+[ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="4_s8ci5"]
+
+[sub_resource type="Resource" id="Resource_0l83s"]
+script = ExtResource("4_s8ci5")
+str = 1
+agi = 1
+vit = 1
+intelligence = 1
+wil = 1
+
+[resource]
+script = ExtResource("3_wrvco")
+enemy_name = "Punky"
+stats = SubResource("Resource_0l83s")
+experience_reward = 10
+gold_reward = 10

@@ -1,6 +1,8 @@
 class_name CharacterStatBlock
 extends Resource
 
+@warning_ignore_start("shadowed_global_identifier")
+
 @export var character_name: String = ""
 @export var level: int = 1
 @export var base_move_speed: float = 150.0
@@ -11,3 +13,7 @@ extends Resource
 @export var vit: int = 10   # Max HP, physical defense
 @export var intelligence: int = 10  # Magic attack, item effectiveness
 @export var wil: int = 10   # Max MP, magic resist, status resist
+
+@export_group("Runtime State")
+@export var current_hp : int = -1
+@export var current_mp : int = -1

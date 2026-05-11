@@ -1,7 +1,8 @@
 class_name Player
 extends CharacterBody2D
 
-@export var stat_block: CharacterStatBlock
+#@export var stat_block: CharacterStatBlock
+@export var party_member : PartyMemberResource
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var cam : Camera2D = $Camera2D
@@ -12,12 +13,14 @@ var _last_direction := Vector2.DOWN
 
 func _ready() -> void:
 	sprite.play("idle_down")
+	print(party_member.stats.current_hp)
+	
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed('interact'):
 		EventBus.interact_pressed.emit()
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	var direction := _get_input_direction()
 	_update_last_direction()
 	_apply_movement(direction)
@@ -38,8 +41,8 @@ func _get_input_direction() -> Vector2:
 	return Input.get_vector("move_left", "move_right", "move_up","move_down")
 
 func _apply_movement(direction: Vector2) -> void:
-	var agi_modifier := 1.0 + (stat_block.agi - 10) * AGI_SPEED_MODIFIER
-	velocity = direction * stat_block.base_move_speed * agi_modifier
+	var agi_modifier :float = 1.0 + (party_member.stats.agi - 10) * AGI_SPEED_MODIFIER
+	velocity = direction * party_member.stats.base_move_speed * agi_modifier
 
 func _update_animation(direction : Vector2):
 	if direction == Vector2.ZERO:
@@ -70,6 +73,7 @@ func _play_idle_animation():
 			sprite.animation = "idle_right"
 
 func set_camera_limits(rect : Rect2):
+	@warning_ignore_start("narrowing_conversion")
 	cam.limit_top = rect.position.y
 	cam.limit_left = rect.position.x
 	cam.limit_bottom = rect.position.y + rect.size.y

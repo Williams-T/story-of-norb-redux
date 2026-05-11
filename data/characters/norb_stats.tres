@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="CharacterStatBlock" format=3 uid="uid://b4u28x1ywgdd7"]
+
+[ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="1_6rvj4"]
+
+[resource]
+script = ExtResource("1_6rvj4")
+character_name = "Norb"
+metadata/_custom_type_script = "uid://bck3giaak2qgo"

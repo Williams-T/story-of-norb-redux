@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PartyMemberResource" format=3 uid="uid://fnlnedirq0qx"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_07d42"]
+[ext_resource type="SpriteFrames" uid="uid://cnk6tlau0s367" path="res://art/characters/player/norb/norb.tres" id="1_q8bbx"]
+[ext_resource type="Resource" uid="uid://1jxsq0x8ybtq" path="res://data/actions/basic_attack.tres" id="2_8sk5o"]
+[ext_resource type="Script" uid="uid://boebfwpkxm8x0" path="res://src/resources/PartyMemberResource.gd" id="2_uvu74"]
+[ext_resource type="Resource" uid="uid://c8hha40tvgj05" path="res://data/actions/slime_tackle.tres" id="3_akcyc"]
+[ext_resource type="Resource" uid="uid://b4u28x1ywgdd7" path="res://data/characters/norb_stats.tres" id="4_q8bbx"]
+
+[resource]
+script = ExtResource("2_uvu74")
+stats = ExtResource("4_q8bbx")
+actions = Array[ExtResource("1_07d42")]([ExtResource("2_8sk5o"), ExtResource("3_akcyc")])
+battle_sprite_frames = ExtResource("1_q8bbx")
+metadata/_custom_type_script = "uid://boebfwpkxm8x0"

@@ -1,5 +1,5 @@
 extends Node
-
+@warning_ignore_start("unused_parameter")
 # Bus structure is defined in the Godot Audio panel, not here.
 # Musicians: your files go in res://audio/music/ and res://audio/sfx/
 

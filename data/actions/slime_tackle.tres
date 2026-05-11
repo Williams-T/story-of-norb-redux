@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="BattleAction" format=3 uid="uid://c8hha40tvgj05"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_sc4oo"]
+
+[resource]
+script = ExtResource("1_sc4oo")
+action_name = "Tackle"
+description = "get bumped HARD"
+metadata/_custom_type_script = "uid://d3fdo4ho75i4u"

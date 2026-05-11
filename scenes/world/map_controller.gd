@@ -16,4 +16,8 @@ func _ready() -> void:
 		pending_warp.just_spawned = true
 		player.set_camera_limits(camera_bounds)
 		player.global_position = pending_warp.global_position
-	
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_accept"):
+		var group = load("res://data/enemies/slime_group.tres")
+		SceneManager.start_combat(group)

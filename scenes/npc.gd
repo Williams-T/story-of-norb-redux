@@ -14,8 +14,8 @@ enum Directions {NORTH, EAST, SOUTH, WEST}
 var facing : Directions = Directions.SOUTH
 var _wander_origin : Vector2
 var _target_position : Vector2
-var _wander_delay = 10.0
-var _wander_max_interval = 15.0
+#var _wander_delay = 10.0
+#var _wander_max_interval = 15.0
 var _player_in_range := false
 var _interactable_entity : Node2D = null
 var _wandering := false

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://5fces0bktoye"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_s20qs"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="2_n28aa"]
+[ext_resource type="Resource" uid="uid://c8hha40tvgj05" path="res://data/actions/slime_tackle.tres" id="2_r0o31"]
+[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="3_nl3q0"]
+[ext_resource type="SpriteFrames" uid="uid://cnk6tlau0s367" path="res://art/characters/player/norb/norb.tres" id="5_ekkkr"]
+[ext_resource type="Resource" uid="uid://4a3jkdqymmq2" path="res://data/enemies/slime_stats.tres" id="6_pmp7f"]
+
+[resource]
+script = ExtResource("3_nl3q0")
+enemy_name = "Slime"
+sprite_frames = ExtResource("5_ekkkr")
+stats = ExtResource("6_pmp7f")
+experience_reward = 10
+gold_reward = 100
+actions = Array[ExtResource("1_s20qs")]([ExtResource("2_r0o31")])
+metadata/_custom_type_script = "uid://und7th2eghly"

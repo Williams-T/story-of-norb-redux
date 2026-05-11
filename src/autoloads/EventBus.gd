@@ -1,5 +1,7 @@
 extends Node
 
+@warning_ignore_start("unused_signal")
+
 # Scene/world signals
 signal scene_transition_requested(scene_path: String, transition: String)
 signal scene_transition_finished()
@@ -7,6 +9,24 @@ signal scene_transition_finished()
 # Combat signals
 signal combat_started(enemy_group: Resource)
 signal combat_ended(result: String)   # "victory", "defeat", "fled"
+signal combat_queued(queue: Array[BattleCombatant])
+signal combat_visuals_ready()
+signal combat_animations_finished()
+signal combat_action_resolving()
+signal combat_log_updated(text: String) # anything that happens in battle gets narrated here: "Norb attacks!", "Slime is poisoned!", "Norb takes 14 damage!"
+signal turn_started(combatant: BattleCombatant) # fired when a new combatant's turn begins, UI uses this to highlight whose turn it is
+signal combatant_damaged(combatant: BattleCombatant, amount: int) # fired after damage is applied, HP bar animates in response
+signal combatant_healed(combatant: BattleCombatant, amount: int) # same pattern for healing
+signal combatant_status_applied(combatant: BattleCombatant, status: StatusEffect) # UI shows the status icon
+signal combatant_status_expired(combatant: BattleCombatant, status: StatusEffect) # UI removes the status icon
+signal combatant_died(combatant: BattleCombatant) # UI plays death state, CombatManager checks victory/defeat condition
+signal player_turn_started()
+signal player_action_selected(action: BattleAction)
+signal player_targets_selected(targets: Array[BattleCombatant])
+signal player_flee_attempted()
+signal target_select_requested(targets: Array[BattleCombatant])
+signal all_targets()
+
 
 # Dialogue signals
 signal dialogue_started(sequence: DialogueSequence)
@@ -23,6 +43,10 @@ signal item_dropped(item: Resource)
 # Game state signals
 signal flag_changed(flag_name: String, value: Variant)
 signal gold_changed(new_amount: int)
+
+# Progression signals
+signal level_increased(character : PartyMemberResource, new_value : int)
+signal stat_increased(character : PartyMemberResource, stat : String, new_value : int)
 
 # Audio signals
 signal music_change_requested(track_path: String, transition: String)

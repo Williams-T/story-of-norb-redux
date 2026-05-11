@@ -1,0 +1,77 @@
+[gd_scene format=3 uid="uid://bov8a0685763p"]
+
+[ext_resource type="Script" uid="uid://darws7n7h1hoj" path="res://indicator.gd" id="1_k87p2"]
+[ext_resource type="StyleBox" uid="uid://dks5m462iqgk7" path="res://art/ui/indicator_stylebox.tres" id="2_lf84i"]
+
+[sub_resource type="Gradient" id="Gradient_yayer"]
+colors = PackedColorArray(0.29411766, 0, 0, 1, 1, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_q4y6p"]
+gradient = SubResource("Gradient_yayer")
+width = 128
+use_hdr = true
+
+[sub_resource type="Gradient" id="Gradient_df86d"]
+colors = PackedColorArray(1.4439225e-06, 0, 0.56940395, 1, 0, 0, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_ywjrr"]
+gradient = SubResource("Gradient_df86d")
+width = 128
+use_hdr = true
+
+[node name="Indicator" type="Control" unique_id=1104993]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_k87p2")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1647599026]
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_styles/panel = ExtResource("2_lf84i")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=1290096109]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="HPBar" type="TextureProgressBar" parent="PanelContainer/VBoxContainer" unique_id=631990444]
+layout_mode = 2
+size_flags_vertical = 3
+value = 100.0
+nine_patch_stretch = true
+texture_progress = SubResource("GradientTexture1D_q4y6p")
+
+[node name="MPBar" type="TextureProgressBar" parent="PanelContainer/VBoxContainer" unique_id=1788672970]
+layout_mode = 2
+size_flags_vertical = 3
+value = 100.0
+nine_patch_stretch = true
+texture_progress = SubResource("GradientTexture1D_ywjrr")
+
+[node name="StatusLabel" type="RichTextLabel" parent="PanelContainer/VBoxContainer" unique_id=571920457]
+clip_contents = false
+layout_mode = 2
+size_flags_vertical = 3
+offset_transform_enabled = true
+offset_transform_position = Vector2(0, -3)
+theme_override_font_sizes/normal_font_size = 9
+theme_override_font_sizes/bold_font_size = 16
+theme_override_font_sizes/bold_italics_font_size = 16
+bbcode_enabled = true
+scroll_active = false
+shortcut_keys_enabled = false
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="PanelContainer" unique_id=657851751]
+modulate = Color(0.67481464, 0.67481464, 0.6748146, 1)
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0, 1.545)
+offset_transform_scale = Vector2(1.75, 1.75)
+text = "⛛"
+horizontal_alignment = 1

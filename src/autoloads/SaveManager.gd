@@ -1,5 +1,5 @@
 extends Node
-
+@warning_ignore_start("unused_parameter")
 func save(slot: int) -> void:
 	pass  # Phase 9
 

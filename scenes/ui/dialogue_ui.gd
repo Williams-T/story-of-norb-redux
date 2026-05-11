@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+@warning_ignore_start("unused_parameter")
+
 @onready var panel := $Panel
 @onready var portrait := $Panel/HBoxContainer/Portrait
 @onready var line_container := $Panel/HBoxContainer/LineContainer
@@ -7,6 +9,8 @@ extends CanvasLayer
 @onready var dialogue_label := $Panel/HBoxContainer/LineContainer/Dialogue
 @onready var choice_scroller := $Panel/HBoxContainer/ScrollContainer
 @onready var choice_container := $Panel/HBoxContainer/ScrollContainer/ChoiceContainer
+
+var _input_guard: bool = false
 
 func _ready() -> void:
 	EventBus.dialogue_started.connect(start_dialogue)
@@ -18,6 +22,9 @@ func _ready() -> void:
 func start_dialogue(sequence : DialogueSequence):
 	if !panel.visible:
 		panel.show()
+	_input_guard = true
+	await get_tree().process_frame
+	_input_guard = false
 
 func line_advanced(line : DialogueLine):
 	if !line_container.visible:
@@ -55,6 +62,8 @@ func end_dialogue():
 	panel.hide()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _input_guard:
+		return
 	if panel.visible and line_container.visible:
 		if event.is_action_pressed("interact"):
 			DialogueManager.advance_dialogue()

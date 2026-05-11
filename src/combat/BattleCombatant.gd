@@ -1,0 +1,98 @@
+class_name BattleCombatant
+extends RefCounted
+
+var stats: CharacterStatBlock 
+var is_player_controlled: bool
+var active_statuses: Array[Dictionary] = []
+var source_resource : Resource
+var physical_actions: Array[BattleAction] = []
+var magic_actions: Array[BattleAction] = []
+var healing_actions: Array[BattleAction] = []
+#var available_magic_actions: Array[BattleAction] = []
+var other_actions: Array[BattleAction] = []
+var inventory : Array = []
+
+func _init(char_stats : CharacterStatBlock) -> void:
+	stats = char_stats
+	if stats.current_hp == -1:
+		stats.current_hp = max_hp()
+	if stats.current_mp == -1:
+		stats.current_mp = max_mp()
+
+static func create_enemy(character : EnemyResource) -> BattleCombatant:
+	var combatant = BattleCombatant.new(character.stats)
+	combatant.is_player_controlled = false
+	combatant.source_resource = character
+	combatant.create_action_arrays(character.actions)
+	return combatant
+
+static func create_party_member(character : PartyMemberResource) -> BattleCombatant:
+	var combatant = BattleCombatant.new(character.stats)
+	combatant.is_player_controlled = true
+	combatant.source_resource = character
+	combatant.create_action_arrays(character.actions)
+	return combatant
+
+func create_action_arrays(actions : Array[BattleAction]):
+	for action : BattleAction in actions:
+		match action.damage_type:
+			action.DamageType.PHYSICAL:
+				physical_actions.append(action)
+			action.DamageType.MAGICAL:
+				magic_actions.append(action)
+			action.DamageType.HEALING:
+				healing_actions.append(action)
+			action.DamageType.NONE:
+				other_actions.append(action)
+
+func return_available_magic_actions() -> Array[BattleAction]:
+	var array : Array[BattleAction] = []
+	for action : BattleAction in magic_actions:
+		if action.mp_cost < stats.current_mp:
+			array.append(action)
+	return array
+
+func return_available_healing_actions() -> Array[BattleAction]:
+	var array : Array[BattleAction] = []
+	for action : BattleAction in healing_actions:
+		if action.mp_cost < stats.current_mp:
+			array.append(action)
+	return array
+
+func max_hp() -> int:
+	return 20 + (stats.vit * 8) + (stats.level * 5)
+func max_mp() -> int:
+	return 10 + (stats.wil * 5) + (stats.level * 3)
+func is_alive() -> bool: # reads stats.current_hp
+	return stats.current_hp > 0
+func can_act() -> bool: # checks is_alive() and whether any active status blocks_action
+	if is_alive():
+		if active_statuses.is_empty():
+			return true
+		else:
+			for i in active_statuses:
+				if i["effect"].blocks_action == true:
+					return false
+			return true
+	else:
+		return false
+func take_damage(amount: int) -> void: # subtracts from stats.current_hp, clamps to zero
+	stats.current_hp = clampi(stats.current_hp - amount, 0, max_hp())
+	print("%s HP: %s" % [stats.character_name, stats.current_hp])
+func heal(amount: int) -> void: # adds to stats.current_hp, clamps to max_hp()
+	stats.current_hp = clampi(stats.current_hp + amount, 0, max_hp())
+func apply_status(status: StatusEffect) -> bool: # appends to active_statuses, but only if not already present
+	var new = true
+	for i in active_statuses:
+		if i["effect"] == status:
+			new = false
+	if new == true:
+		active_statuses.append({"effect" = status, "turns_remaining" = status.duration_turns})
+	return new
+func tick_statuses() -> void: #decrements duration_turns on each status, removes expired ones, applies damage_per_turn for POISON
+	var statuses = active_statuses.duplicate()
+	for status in statuses:
+		status["turns_remaining"] -= 1
+		take_damage(status["effect"].damage_per_turn)
+		if status["turns_remaining"] <= 0:
+			active_statuses.erase(status)

@@ -1,0 +1,507 @@
+[gd_scene format=3 uid="uid://b2kda6hkkbhbf"]
+
+[ext_resource type="Script" uid="uid://cljmgnr4hqk48" path="res://src/combat/combat_manager.gd" id="1_g84ej"]
+[ext_resource type="Script" uid="uid://dvdjeo31b6aw" path="res://scenes/battle/battle_ui.gd" id="2_jnwmo"]
+
+[sub_resource type="Gradient" id="Gradient_qmg44"]
+colors = PackedColorArray(0.26293245, 0.26293245, 0.26293245, 1, 0.47397572, 0.47397572, 0.47397572, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_omw3i"]
+gradient = SubResource("Gradient_qmg44")
+fill = 1
+fill_from = Vector2(0.5478261, 0.5043478)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w6b63"]
+bg_color = Color(0.24313726, 0.24313726, 0.24313726, 0.13725491)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g84ej"]
+bg_color = Color(0, 0, 0, 0.24705882)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jnwmo"]
+bg_color = Color(1, 1, 1, 0.24705882)
+
+[node name="Battle" type="Control" unique_id=172547049]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_g84ej")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1625852051]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_omw3i")
+
+[node name="BattleUI" type="VBoxContainer" parent="." unique_id=1416184799]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+script = ExtResource("2_jnwmo")
+
+[node name="TopBar" type="Control" parent="BattleUI" unique_id=1894689668]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="PanelContainer" type="PanelContainer" parent="BattleUI/TopBar" unique_id=310846959]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BattleLog" type="RichTextLabel" parent="BattleUI/TopBar/PanelContainer" unique_id=1142135405]
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
+theme_override_font_sizes/bold_italics_font_size = 24
+theme_override_font_sizes/italics_font_size = 24
+theme_override_font_sizes/mono_font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_w6b63")
+bbcode_enabled = true
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EnemyRow" type="Control" parent="BattleUI" unique_id=2018250886]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="BattleUI/EnemyRow" unique_id=1152287589]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+offset_transform_pivot_ratio = Vector2(0.695, 0.5)
+
+[node name="SpacerLarge" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=1224325526]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="EnemyPosition5" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=1123938404]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyPosition4" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=1487017779]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyPosition3" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=641694808]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyPosition2" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=1406195921]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EnemyPosition1" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=2022506410]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SpacerSmall" type="Control" parent="BattleUI/EnemyRow/HBoxContainer" unique_id=1653534871]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="PartyRow" type="Control" parent="BattleUI" unique_id=525631336]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="BattleUI/PartyRow" unique_id=961158221]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+offset_transform_pivot_ratio = Vector2(0.695, 0.5)
+
+[node name="SpacerSmall" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1337349881]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="PartyPosition1" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1935366684]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PartyPosition2" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1149472313]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PartyPosition3" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1708918297]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PartyPosition4" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1751003666]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PartyPosition5" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=1475141904]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SpacerLarge" type="Control" parent="BattleUI/PartyRow/HBoxContainer" unique_id=522807043]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="Controls" type="Control" parent="BattleUI" unique_id=265003600]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.8
+
+[node name="ActionMenu" type="GridContainer" parent="BattleUI/Controls" unique_id=318707880]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="AttackButton" type="Button" parent="BattleUI/Controls/ActionMenu" unique_id=2031585457]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Attack"
+
+[node name="SpellButton" type="Button" parent="BattleUI/Controls/ActionMenu" unique_id=1969935982]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Spell"
+
+[node name="ItemButton" type="Button" parent="BattleUI/Controls/ActionMenu" unique_id=1863947414]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Item"
+
+[node name="EscapeButton" type="Button" parent="BattleUI/Controls/ActionMenu" unique_id=515094351]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Escape"
+
+[node name="AttackMenu" type="GridContainer" parent="BattleUI/Controls" unique_id=412430082]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="Button1" type="Button" parent="BattleUI/Controls/AttackMenu" unique_id=2100826771]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Attack 1"
+
+[node name="Button2" type="Button" parent="BattleUI/Controls/AttackMenu" unique_id=1038766538]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Attack 2"
+
+[node name="Button3" type="Button" parent="BattleUI/Controls/AttackMenu" unique_id=1475108480]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Attack 3"
+
+[node name="Back" type="Button" parent="BattleUI/Controls/AttackMenu" unique_id=1566514260]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Back
+"
+
+[node name="Navigation" type="HBoxContainer" parent="BattleUI/Controls/AttackMenu" unique_id=391702821]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="NavNext" type="Button" parent="BattleUI/Controls/AttackMenu/Navigation" unique_id=1071796211]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Next
+"
+
+[node name="NavBack" type="Button" parent="BattleUI/Controls/AttackMenu/Navigation" unique_id=702767971]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Back"
+
+[node name="SpellMenu" type="GridContainer" parent="BattleUI/Controls" unique_id=720988079]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="Button1" type="Button" parent="BattleUI/Controls/SpellMenu" unique_id=196314801]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Spell 1"
+
+[node name="Button2" type="Button" parent="BattleUI/Controls/SpellMenu" unique_id=1215769961]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Spell 2"
+
+[node name="Button3" type="Button" parent="BattleUI/Controls/SpellMenu" unique_id=401554443]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Spell 3"
+
+[node name="Back" type="Button" parent="BattleUI/Controls/SpellMenu" unique_id=769339207]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Back
+"
+
+[node name="Navigation" type="HBoxContainer" parent="BattleUI/Controls/SpellMenu" unique_id=501503726]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="NavNext" type="Button" parent="BattleUI/Controls/SpellMenu/Navigation" unique_id=569759108]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Next
+"
+
+[node name="NavBack" type="Button" parent="BattleUI/Controls/SpellMenu/Navigation" unique_id=2004999115]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Back"
+
+[node name="ItemMenu" type="GridContainer" parent="BattleUI/Controls" unique_id=2069088840]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="Button1" type="Button" parent="BattleUI/Controls/ItemMenu" unique_id=94560201]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Item 1"
+
+[node name="Button2" type="Button" parent="BattleUI/Controls/ItemMenu" unique_id=1360057311]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Item 2"
+
+[node name="Button3" type="Button" parent="BattleUI/Controls/ItemMenu" unique_id=751970262]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Item 3"
+
+[node name="Back" type="Button" parent="BattleUI/Controls/ItemMenu" unique_id=1878377535]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Back
+"
+
+[node name="Navigation" type="HBoxContainer" parent="BattleUI/Controls/ItemMenu" unique_id=1742595697]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="NavNext" type="Button" parent="BattleUI/Controls/ItemMenu/Navigation" unique_id=1816126287]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Next
+"
+
+[node name="NavBack" type="Button" parent="BattleUI/Controls/ItemMenu/Navigation" unique_id=1802000215]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82606, 0.82606006, 0.82606, 1)
+theme_override_colors/font_focus_color = Color(0.11119685, 0.11119684, 0.11119684, 1)
+theme_override_colors/font_hover_color = Color(0.10980392, 0.10980392, 0.10980392, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_g84ej")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jnwmo")
+text = "Back"
