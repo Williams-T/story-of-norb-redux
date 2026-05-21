@@ -1,0 +1,541 @@
+[gd_scene format=3 uid="uid://db43riu704qe1"]
+
+[ext_resource type="Script" uid="uid://b1i15d1ey2lct" path="res://scenes/ui/world_menu.gd" id="1_dkymr"]
+[ext_resource type="Texture2D" uid="uid://d0gx2xohyn3an" path="res://body.png" id="2_j56qf"]
+[ext_resource type="Texture2D" uid="uid://rajqnj3pwh7b" path="res://test_square.png" id="2_jm442"]
+[ext_resource type="Texture2D" uid="uid://ck6wdcqrlpbd6" path="res://test_square2.png" id="4_qx6q8"]
+[ext_resource type="Texture2D" uid="uid://cxpe1gurxnfce" path="res://rings.png" id="4_rsh6u"]
+[ext_resource type="Texture2D" uid="uid://06qhkbpxdkln" path="res://art/NULL.png" id="5_qx6q8"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_qx6q8"]
+font_size = 32
+
+[sub_resource type="LabelSettings" id="LabelSettings_fxsls"]
+font_size = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fxsls"]
+bg_color = Color(0.8509804, 0.34117648, 0.3882353, 0.40392157)
+
+[node name="WorldMenu" type="CanvasLayer" unique_id=52257110]
+visible = false
+script = ExtResource("1_dkymr")
+
+[node name="Panel" type="Panel" parent="." unique_id=323095612]
+texture_filter = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+
+[node name="TabContainer" type="TabContainer" parent="Panel" unique_id=1247102261]
+custom_minimum_size = Vector2(1280, 720)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/tab_separation = 8
+theme_override_font_sizes/font_size = 32
+tab_alignment = 1
+current_tab = 0
+
+[node name="Items" type="VBoxContainer" parent="Panel/TabContainer" unique_id=1780942216]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Items" unique_id=1987281301]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Items/HBoxContainer" unique_id=1575556477]
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0.032, 0.013)
+offset_transform_scale = Vector2(0.95, 0.95)
+texture = ExtResource("2_j56qf")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Control" type="Control" parent="Panel/TabContainer/Items/HBoxContainer" unique_id=1085671291]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer" unique_id=44913455]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Stats" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer" unique_id=149432706]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/Stats" unique_id=1335124084]
+layout_mode = 2
+size_flags_vertical = 1
+text = "Name"
+label_settings = SubResource("LabelSettings_qx6q8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/Stats" unique_id=982931703]
+layout_mode = 2
+size_flags_vertical = 1
+text = "str: 10
+agi: 10
+vit: 10
+int: 10
+wil: 10"
+label_settings = SubResource("LabelSettings_fxsls")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer" unique_id=177076367]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TabContainer" type="TabContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=492672491]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1428038964]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MemberPicker" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1740294426]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker" unique_id=1611888676]
+layout_mode = 2
+text = "Use On:"
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker" unique_id=544127366]
+layout_mode = 2
+
+[node name="Equipment" type="HBoxContainer" parent="Panel/TabContainer" unique_id=62404569]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="TabContainer" type="TabContainer" parent="Panel/TabContainer/Equipment" unique_id=1495645698]
+layout_mode = 2
+size_flags_horizontal = 3
+tab_alignment = 1
+current_tab = 0
+
+[node name="Main" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer" unique_id=362655565]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Main" unique_id=1341457855]
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0.06, -0.01)
+offset_transform_visual_only = false
+texture = ExtResource("2_j56qf")
+expand_mode = 3
+
+[node name="Head" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=769849053]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 0
+offset_left = 148.0
+offset_top = 39.0
+offset_right = 276.0
+offset_bottom = 167.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 5
+
+[node name="Torso" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=533972200]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 0
+offset_left = 147.0
+offset_top = 186.0
+offset_right = 275.0
+offset_bottom = 378.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="LeftHand" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=985257638]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 0
+offset_left = -14.0
+offset_top = 269.0
+offset_right = 114.0
+offset_bottom = 397.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 5
+
+[node name="LeftFoot" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1707866478]
+custom_minimum_size = Vector2(128, 96)
+layout_mode = 0
+offset_left = 15.0
+offset_top = 547.0
+offset_right = 143.0
+offset_bottom = 643.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="RightFoot" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=2126232846]
+custom_minimum_size = Vector2(128, 96)
+layout_mode = 0
+offset_left = 281.0
+offset_top = 547.0
+offset_right = 409.0
+offset_bottom = 643.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="RightHand" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1358434361]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 0
+offset_left = 321.0
+offset_top = 266.0
+offset_right = 449.0
+offset_bottom = 394.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 5
+
+[node name="Legs" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1787289124]
+custom_minimum_size = Vector2(256, 128)
+layout_mode = 0
+offset_left = 89.0
+offset_top = 381.0
+offset_right = 345.0
+offset_bottom = 541.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="Control" type="Control" parent="Panel/TabContainer/Equipment/TabContainer/Main" unique_id=1131276057]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main" unique_id=1049919716]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=1802776583]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+text = "Equipment Description"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=799941413]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fxsls")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer" unique_id=1162206763]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=1454529915]
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 2
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=911638214]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=595743977]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/ScrollContainer" unique_id=1100217020]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Rings" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer" unique_id=488615251]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Rings" unique_id=1499612075]
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0.06, 0.03)
+offset_transform_visual_only = false
+texture = ExtResource("4_rsh6u")
+expand_mode = 3
+
+[node name="Ring1" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1369508756]
+layout_mode = 0
+offset_left = 101.0
+offset_top = 41.0
+offset_right = 133.0
+offset_bottom = 73.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="Ring2" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1658408369]
+layout_mode = 0
+offset_left = 67.0
+offset_top = 34.0
+offset_right = 99.0
+offset_bottom = 66.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="Ring3" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=766426095]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 46.0
+offset_right = 65.0
+offset_bottom = 78.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="Ring4" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=321491465]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 73.0
+offset_right = 36.0
+offset_bottom = 105.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="Ring5" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=704468204]
+layout_mode = 0
+offset_left = 137.0
+offset_top = 98.0
+offset_right = 169.0
+offset_bottom = 130.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="Ring6" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=818269102]
+layout_mode = 0
+offset_left = 291.0
+offset_top = 39.0
+offset_right = 323.0
+offset_bottom = 71.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="Ring7" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=321008637]
+layout_mode = 0
+offset_left = 328.0
+offset_top = 27.0
+offset_right = 360.0
+offset_bottom = 59.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="Ring8" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1868735230]
+layout_mode = 0
+offset_left = 363.0
+offset_top = 41.0
+offset_right = 395.0
+offset_bottom = 73.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="Ring9" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1971723219]
+layout_mode = 0
+offset_left = 390.0
+offset_top = 70.0
+offset_right = 422.0
+offset_bottom = 102.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="Ring10" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1600788340]
+layout_mode = 0
+offset_left = 257.0
+offset_top = 100.0
+offset_right = 289.0
+offset_bottom = 132.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+stretch_mode = 0
+
+[node name="ToeRing1" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1903545875]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 479.0
+offset_right = 48.0
+offset_bottom = 495.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ToeRing10" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=678114879]
+layout_mode = 0
+offset_left = 376.0
+offset_top = 476.0
+offset_right = 392.0
+offset_bottom = 492.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ToeRing2" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=594800743]
+layout_mode = 0
+offset_left = 44.0
+offset_top = 491.0
+offset_right = 68.0
+offset_bottom = 515.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ToeRing9" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=20007664]
+layout_mode = 0
+offset_left = 357.0
+offset_top = 491.0
+offset_right = 381.0
+offset_bottom = 515.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ToeRing3" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1259201031]
+layout_mode = 0
+offset_left = 67.0
+offset_top = 505.0
+offset_right = 91.0
+offset_bottom = 529.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ToeRing8" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=741926572]
+layout_mode = 0
+offset_left = 332.0
+offset_top = 505.0
+offset_right = 356.0
+offset_bottom = 529.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ToeRing4" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=447472050]
+layout_mode = 0
+offset_left = 93.0
+offset_top = 516.0
+offset_right = 117.0
+offset_bottom = 540.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ToeRing7" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1727065511]
+layout_mode = 0
+offset_left = 308.0
+offset_top = 516.0
+offset_right = 332.0
+offset_bottom = 540.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ToeRing5" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=206830182]
+layout_mode = 0
+offset_left = 125.0
+offset_top = 513.0
+offset_right = 157.0
+offset_bottom = 545.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ToeRing6" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=835823255]
+layout_mode = 0
+offset_left = 269.0
+offset_top = 513.0
+offset_right = 301.0
+offset_bottom = 545.0
+texture_normal = ExtResource("2_jm442")
+texture_hover = ExtResource("4_qx6q8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="Control" type="Control" parent="Panel/TabContainer/Equipment/TabContainer/Rings" unique_id=111083745]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings" unique_id=1890172302]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=755918697]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+text = "Equipment Description"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=1131624095]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_fxsls")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer" unique_id=321706391]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=2140168971]
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 2
+texture = ExtResource("5_qx6q8")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=1667781844]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "Item Description"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=1702338643]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/ScrollContainer" unique_id=1642958929]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

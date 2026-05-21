@@ -16,6 +16,6 @@ wil = 1
 [resource]
 script = ExtResource("3_wrvco")
 enemy_name = "Punky"
-stats = SubResource("Resource_0l83s")
 experience_reward = 10
 gold_reward = 10
+stats = SubResource("Resource_0l83s")

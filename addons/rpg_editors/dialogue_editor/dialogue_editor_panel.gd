@@ -208,7 +208,7 @@ func refresh_choice_details(line_index : int, choice_index : int):
 		sets_flag_field.text = "%s" % current_choice.sets_flag
 	if current_choice.sets_value != null:
 		sets_value_field.text = "%s" % current_choice.sets_value
-	if current_choice.next_lines != null:
+	if current_choice.next_sequence_id != null:
 		next_sequence_id_field.text = "%s" % current_choice.next_sequence_id
 	required_flag_field.text_changed.connect(update_choice.bind(line_index, choice_index, "required_flag"))
 	required_value_field.text_changed.connect(update_choice.bind(line_index, choice_index, "required_value"))

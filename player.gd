@@ -14,6 +14,8 @@ var _last_direction := Vector2.DOWN
 func _ready() -> void:
 	sprite.play("idle_down")
 	print(party_member.stats.current_hp)
+	EventBus.world_menu_closed.connect(func():set_physics_process(true))
+	EventBus.world_menu_opened.connect(func():set_physics_process(false))
 	
 
 func _unhandled_input(event: InputEvent) -> void:

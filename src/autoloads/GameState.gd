@@ -18,9 +18,13 @@ var save_slot: int = 0
 var pending_warp_id : String = "test_town_entrance"
 
 var pending_enemy_group : EnemyGroupResource = null
+var in_combat := false
 
 func _ready() -> void:
-	party.append(load("res://data/characters/norb_party_member.tres"))
+	EventBus.combat_started.connect(func(enemy_group):in_combat=true)
+	EventBus.combat_ended.connect(func(result):in_combat=false)
+	party.append(load("res://data/characters/norb_party_member.tres").duplicate(true))
+	inventory.append_array([load("res://data/items/elixer.tres"), load("res://data/items/magicrestore.tres"), load("res://data/items/potion.tres"), load("res://data/items/sword.tres")])
 
 func set_flag(flag_name: String, value: Variant) -> void:
 	flags[flag_name] = value
@@ -45,10 +49,13 @@ func spend_gold(amount: int) -> bool:
 func inventory_drop(drop_table : Array[ItemResource]):
 	if drop_table.is_empty():
 		return
-	var dropped_items = randi_range(0, drop_table.size())
+	var dropped_items = randi_range(0, drop_table.size()-1)
 	for i in dropped_items:
-		pending_inventory.append(drop_table[i])
-		EventBus.item_dropped.emit(i)
+		give_item(drop_table[i])
+
+func give_item(item : ItemResource):
+	pending_inventory.append(item)
+	EventBus.item_dropped.emit(item)
 
 func inventory_transfer():
 	for i in pending_inventory:

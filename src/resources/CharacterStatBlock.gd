@@ -17,3 +17,8 @@ extends Resource
 @export_group("Runtime State")
 @export var current_hp : int = -1
 @export var current_mp : int = -1
+
+func max_hp() -> int:
+	return 20 + (vit * 8) + (level * 5)
+func max_mp() -> int:
+	return 10 + (wil * 5) + (level * 3)

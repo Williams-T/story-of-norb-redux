@@ -48,6 +48,7 @@ func _ready() -> void:
 	EventBus.all_targets.connect(func(): all_targets = true)
 	EventBus.combatant_status_applied.connect(func(combatant : BattleCombatant, status : StatusEffect): (positions[combatant].get_child(1) as Indicator).change_text(status.status_name))
 	EventBus.combatant_status_expired.connect(func(combatant : BattleCombatant, status : StatusEffect): (positions[combatant].get_child(1) as Indicator).change_text(""))
+	EventBus.combat_action_resolving.connect(_on_resolve_started)
 	action_menu.get_child(0).grab_focus()
 	attack_button.pressed.connect(_on_action_menu_pressed.bind('attack'))
 	spell_button.pressed.connect(_on_action_menu_pressed.bind('spell'))
@@ -129,8 +130,8 @@ func set_positions(combatants : Array[BattleCombatant]):
 		positions[i].get_child(1).hide()
 		indicator.hp_bar.min_value = 0
 		indicator.mp_bar.min_value = 0
-		indicator.hp_bar.max_value = i.max_hp()
-		indicator.mp_bar.max_value = i.max_mp()
+		indicator.hp_bar.max_value = i.stats.max_hp()
+		indicator.mp_bar.max_value = i.stats.max_mp()
 		indicator.hp_bar.value = i.stats.current_hp
 		indicator.mp_bar.value = i.stats.current_mp
 		#indicator.text = "v"
@@ -184,6 +185,7 @@ func paginate(action_array : Array, base_node : GridContainer, page : int = 0):
 		var action_index = (page * 3)+i
 		var button : Button = buttons[i]
 		if action_index <= action_array.size() - 1:
+			button.disabled = false
 			if action_array[action_index] is BattleAction:
 				button.text = action_array[action_index].action_name
 			elif action_array[action_index] is ItemResource:
@@ -195,15 +197,17 @@ func paginate(action_array : Array, base_node : GridContainer, page : int = 0):
 				nav_next.pressed.disconnect(paginate)
 			nav_next.pressed.connect(paginate.bind(action_array, base_node, page + 1))
 		else:
-			buttons[i].disabled = true
+			button.disabled = true
+			button.text = ""
 			if nav_next.pressed.is_connected(paginate):
 				nav_next.pressed.disconnect(paginate)
 			nav_next.pressed.connect(paginate.bind(action_array, base_node, 0))
+
 func send_action(action):
 	if action is BattleAction:
 		EventBus.player_action_selected.emit(action)
 	elif action is ItemResource:
-		pass
+		EventBus.player_item_selected.emit(action)
 
 func target_select(valid_targets : Array[BattleCombatant]):
 	current_menu.hide()
@@ -222,6 +226,12 @@ func _on_resolve_started():
 		EventBus.combat_animations_finished.emit()
 
 func _on_combatant_damaged(combatant : BattleCombatant, amount : int):
+	var arrow = positions[combatant].get_child(1)
+	arrow.show()
+	if combatant.is_player_controlled:
+		arrow.change_color(Color.YELLOW)
+	else:
+		arrow.change_color(Color.RED)
 	var sprite : AnimatedSprite2D = positions[combatant].get_child(0)
 	if sprite.sprite_frames.has_animation("hurt"):
 		sprite.play("hurt")
@@ -273,7 +283,6 @@ func _on_turn_started(combatant : BattleCombatant):
 	var arrow = positions[combatant].get_child(1)
 	arrow.show()
 	arrow.change_color(Color.YELLOW)
-	pass # put arrow as child and control show/hide from this method
 
 func clear_arrows():
 	for i : BattleCombatant in enemies + party:
@@ -300,11 +309,20 @@ func populate_item_menu():
 	action_menu.hide()
 	item_menu.show()
 	current_menu = item_menu
-	paginate(_current_combatant.inventory, item_menu, _current_page)
+	if _current_combatant.source_resource.is_player:
+		var usable = GameState.inventory.filter(
+			func(item): return item.item_type == ItemResource.ItemType.CONSUMABLE)
+		paginate(usable, item_menu, _current_page)
+		#paginate(GameState.inventory, item_menu, _current_page)
+	else:
+		var usable = _current_combatant.source_resource.inventory.filter(
+			func(item): return item.item_type == ItemResource.ItemType.CONSUMABLE)
+		paginate(usable, item_menu, _current_page)
+		#paginate(_current_combatant.source_resource.inventory, item_menu, _current_page)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if selecting_targets and !all_targets:
-		if event.is_action_pressed("combat_confirm") or target_array.size() == 1:
+		if target_array.size() == 1 or event.is_action_pressed("combat_confirm"):
 			var targets :Array[BattleCombatant] = []
 			targets.append(target_array[target_index])
 			EventBus.player_targets_selected.emit(targets)

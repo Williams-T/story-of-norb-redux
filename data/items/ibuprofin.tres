@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://bnokt8m3a3wdo"]
+
+[ext_resource type="Texture2D" uid="uid://06qhkbpxdkln" path="res://art/NULL.png" id="1_824u2"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="2_uxs40"]
+
+[resource]
+script = ExtResource("2_uxs40")
+item_name = "Ibuprofin"
+description = "Helps with pain"
+icon = ExtResource("1_824u2")
+value = 10.0
+max_stack = 0.0
+effect_type = 1
+effect_value = 10.0

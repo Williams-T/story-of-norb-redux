@@ -54,6 +54,7 @@ func _ready() -> void:
 	add_child(drop_dialog)
 	new_button.pressed.connect(reset_form)
 	save_button.pressed.connect(save_form)
+	behavior_options.clear()
 	behavior_options.add_item("RANDOM")
 	behavior_options.add_item("AGGRESSIVE")
 	behavior_options.add_item("DEFENSIVE")
@@ -81,7 +82,6 @@ func refresh_files():
 		file_list.remove_child(child)
 		child.queue_free()
 	var files = DirAccess.get_files_at("res://data/enemies/")
-	print(files)
 	for file : String in files:
 		var loaded = load("res://data/enemies/%s" % file)
 		if loaded is EnemyResource:

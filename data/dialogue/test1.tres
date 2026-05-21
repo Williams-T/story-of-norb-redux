@@ -19,12 +19,20 @@ script = ExtResource("2_8opf0")
 label = "Howdy"
 required_value = null
 sets_value = null
+next_sequence_id = "test_dialogue"
+
+[sub_resource type="Resource" id="Resource_ffngp"]
+script = ExtResource("1_ffngp")
+speaker_name = "NPC"
+text = "He said doody lmfao"
+metadata/_custom_type_script = "uid://dtjevhceewfsc"
 
 [sub_resource type="Resource" id="Resource_ia7by"]
 script = ExtResource("2_8opf0")
 label = "Doody"
 required_value = null
 sets_value = null
+next_lines = Array[ExtResource("1_ffngp")]([SubResource("Resource_ffngp")])
 
 [sub_resource type="Resource" id="Resource_106lg"]
 script = ExtResource("1_ffngp")

@@ -66,8 +66,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if panel.visible and line_container.visible:
 		if event.is_action_pressed("interact"):
-			DialogueManager.advance_dialogue()
+			#DialogueManager.advance_dialogue()
+			EventBus.advance_dialogue_requested.emit()
 			get_viewport().set_input_as_handled()
 
 func choice_selected(choice : DialogueChoice):
-	DialogueManager.choice_selected(choice)
+	#DialogueManager.choice_selected(choice)
+	EventBus.dialogue_choice_selected.emit(choice)

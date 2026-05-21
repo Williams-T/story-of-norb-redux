@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://bsgr2xqivp1gn"]
+
+[ext_resource type="Texture2D" uid="uid://06qhkbpxdkln" path="res://art/NULL.png" id="1_lpgsc"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="1_sxjy2"]
+
+[resource]
+script = ExtResource("1_sxjy2")
+item_name = "Sword"
+icon = ExtResource("1_lpgsc")
+item_type = 1
+equip_slot = 4
+two_handed = true
+stat_modifiers = {
+"agi": 25,
+"str": 25.0
+}
+metadata/_custom_type_script = "uid://c5rosmfabv7fs"

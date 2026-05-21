@@ -27,6 +27,8 @@ func _ready() -> void:
 	EventBus.dialogue_started.connect(_on_dialogue_started)
 	EventBus.dialogue_finished.connect(_on_dialogue_finished)
 	EventBus.interact_pressed.connect(try_interact)
+	EventBus.world_menu_closed.connect(func():set_physics_process(true))
+	EventBus.world_menu_opened.connect(func():set_physics_process(false))
 	_wander_origin = position
 	orient_facing(Vector2.DOWN)
 	if wander_radius > 0.0:
@@ -82,7 +84,6 @@ func orient_facing(dir : Vector2):
 
 func wander():
 	_wandering = true
-	randomize()
 	var t = randf() * TAU # Random angle
 	var r = sqrt(randf()) * wander_radius # Uniform radius
 	_target_position = _wander_origin + Vector2(r * cos(t), r * sin(t))

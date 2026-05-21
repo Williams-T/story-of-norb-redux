@@ -10,6 +10,7 @@ var _awaiting_choices : bool = false
 
 func _ready() -> void:
 	EventBus.dialogue_choice_selected.connect(choice_selected)
+	EventBus.advance_dialogue_requested.connect(advance_dialogue)
 	_dialogue_ui = DIALOGUE_UI_SCENE.instantiate()
 	get_tree().root.add_child.call_deferred(_dialogue_ui)
 

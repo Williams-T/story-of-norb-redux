@@ -23,6 +23,7 @@ signal combatant_died(combatant: BattleCombatant) # UI plays death state, Combat
 signal player_turn_started()
 signal player_action_selected(action: BattleAction)
 signal player_targets_selected(targets: Array[BattleCombatant])
+signal player_item_selected(item : ItemResource)
 signal player_flee_attempted()
 signal target_select_requested(targets: Array[BattleCombatant])
 signal all_targets()
@@ -30,6 +31,7 @@ signal all_targets()
 
 # Dialogue signals
 signal dialogue_started(sequence: DialogueSequence)
+signal advance_dialogue_requested()
 signal dialogue_line_advanced(line : DialogueLine)
 signal dialogue_choices_available(choices: Array[DialogueChoice])
 signal dialogue_choice_selected(choice : DialogueChoice)
@@ -54,3 +56,5 @@ signal sfx_requested(sfx_path: String)
 
 # Manipulation signals
 signal interact_pressed
+signal world_menu_opened
+signal world_menu_closed

@@ -23,7 +23,7 @@ func _do_scene_change(scene_path: String) -> void:
 func start_combat(enemy_group: Resource) -> void:
 	# Store the return scene so we can come back after combat
 	GameState.current_map_path = get_tree().current_scene.scene_file_path
-	#EventBus.combat_started.emit(enemy_group)
+	EventBus.combat_started.emit(enemy_group)
 	GameState.pending_enemy_group = enemy_group
 	travel_to("res://scenes/battle/Battle.tscn", "", "flash")
 

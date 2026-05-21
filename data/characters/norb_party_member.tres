@@ -6,10 +6,12 @@
 [ext_resource type="Script" uid="uid://boebfwpkxm8x0" path="res://src/resources/PartyMemberResource.gd" id="2_uvu74"]
 [ext_resource type="Resource" uid="uid://c8hha40tvgj05" path="res://data/actions/slime_tackle.tres" id="3_akcyc"]
 [ext_resource type="Resource" uid="uid://b4u28x1ywgdd7" path="res://data/characters/norb_stats.tres" id="4_q8bbx"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="5_akcyc"]
 
 [resource]
 script = ExtResource("2_uvu74")
+battle_sprite_frames = ExtResource("1_q8bbx")
 stats = ExtResource("4_q8bbx")
 actions = Array[ExtResource("1_07d42")]([ExtResource("2_8sk5o"), ExtResource("3_akcyc")])
-battle_sprite_frames = ExtResource("1_q8bbx")
+is_player = true
 metadata/_custom_type_script = "uid://boebfwpkxm8x0"

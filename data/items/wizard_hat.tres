@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://1ux326n4vr5t"]
+
+[ext_resource type="Texture2D" uid="uid://06qhkbpxdkln" path="res://art/NULL.png" id="1_thutd"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="2_tyrc6"]
+
+[resource]
+script = ExtResource("2_tyrc6")
+item_name = "Wizard Hat"
+description = "Clever hat for clever boys"
+icon = ExtResource("1_thutd")
+item_type = 1
+value = 100
+stackable = false
+max_stack = 0
+equip_slot = 1
+stat_modifiers = {
+"intelligence": 50.0,
+"vit": 30.0,
+"wil": 20.0
+}

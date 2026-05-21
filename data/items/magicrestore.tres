@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://hn8eopjip8rc"]
+
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="1_fhab3"]
+
+[resource]
+script = ExtResource("1_fhab3")
+item_name = "Magic Pills"
+value = 10
+effect_type = 2
+effect_value = 20
+metadata/_custom_type_script = "uid://c5rosmfabv7fs"

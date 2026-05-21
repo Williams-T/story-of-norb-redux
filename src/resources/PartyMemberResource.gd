@@ -1,12 +1,6 @@
-# Stretch goal: this resource is intended to eventually extend
-# a shared EntityResource base alongside EnemyResource.
-# Keep shared fields structurally parallel to EnemyResource.
-
 class_name PartyMemberResource
 extends EntityResource
 
-@export var stats: CharacterStatBlock
-@export var actions: Array[BattleAction] = []
 @export var battle_sprite_frames: SpriteFrames
 @export var portrait: Texture2D
 @export var pending_xp : float = 0.0
@@ -37,7 +31,7 @@ func process_progression():
 	pending_xp = 0
 	while xp_gauge >= xp_till_level_up:
 		xp_gauge -= xp_till_level_up
-		xp_till_level_up = int(xp_till_level_up * 1.2)
+		xp_till_level_up = xp_till_level_up * 1.2
 		stats.level += 1
 		EventBus.level_increased.emit(self, stats.level)
 		print("%s's level raised to %s" % [stats.character_name, stats.level])

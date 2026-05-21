@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://nd6rf64wt7mg"]
+
+[ext_resource type="Texture2D" uid="uid://06qhkbpxdkln" path="res://art/NULL.png" id="1_8ljck"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="2_wei5g"]
+
+[resource]
+script = ExtResource("2_wei5g")
+item_name = "Golden Trinket"
+description = "A golden trinket"
+icon = ExtResource("1_8ljck")
+item_type = 2
+value = 10
+stackable = false
+max_stack = 0
+sets_flag = "trinketed"
