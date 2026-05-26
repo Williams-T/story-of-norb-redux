@@ -15,6 +15,8 @@ extends EntityResource
 	"wil" : [0.0, 100.0],
 }
 
+@export var previous_location = null
+
 func accumulate(stat_name : String, amount : float):
 	stat_levels[stat_name][0] += amount
 	pending_xp += amount * 0.5

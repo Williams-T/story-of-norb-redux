@@ -12,10 +12,11 @@ const AGI_SPEED_MODIFIER := 0.003
 var _last_direction := Vector2.DOWN
 
 func _ready() -> void:
+	#GameState.previous_player_location = global_position
 	sprite.play("idle_down")
 	print(party_member.stats.current_hp)
-	EventBus.world_menu_closed.connect(func():set_physics_process(true))
-	EventBus.world_menu_opened.connect(func():set_physics_process(false))
+	EventBus.player_movement_unlocked.connect(func():set_physics_process(true))
+	EventBus.player_movement_locked.connect(func():set_physics_process(false))
 	
 
 func _unhandled_input(event: InputEvent) -> void:

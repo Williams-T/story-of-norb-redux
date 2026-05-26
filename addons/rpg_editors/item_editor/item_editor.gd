@@ -1,42 +1,42 @@
 @tool
 extends PanelContainer
 
-@onready var tab_container : TabContainer = $VBoxContainer/HBoxContainer/TabContainer
-@onready var file_list : VBoxContainer = $VBoxContainer/MainPanel/ScrollContainer/FileList
-@onready var new_button : Button = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3/NewButton
-@onready var save_button : Button = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3/SaveButton
-@onready var item_fields : GridContainer = $VBoxContainer/MainPanel/FieldsContainer/ItemFields
-@onready var consumable_fields : GridContainer = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields
-@onready var equipment_fields : GridContainer = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields
-@onready var key_item_fields : GridContainer = $VBoxContainer/MainPanel/FieldsContainer/KeyItemFields
+@onready var tab_container : TabContainer = $ScrollContainer/VBoxContainer/HBoxContainer/TabContainer
+@onready var file_list : VBoxContainer = $ScrollContainer/VBoxContainer/MainPanel/ScrollContainer/FileList
+@onready var new_button : Button = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3/NewButton
+@onready var save_button : Button = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3/SaveButton
+@onready var item_fields : GridContainer = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields
+@onready var consumable_fields : GridContainer = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields
+@onready var equipment_fields : GridContainer = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields
+@onready var key_item_fields : GridContainer = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/KeyItemFields
 
 # Item Fields (default)
-@onready var name_field : LineEdit = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/NameLine
-@onready var description_field : LineEdit = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/DescriptionLine
-@onready var icon_button : TextureButton = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2/IconButton
-@onready var value_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/ValueSpin
-@onready var stackable_field : CheckButton = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer/StackableCheck
-@onready var max_stack_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/MaxStackSpin
+@onready var name_field : LineEdit = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/NameLine
+@onready var description_field : LineEdit = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/DescriptionLine
+@onready var icon_button : TextureButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2/IconButton
+@onready var value_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/ValueSpin
+@onready var stackable_field : CheckButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer/StackableCheck
+@onready var max_stack_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/MaxStackSpin
 
 # Consumable Fields
-@onready var effect_type_field : OptionButton = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/EffectTypeOption
-@onready var effect_value_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/EffectValueSpin
-@onready var custom_type_field : OptionButton = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomTypesOption
-@onready var custom_value_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomValuesSpin
-@onready var add_custom_button : Button = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/AddCustomButton
-@onready var custom_container : GridContainer = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer
+@onready var effect_type_field : OptionButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/EffectTypeOption
+@onready var effect_value_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/EffectValueSpin
+@onready var custom_type_field : OptionButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomTypesOption
+@onready var custom_value_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomValuesSpin
+@onready var add_custom_button : Button = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/AddCustomButton
+@onready var custom_container : GridContainer = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer
 
 # Equipment Fields
-@onready var equip_slot_field : OptionButton = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/EquipSlotOption
-@onready var two_handed_field : CheckButton = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/HBoxContainer/TwoHandedCheck
-@onready var str_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer/StrSpin
-@onready var agi_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer/AgiSpin
-@onready var vit_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer/VitSpin
-@onready var int_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer/IntSpin
-@onready var wil_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer/WilSpin
+@onready var equip_slot_field : OptionButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/EquipSlotOption
+@onready var two_handed_field : CheckButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/HBoxContainer/TwoHandedCheck
+@onready var str_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer/StrSpin
+@onready var agi_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer/AgiSpin
+@onready var vit_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer/VitSpin
+@onready var int_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer/IntSpin
+@onready var wil_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer/WilSpin
 
 # Key Item Fields
-@onready var sets_flag_field : LineEdit = $VBoxContainer/MainPanel/FieldsContainer/KeyItemFields/LineEdit
+@onready var sets_flag_field : LineEdit = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/KeyItemFields/LineEdit
 
 var current_item : ItemResource = ItemResource.new()
 var current_path: String = ""

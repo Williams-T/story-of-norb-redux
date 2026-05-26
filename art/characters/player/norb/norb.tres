@@ -26,7 +26,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("2_bu7u5")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle_down",
 "speed": 4.0
 }, {
@@ -37,7 +37,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("4_b8qkc")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle_left",
 "speed": 4.0
 }, {
@@ -48,7 +48,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("6_nexln")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle_right",
 "speed": 4.0
 }, {
@@ -59,7 +59,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("8_kp2ja")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle_up",
 "speed": 4.0
 }, {
@@ -70,7 +70,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("10_im223")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk_down",
 "speed": 4.0
 }, {
@@ -81,7 +81,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("12_npoj3")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk_left",
 "speed": 4.0
 }, {
@@ -92,7 +92,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("14_nhdjn")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk_right",
 "speed": 4.0
 }, {
@@ -103,7 +103,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("16_olym5")
 }],
-"loop": true,
+"loop": 1,
 "name": &"walk_up",
 "speed": 4.0
 }]

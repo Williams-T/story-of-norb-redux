@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://byg8jybyo4tkq"]
+
+[ext_resource type="Script" uid="uid://drtxpo1ba0lwu" path="res://src/resources/StatusEffect.gd" id="1_5p3lf"]
+
+[resource]
+script = ExtResource("1_5p3lf")
+status_name = "Lethargic"
+status_type = 3
+duration_turns = 2
+blocks_action = true
+metadata/_custom_type_script = "uid://drtxpo1ba0lwu"

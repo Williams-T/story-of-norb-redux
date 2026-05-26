@@ -10,16 +10,22 @@
 [sub_resource type="TileSet" id="TileSet_4jb3m"]
 tile_size = Vector2i(64, 64)
 
+[sub_resource type="Resource" id="Resource_pvfq6"]
+script = ExtResource("4_d5ghx")
+target_scene = "res://scenes/dungeons/TestDungeon.tscn"
+target_warp_id = "dungeon_entrance"
+metadata/_custom_type_script = "uid://drag68vt7goeq"
+
 [sub_resource type="Resource" id="Resource_awhr7"]
 script = ExtResource("4_d5ghx")
-target_scene = "res://scenes/towns/TestTown.tscn"
-target_warp_id = "test_town_entrance"
+target_scene = "res://scenes/towns/Hogsforth.tscn"
+target_warp_id = "NorthExit"
 metadata/_custom_type_script = "uid://drag68vt7goeq"
 
 [sub_resource type="Resource" id="Resource_xjdhy"]
 script = ExtResource("4_d5ghx")
-target_scene = "res://scenes/dungeons/TestDungeon.tscn"
-target_warp_id = "dungeon_entrance"
+target_scene = "res://scenes/towns/Hogsforth.tscn"
+target_warp_id = "EastExit"
 metadata/_custom_type_script = "uid://drag68vt7goeq"
 
 [node name="Overworld" type="Node2D" unique_id=1952397873]
@@ -39,7 +45,15 @@ tile_set = ExtResource("2_dvncc")
 
 [node name="Warps" type="Node2D" parent="." unique_id=1008206038]
 
-[node name="Town" parent="Warps" unique_id=1105175947 instance=ExtResource("3_pvfq6")]
+[node name="InteractPoint" parent="Warps" unique_id=1105175947 instance=ExtResource("3_pvfq6")]
+modulate = Color(1, 0, 0, 1)
+position = Vector2(736, 229)
+warp_id = "overworld_interact"
+warp_definition = SubResource("Resource_pvfq6")
+require_interact = true
+
+[node name="Town" parent="Warps" unique_id=975121074 instance=ExtResource("3_pvfq6")]
+modulate = Color(0.15686275, 1, 1, 1)
 position = Vector2(471, 235)
 warp_id = "overworld_from_town"
 warp_definition = SubResource("Resource_awhr7")
@@ -56,7 +70,7 @@ y_sort_enabled = true
 
 [node name="Entities" type="Node2D" parent="YSort" unique_id=561890850]
 
-[node name="Player" parent="YSort" unique_id=1122482979 instance=ExtResource("3_xjdhy")]
+[node name="Player" parent="YSort" unique_id=1122482979 groups=["party"] instance=ExtResource("3_xjdhy")]
 
 [node name="MapController" type="Node" parent="." unique_id=690899599]
 script = ExtResource("4_pvfq6")

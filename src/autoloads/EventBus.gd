@@ -2,6 +2,10 @@ extends Node
 
 @warning_ignore_start("unused_signal")
 
+# Utility Signals
+signal player_movement_locked()
+signal player_movement_unlocked()
+
 # Scene/world signals
 signal scene_transition_requested(scene_path: String, transition: String)
 signal scene_transition_finished()

@@ -1,15 +1,17 @@
 StoryOfNorbRedux
 
 ROOT:
-    body.png
-    codebase_export.txt
-    debug_tileset.tres
-    ground_tiles.tres
-    README.md
-    rings.png
-    test_square.png
-    test_square2.png
-    wall_tiles.tres
+	body.png
+	codebase_export.txt
+	debug_enemy_normal.png
+	debug_partymember_normal.png
+	debug_tileset.tres
+	ground_tiles.tres
+	README.md
+	rings.png
+	test_square.png
+	test_square2.png
+	wall_tiles.tres
 _______________
 (indicator.gd):
 extends Control
@@ -80,10 +82,11 @@ const AGI_SPEED_MODIFIER := 0.003
 var _last_direction := Vector2.DOWN
 
 func _ready() -> void:
+	#GameState.previous_player_location = global_position
 	sprite.play("idle_down")
 	print(party_member.stats.current_hp)
-	EventBus.world_menu_closed.connect(func():set_physics_process(true))
-	EventBus.world_menu_opened.connect(func():set_physics_process(false))
+	EventBus.player_movement_unlocked.connect(func():set_physics_process(true))
+	EventBus.player_movement_locked.connect(func():set_physics_process(false))
 	
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -165,7 +168,7 @@ config_version=5
 [application]
 
 config/name="StoryOfNorbRedux"
-run/main_scene="uid://bmqoe0sya3knp"
+run/main_scene="uid://dk6ijwufw6ny0"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [autoload]
@@ -191,6 +194,7 @@ enabled=PackedStringArray("res://addons/rpg_editors/plugin.cfg")
 [global_group]
 
 player=""
+party=""
 
 [importer_defaults]
 
@@ -1831,42 +1835,42 @@ _______________
       @tool
       extends PanelContainer
       
-      @onready var tab_container : TabContainer = $VBoxContainer/HBoxContainer/TabContainer
-      @onready var file_list : VBoxContainer = $VBoxContainer/MainPanel/ScrollContainer/FileList
-      @onready var new_button : Button = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3/NewButton
-      @onready var save_button : Button = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3/SaveButton
-      @onready var item_fields : GridContainer = $VBoxContainer/MainPanel/FieldsContainer/ItemFields
-      @onready var consumable_fields : GridContainer = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields
-      @onready var equipment_fields : GridContainer = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields
-      @onready var key_item_fields : GridContainer = $VBoxContainer/MainPanel/FieldsContainer/KeyItemFields
+      @onready var tab_container : TabContainer = $ScrollContainer/VBoxContainer/HBoxContainer/TabContainer
+      @onready var file_list : VBoxContainer = $ScrollContainer/VBoxContainer/MainPanel/ScrollContainer/FileList
+      @onready var new_button : Button = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3/NewButton
+      @onready var save_button : Button = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3/SaveButton
+      @onready var item_fields : GridContainer = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields
+      @onready var consumable_fields : GridContainer = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields
+      @onready var equipment_fields : GridContainer = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields
+      @onready var key_item_fields : GridContainer = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/KeyItemFields
       
       # Item Fields (default)
-      @onready var name_field : LineEdit = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/NameLine
-      @onready var description_field : LineEdit = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/DescriptionLine
-      @onready var icon_button : TextureButton = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2/IconButton
-      @onready var value_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/ValueSpin
-      @onready var stackable_field : CheckButton = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer/StackableCheck
-      @onready var max_stack_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/ItemFields/MaxStackSpin
+      @onready var name_field : LineEdit = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/NameLine
+      @onready var description_field : LineEdit = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/DescriptionLine
+      @onready var icon_button : TextureButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2/IconButton
+      @onready var value_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/ValueSpin
+      @onready var stackable_field : CheckButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer/StackableCheck
+      @onready var max_stack_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/MaxStackSpin
       
       # Consumable Fields
-      @onready var effect_type_field : OptionButton = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/EffectTypeOption
-      @onready var effect_value_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/EffectValueSpin
-      @onready var custom_type_field : OptionButton = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomTypesOption
-      @onready var custom_value_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomValuesSpin
-      @onready var add_custom_button : Button = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/AddCustomButton
-      @onready var custom_container : GridContainer = $VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer
+      @onready var effect_type_field : OptionButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/EffectTypeOption
+      @onready var effect_value_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/EffectValueSpin
+      @onready var custom_type_field : OptionButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomTypesOption
+      @onready var custom_value_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomValuesSpin
+      @onready var add_custom_button : Button = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/AddCustomButton
+      @onready var custom_container : GridContainer = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer
       
       # Equipment Fields
-      @onready var equip_slot_field : OptionButton = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/EquipSlotOption
-      @onready var two_handed_field : CheckButton = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/HBoxContainer/TwoHandedCheck
-      @onready var str_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer/StrSpin
-      @onready var agi_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer/AgiSpin
-      @onready var vit_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer/VitSpin
-      @onready var int_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer/IntSpin
-      @onready var wil_field : SpinBox = $VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer/WilSpin
+      @onready var equip_slot_field : OptionButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/EquipSlotOption
+      @onready var two_handed_field : CheckButton = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/HBoxContainer/TwoHandedCheck
+      @onready var str_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer/StrSpin
+      @onready var agi_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer/AgiSpin
+      @onready var vit_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer/VitSpin
+      @onready var int_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer/IntSpin
+      @onready var wil_field : SpinBox = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer/WilSpin
       
       # Key Item Fields
-      @onready var sets_flag_field : LineEdit = $VBoxContainer/MainPanel/FieldsContainer/KeyItemFields/LineEdit
+      @onready var sets_flag_field : LineEdit = $ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/KeyItemFields/LineEdit
       
       var current_item : ItemResource = ItemResource.new()
       var current_path: String = ""
@@ -2099,6 +2103,7 @@ _______________
       font_size = 14
       
       [node name="ItemEditor" type="PanelContainer" unique_id=968321096]
+      custom_maximum_size = Vector2(-1, 400)
       anchors_preset = 15
       anchor_right = 1.0
       anchor_bottom = 1.0
@@ -2106,130 +2111,135 @@ _______________
       grow_vertical = 2
       script = ExtResource("1_cf5fc")
       
-      [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2020964752]
+      [node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=650310304]
       layout_mode = 2
       
-      [node name="Label" type="Label" parent="VBoxContainer" unique_id=443878041]
+      [node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=2020964752]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      
+      [node name="Label" type="Label" parent="ScrollContainer/VBoxContainer" unique_id=443878041]
       layout_mode = 2
       text = "Item Editor"
       horizontal_alignment = 1
       
-      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=950758478]
+      [node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer" unique_id=950758478]
       layout_mode = 2
       
-      [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer" unique_id=1868865191]
+      [node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/HBoxContainer" unique_id=1868865191]
       layout_mode = 2
       size_flags_horizontal = 3
       text = "Item Type:"
       horizontal_alignment = 2
       
-      [node name="TabContainer" type="TabContainer" parent="VBoxContainer/HBoxContainer" unique_id=2053859487]
+      [node name="TabContainer" type="TabContainer" parent="ScrollContainer/VBoxContainer/HBoxContainer" unique_id=2053859487]
       layout_mode = 2
       size_flags_horizontal = 3
       deselect_enabled = true
       
-      [node name="Consumable" type="Control" parent="VBoxContainer/HBoxContainer/TabContainer" unique_id=20032366]
+      [node name="Consumable" type="Control" parent="ScrollContainer/VBoxContainer/HBoxContainer/TabContainer" unique_id=20032366]
       visible = false
       layout_mode = 2
       metadata/_tab_index = 0
       
-      [node name="Equipment" type="Control" parent="VBoxContainer/HBoxContainer/TabContainer" unique_id=2050008750]
+      [node name="Equipment" type="Control" parent="ScrollContainer/VBoxContainer/HBoxContainer/TabContainer" unique_id=2050008750]
       visible = false
       layout_mode = 2
       metadata/_tab_index = 1
       
-      [node name="Key Item" type="Control" parent="VBoxContainer/HBoxContainer/TabContainer" unique_id=259309734]
+      [node name="Key Item" type="Control" parent="ScrollContainer/VBoxContainer/HBoxContainer/TabContainer" unique_id=259309734]
       visible = false
       layout_mode = 2
       metadata/_tab_index = 2
       
-      [node name="MainPanel" type="HBoxContainer" parent="VBoxContainer" unique_id=38747990]
+      [node name="MainPanel" type="HBoxContainer" parent="ScrollContainer/VBoxContainer" unique_id=38747990]
       layout_mode = 2
       size_flags_vertical = 3
       
-      [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/MainPanel" unique_id=655769271]
+      [node name="ScrollContainer" type="ScrollContainer" parent="ScrollContainer/VBoxContainer/MainPanel" unique_id=655769271]
       layout_mode = 2
       size_flags_horizontal = 3
       size_flags_stretch_ratio = 0.5
       
-      [node name="FileList" type="VBoxContainer" parent="VBoxContainer/MainPanel/ScrollContainer" unique_id=1582413694]
+      [node name="FileList" type="VBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/ScrollContainer" unique_id=1582413694]
       layout_mode = 2
       size_flags_horizontal = 3
       size_flags_vertical = 3
       
-      [node name="FieldsContainer" type="VBoxContainer" parent="VBoxContainer/MainPanel" unique_id=1898622153]
+      [node name="FieldsContainer" type="VBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel" unique_id=1898622153]
       layout_mode = 2
       size_flags_horizontal = 3
       alignment = 1
       
-      [node name="ItemFields" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer" unique_id=354114218]
+      [node name="ItemFields" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer" unique_id=354114218]
       layout_mode = 2
       theme_override_constants/h_separation = 64
       columns = 2
       
-      [node name="Control" type="Control" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=911747892]
+      [node name="Control" type="Control" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=911747892]
       layout_mode = 2
       
-      [node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1846446529]
+      [node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1846446529]
       layout_mode = 2
       offset_transform_enabled = true
       offset_transform_position = Vector2(-16, 0)
       offset_transform_visual_only = false
       
-      [node name="NewButton" type="Button" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3" unique_id=1701502673]
+      [node name="NewButton" type="Button" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3" unique_id=1701502673]
       layout_mode = 2
       size_flags_horizontal = 3
       text = "NEW"
       
-      [node name="SaveButton" type="Button" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3" unique_id=727137414]
+      [node name="SaveButton" type="Button" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3" unique_id=727137414]
       layout_mode = 2
       size_flags_horizontal = 3
       text = "SAVE"
       
-      [node name="NameLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=584322593]
+      [node name="NameLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=584322593]
       layout_mode = 2
       size_flags_vertical = 3
       text = "Name:"
       horizontal_alignment = 2
       
-      [node name="NameLine" type="LineEdit" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1852548588]
+      [node name="NameLine" type="LineEdit" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1852548588]
       layout_mode = 2
       size_flags_horizontal = 3
       offset_transform_enabled = true
       offset_transform_position = Vector2(-16, 0)
       offset_transform_visual_only = false
       
-      [node name="DescriptionLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1315406291]
+      [node name="DescriptionLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1315406291]
       layout_mode = 2
       size_flags_vertical = 3
       text = "Description:"
       horizontal_alignment = 2
       
-      [node name="DescriptionLine" type="LineEdit" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1551119526]
+      [node name="DescriptionLine" type="LineEdit" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1551119526]
       layout_mode = 2
       size_flags_horizontal = 3
       offset_transform_enabled = true
       offset_transform_position = Vector2(-16, 0)
       offset_transform_visual_only = false
       
-      [node name="IconLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1836587011]
+      [node name="IconLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1836587011]
       layout_mode = 2
       size_flags_vertical = 3
       text = "Icon:"
       horizontal_alignment = 2
       vertical_alignment = 1
       
-      [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1712759227]
+      [node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1712759227]
       layout_mode = 2
       offset_transform_enabled = true
       offset_transform_position = Vector2(-16, 0)
       offset_transform_visual_only = false
       
-      [node name="Control" type="Control" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1963041039]
+      [node name="Control" type="Control" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1963041039]
       layout_mode = 2
       size_flags_horizontal = 3
       
-      [node name="IconButton" type="TextureButton" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1999136704]
+      [node name="IconButton" type="TextureButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1999136704]
       custom_minimum_size = Vector2(128, 128)
       layout_mode = 2
       size_flags_horizontal = 3
@@ -2239,17 +2249,17 @@ _______________
       texture_normal = ExtResource("1_cqfea")
       stretch_mode = 3
       
-      [node name="Control2" type="Control" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1505025570]
+      [node name="Control2" type="Control" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1505025570]
       layout_mode = 2
       size_flags_horizontal = 3
       
-      [node name="ValueLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=2075902284]
+      [node name="ValueLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=2075902284]
       layout_mode = 2
       size_flags_vertical = 3
       text = "Value:"
       horizontal_alignment = 2
       
-      [node name="ValueSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=923621526]
+      [node name="ValueSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=923621526]
       layout_mode = 2
       size_flags_horizontal = 3
       offset_transform_enabled = true
@@ -2257,29 +2267,29 @@ _______________
       offset_transform_visual_only = false
       alignment = 1
       
-      [node name="StackableLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1875209643]
+      [node name="StackableLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1875209643]
       layout_mode = 2
       size_flags_vertical = 3
       text = "Stackable:"
       horizontal_alignment = 2
       
-      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=901819836]
+      [node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=901819836]
       layout_mode = 2
       size_flags_horizontal = 3
       offset_transform_enabled = true
       offset_transform_position = Vector2(-16, 0)
       offset_transform_visual_only = false
       
-      [node name="StackableCheck" type="CheckButton" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer" unique_id=1371194751]
+      [node name="StackableCheck" type="CheckButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer" unique_id=1371194751]
       layout_mode = 2
       
-      [node name="MaxStackLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1619168851]
+      [node name="MaxStackLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1619168851]
       layout_mode = 2
       size_flags_vertical = 3
       text = "       Max Stack:"
       horizontal_alignment = 2
       
-      [node name="MaxStackSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=628301293]
+      [node name="MaxStackSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=628301293]
       layout_mode = 2
       size_flags_horizontal = 3
       offset_transform_enabled = true
@@ -2287,17 +2297,17 @@ _______________
       offset_transform_visual_only = false
       alignment = 1
       
-      [node name="ConsumableFields" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer" unique_id=577062632]
+      [node name="ConsumableFields" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer" unique_id=577062632]
       layout_mode = 2
       theme_override_constants/h_separation = 64
       columns = 2
       
-      [node name="EffectTypeLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1746081853]
+      [node name="EffectTypeLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1746081853]
       layout_mode = 2
       text = "Effect Type:"
       horizontal_alignment = 2
       
-      [node name="EffectTypeOption" type="OptionButton" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1397328697]
+      [node name="EffectTypeOption" type="OptionButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1397328697]
       layout_mode = 2
       size_flags_horizontal = 3
       offset_transform_enabled = true
@@ -2317,24 +2327,24 @@ _______________
       popup/item_5/text = "CUSTOM"
       popup/item_5/id = 5
       
-      [node name="EffectValueLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=357656630]
+      [node name="EffectValueLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=357656630]
       layout_mode = 2
       text = "Effect Value:"
       horizontal_alignment = 2
       
-      [node name="EffectValueSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1969146307]
+      [node name="EffectValueSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1969146307]
       layout_mode = 2
       offset_transform_enabled = true
       offset_transform_position = Vector2(-16, 0)
       offset_transform_visual_only = false
       alignment = 1
       
-      [node name="CustomTypesLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=99946562]
+      [node name="CustomTypesLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=99946562]
       layout_mode = 2
       text = "Custom Type:"
       horizontal_alignment = 2
       
-      [node name="CustomTypesOption" type="OptionButton" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=235100381]
+      [node name="CustomTypesOption" type="OptionButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=235100381]
       layout_mode = 2
       size_flags_horizontal = 3
       offset_transform_enabled = true
@@ -2352,12 +2362,12 @@ _______________
       popup/item_4/text = "CURE_STATUS"
       popup/item_4/id = 4
       
-      [node name="CustomValuesLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=82575447]
+      [node name="CustomValuesLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=82575447]
       layout_mode = 2
       text = "Custom Value:"
       horizontal_alignment = 2
       
-      [node name="CustomValuesSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1574939042]
+      [node name="CustomValuesSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1574939042]
       layout_mode = 2
       size_flags_horizontal = 3
       offset_transform_enabled = true
@@ -2365,10 +2375,10 @@ _______________
       offset_transform_visual_only = false
       alignment = 1
       
-      [node name="Control" type="Control" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1125999812]
+      [node name="Control" type="Control" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1125999812]
       layout_mode = 2
       
-      [node name="AddCustomButton" type="Button" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=927811990]
+      [node name="AddCustomButton" type="Button" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=927811990]
       custom_minimum_size = Vector2(128, 0)
       layout_mode = 2
       size_flags_horizontal = 6
@@ -2378,42 +2388,42 @@ _______________
       offset_transform_visual_only = false
       text = "Add Custom Effect"
       
-      [node name="Control2" type="Control" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=806535424]
+      [node name="Control2" type="Control" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=806535424]
       layout_mode = 2
       
-      [node name="CustomContainer" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=2075338660]
+      [node name="CustomContainer" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=2075338660]
       layout_mode = 2
       offset_transform_enabled = true
       offset_transform_position = Vector2(-16, 0)
       offset_transform_visual_only = false
       columns = 2
       
-      [node name="EffectsLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer" unique_id=1412782345]
+      [node name="EffectsLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer" unique_id=1412782345]
       layout_mode = 2
       size_flags_horizontal = 3
       text = "Effects"
       label_settings = SubResource("LabelSettings_cf5fc")
       horizontal_alignment = 1
       
-      [node name="ValuesLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer" unique_id=49092922]
+      [node name="ValuesLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer" unique_id=49092922]
       layout_mode = 2
       size_flags_horizontal = 3
       text = "Values"
       label_settings = SubResource("LabelSettings_cf5fc")
       horizontal_alignment = 1
       
-      [node name="EquipmentFields" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer" unique_id=1215117289]
+      [node name="EquipmentFields" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer" unique_id=1215117289]
       layout_mode = 2
       theme_override_constants/h_separation = 64
       columns = 2
       
-      [node name="EquipSlotLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=195987645]
+      [node name="EquipSlotLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=195987645]
       layout_mode = 2
       size_flags_horizontal = 8
       text = "Equip Slot: "
       horizontal_alignment = 2
       
-      [node name="EquipSlotOption" type="OptionButton" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=602271526]
+      [node name="EquipSlotOption" type="OptionButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=602271526]
       layout_mode = 2
       size_flags_horizontal = 3
       offset_transform_enabled = true
@@ -2437,25 +2447,25 @@ _______________
       popup/item_7/text = "TOE_RING"
       popup/item_7/id = 7
       
-      [node name="TwoHandedLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=1460035571]
+      [node name="TwoHandedLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=1460035571]
       layout_mode = 2
       size_flags_horizontal = 8
       text = "Two-Handed:"
       horizontal_alignment = 2
       
-      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=213683872]
+      [node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=213683872]
       layout_mode = 2
       
-      [node name="TwoHandedCheck" type="CheckButton" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/HBoxContainer" unique_id=2126670851]
+      [node name="TwoHandedCheck" type="CheckButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/HBoxContainer" unique_id=2126670851]
       layout_mode = 2
       
-      [node name="StatModsLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=386620982]
+      [node name="StatModsLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=386620982]
       layout_mode = 2
       size_flags_horizontal = 8
       text = "Stat Mods:"
       horizontal_alignment = 2
       
-      [node name="GridContainer" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=145782220]
+      [node name="GridContainer" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=145782220]
       layout_mode = 2
       size_flags_horizontal = 3
       offset_transform_enabled = true
@@ -2463,98 +2473,98 @@ _______________
       offset_transform_visual_only = false
       columns = 5
       
-      [node name="StrContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1009273991]
+      [node name="StrContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1009273991]
       layout_mode = 2
       size_flags_horizontal = 3
       
-      [node name="StrLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer" unique_id=315775785]
+      [node name="StrLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer" unique_id=315775785]
       layout_mode = 2
       size_flags_horizontal = 3
       text = "STR: "
       horizontal_alignment = 1
       
-      [node name="StrSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer" unique_id=2052851584]
+      [node name="StrSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer" unique_id=2052851584]
       layout_mode = 2
       size_flags_horizontal = 3
       min_value = -100.0
       alignment = 1
       
-      [node name="AgiContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1855576656]
+      [node name="AgiContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1855576656]
       layout_mode = 2
       size_flags_horizontal = 3
       
-      [node name="AgiLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer" unique_id=1155174138]
+      [node name="AgiLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer" unique_id=1155174138]
       layout_mode = 2
       size_flags_horizontal = 3
       text = "AGI: "
       horizontal_alignment = 1
       
-      [node name="AgiSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer" unique_id=1933453238]
+      [node name="AgiSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer" unique_id=1933453238]
       layout_mode = 2
       size_flags_horizontal = 3
       min_value = -100.0
       alignment = 1
       
-      [node name="VitContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1672021378]
+      [node name="VitContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1672021378]
       layout_mode = 2
       size_flags_horizontal = 3
       
-      [node name="VitLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer" unique_id=1243533285]
+      [node name="VitLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer" unique_id=1243533285]
       layout_mode = 2
       size_flags_horizontal = 3
       text = "VIT: "
       horizontal_alignment = 1
       
-      [node name="VitSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer" unique_id=1551310487]
+      [node name="VitSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer" unique_id=1551310487]
       layout_mode = 2
       size_flags_horizontal = 3
       min_value = -100.0
       alignment = 1
       
-      [node name="IntContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=2055888982]
+      [node name="IntContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=2055888982]
       layout_mode = 2
       size_flags_horizontal = 3
       
-      [node name="IntLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer" unique_id=427257489]
+      [node name="IntLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer" unique_id=427257489]
       layout_mode = 2
       size_flags_horizontal = 3
       text = "INT: "
       horizontal_alignment = 1
       
-      [node name="IntSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer" unique_id=1019294451]
+      [node name="IntSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer" unique_id=1019294451]
       layout_mode = 2
       size_flags_horizontal = 3
       min_value = -100.0
       alignment = 1
       
-      [node name="WilContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1652628394]
+      [node name="WilContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1652628394]
       layout_mode = 2
       size_flags_horizontal = 3
       
-      [node name="WilLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer" unique_id=579369202]
+      [node name="WilLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer" unique_id=579369202]
       layout_mode = 2
       size_flags_horizontal = 3
       text = "WIL: "
       horizontal_alignment = 1
       
-      [node name="WilSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer" unique_id=630346490]
+      [node name="WilSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer" unique_id=630346490]
       layout_mode = 2
       size_flags_horizontal = 3
       min_value = -100.0
       alignment = 1
       
-      [node name="KeyItemFields" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer" unique_id=1738426490]
+      [node name="KeyItemFields" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer" unique_id=1738426490]
       layout_mode = 2
       theme_override_constants/h_separation = 64
       columns = 2
       
-      [node name="Label" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/KeyItemFields" unique_id=2094853691]
+      [node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/KeyItemFields" unique_id=2094853691]
       layout_mode = 2
       size_flags_horizontal = 8
       text = "       Sets Flag:"
       horizontal_alignment = 2
       
-      [node name="LineEdit" type="LineEdit" parent="VBoxContainer/MainPanel/FieldsContainer/KeyItemFields" unique_id=750681474]
+      [node name="LineEdit" type="LineEdit" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/KeyItemFields" unique_id=750681474]
       layout_mode = 2
       size_flags_horizontal = 3
       offset_transform_enabled = true
@@ -2816,12 +2826,12 @@ _______________
       # Called when the node enters the scene tree for the first time.
       func refresh(scene_root : Node):
       	for i in warp_container.get_children():
-      		if i.name != 'ErrorLabel':
+	  		if i.name != 'ErrorLabel':
       			warp_container.remove_child(i)
       			i.queue_free()
-      	if scene_root.has_node('Warps') and scene_root.get_node('Warps').get_child_count() > 0:
+	  	if scene_root.has_node('Warps') and scene_root.get_node('Warps').get_child_count() > 0:
       		error_label.hide()
-      		for warp in scene_root.get_node('Warps').get_children():
+	  		for warp in scene_root.get_node('Warps').get_children():
       			if warp is WarpPoint:
       				var new_row = row.instantiate()
       				warp_container.add_child(new_row)
@@ -2887,19 +2897,19 @@ _______________
       
       func _on_warp_id_edit_text_set() -> void:
       	if warp_point:
-      		#field_changed.emit(warp_point, 'warp_id', warp_id_field.text)
+	  		#field_changed.emit(warp_point, 'warp_id', warp_id_field.text)
       		warp_point.warp_id = warp_id_field.text
       
       
       func _on_target_scene_edit_text_set() -> void:
       	if warp_point:
-      		#field_changed.emit(warp_point, 'target_scene', target_scene_field.text)
+	  		#field_changed.emit(warp_point, 'target_scene', target_scene_field.text)
       		warp_point.warp_definition.target_scene = target_scene_field.text
       
       
       func _on_target_warp_id_edit_text_set() -> void:
       	if warp_point:
-      		#field_changed.emit(warp_point, 'target_warp_id', target_warp_id_field.text)
+	  		#field_changed.emit(warp_point, 'target_warp_id', target_warp_id_field.text)
       		warp_point.warp_definition.target_warp_id = target_warp_id_field.text
       
       
@@ -2960,6 +2970,13 @@ _______________
       NULL.png
     CHARACTERS:
       ENEMIES:
+        DEBUG:
+            debug.tres
+          IDLE:
+              enemy_idle_01.png
+              enemy_idle_02.png
+              enemy_idle_03.png
+              enemy_idle_04.png
       NPCS:
         NPC:
             NPC.tres
@@ -2987,6 +3004,14 @@ _______________
           WALK_UP:
               npc_walk_up_01.png
               npc_walk_up_02.png
+      PARTYMEMBERS:
+        DEBUG:
+            debug.tres
+          IDLE:
+              pm_idle_01.png
+              pm_idle_02.png
+              pm_idle_03.png
+              pm_idle_04.png
       PLAYER:
         NORB:
             norb.tres
@@ -3022,6 +3047,7 @@ _______________
       OVERWORLD:
       TILESETS:
           ground_tiles.png
+          hogsforth.png
           tiles.png
           wall_tiles.png
   AUDIO:
@@ -3032,9 +3058,12 @@ _______________
         basic_attack.tres
         slime_tackle.tres
     CHARACTERS:
+        dog_party_member.tres
         norb_party_member.tres
         norb_stats.tres
     DIALOGUE:
+        flag test.tres
+        index test.tres
         test1.tres
         test_dialogue.tres
     ENEMIES:
@@ -3116,17 +3145,17 @@ _______________
   	EventBus.interact_pressed.connect(try_interact)
   	EventBus.world_menu_closed.connect(func():set_physics_process(true))
   	EventBus.world_menu_opened.connect(func():set_physics_process(false))
-  	_wander_origin = position
+  	_wander_origin = global_position
   	orient_facing(Vector2.DOWN)
   	if wander_radius > 0.0:
-  		timer.start(randf_range(6.0, 12.0))
+  		timer.start(randf_range(1.0, 3.0))
   
   func _on_dialogue_started(_sequence : DialogueSequence):
   	timer.stop()
   	_wandering = false
   func _on_dialogue_finished():
   	if wander_radius > 0.0:
-  		timer.start(randf_range(6.0, 12.0))
+  		timer.start(randf_range(1.0, 3.0))
   
   func _on_body_entered(body : Node2D):
   	if body is Player:
@@ -3170,23 +3199,23 @@ _______________
   				sprite.play("walk_left")
   
   func wander():
+  	timer.stop()
   	_wandering = true
   	var t = randf() * TAU # Random angle
-  	var r = sqrt(randf()) * wander_radius # Uniform radius
+  	var r = sqrt(randf_range(0.5, 1.0)) * wander_radius # Uniform radius
   	_target_position = _wander_origin + Vector2(r * cos(t), r * sin(t))
-  	orient_facing(_wander_origin.direction_to(_target_position))
+  	orient_facing(global_position.direction_to(_target_position))
   	if stats:
-  		velocity = _wander_origin.direction_to(_target_position) * stats.base_move_speed 
+  		velocity = global_position.direction_to(_target_position) * stats.base_move_speed 
   	else:
-  		velocity = _wander_origin.direction_to(_target_position) * 120.0
+  		velocity = global_position.direction_to(_target_position) * 120.0
   
   func _physics_process(_delta: float) -> void:
-  	if _wandering and (position.distance_to(_target_position) < 8.0 \
-  or position.distance_to(_wander_origin) >= wander_radius):
+  	if _wandering and (global_position.distance_to(_target_position) < 8.0 or global_position.distance_to(_wander_origin) >= wander_radius):
   		_wandering = false
   		orient_facing(velocity)
   		velocity = Vector2.ZERO
-  		timer.start(randf_range(6.0, 12.0))
+  		timer.start(randf_range(1.0, 3.0))
   	if wander_radius > 0.0 and _wandering:
   		move_and_slide()
   
@@ -3236,7 +3265,7 @@ _______________
   [ext_resource type="Resource" uid="uid://fnlnedirq0qx" path="res://data/characters/norb_party_member.tres" id="2_qhqgy"]
   
   [sub_resource type="RectangleShape2D" id="RectangleShape2D_g2els"]
-  size = Vector2(64, 32)
+  size = Vector2(60, 32)
   
   [node name="Player" type="CharacterBody2D" unique_id=1122482979 groups=["player"]]
   collision_layer = 2
@@ -3246,15 +3275,18 @@ _______________
   party_member = ExtResource("2_qhqgy")
   
   [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1253918709]
+  y_sort_enabled = true
   texture_filter = 1
   sprite_frames = ExtResource("2_g2els")
   animation = &"idle_down"
   
   [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=629372083]
+  y_sort_enabled = true
   position = Vector2(0, 16)
   shape = SubResource("RectangleShape2D_g2els")
   
   [node name="Camera2D" type="Camera2D" parent="." unique_id=334418866]
+  y_sort_enabled = true
   zoom = Vector2(2, 2)
   
   _______________
@@ -3267,7 +3299,7 @@ _______________
     [ext_resource type="Script" uid="uid://dvdjeo31b6aw" path="res://scenes/battle/battle_ui.gd" id="2_jnwmo"]
     
     [sub_resource type="Gradient" id="Gradient_qmg44"]
-    colors = PackedColorArray(0.26293245, 0.26293245, 0.26293245, 1, 0.47397572, 0.47397572, 0.47397572, 1)
+    colors = PackedColorArray(0.654902, 0.2627451, 0.2627451, 1, 0.31832558, 0.11595874, 0.12258426, 1)
     
     [sub_resource type="GradientTexture2D" id="GradientTexture2D_omw3i"]
     gradient = SubResource("Gradient_qmg44")
@@ -3831,10 +3863,10 @@ _______________
     	EventBus.combatant_status_expired.connect(func(combatant : BattleCombatant, status : StatusEffect): (positions[combatant].get_child(1) as Indicator).change_text(""))
     	EventBus.combat_action_resolving.connect(_on_resolve_started)
     	action_menu.get_child(0).grab_focus()
-    	attack_button.pressed.connect(_on_action_menu_pressed.bind('attack'))
-    	spell_button.pressed.connect(_on_action_menu_pressed.bind('spell'))
-    	item_button.pressed.connect(_on_action_menu_pressed.bind('item'))
-    	escape_button.pressed.connect(_on_action_menu_pressed.bind('escape'))
+		attack_button.pressed.connect(_on_action_menu_pressed.bind('attack'))
+		spell_button.pressed.connect(_on_action_menu_pressed.bind('spell'))
+		item_button.pressed.connect(_on_action_menu_pressed.bind('item'))
+		escape_button.pressed.connect(_on_action_menu_pressed.bind('escape'))
     	slots["enemy"]=[
     		enemy_position_1,
     		enemy_position_2,
@@ -3896,8 +3928,8 @@ _______________
     			else:
     				sprite.stop())
     		#sprite.play("battle_entrance")
-    		if sprite.sprite_frames.has_animation("idle_down"):
-    			sprite.play("idle_down")
+    		if sprite.sprite_frames.has_animation("idle"):
+    			sprite.play("idle")
     		var target_pos = positions[i].size
     		var tween = create_tween()
     		tween.tween_property(sprite, "position", target_pos, 0.4)
@@ -3917,7 +3949,7 @@ _______________
     		indicator.mp_bar.value = i.stats.current_mp
     		#indicator.text = "v"
     		indicator.offset_transform_enabled = true
-    		indicator.offset_transform_position = Vector2(80,20)
+    		indicator.offset_transform_position = Vector2(80,-50)
     		##indicator.offset_transform_position_ratio = Vector2(1.8, -0.8)
     		#indicator.offset_transform_position = Vector2(125,60)
     		#indicator.name = "SelectionArrow"
@@ -3931,13 +3963,13 @@ _______________
     
     func _on_action_menu_pressed(choice : String):
     	match choice:
-    		'attack':
+			'attack':
     			populate_attack_menu()
-    		'spell':
+			'spell':
     			populate_spell_menu()
-    		'item':
+			'item':
     			populate_item_menu()
-    		'escape':
+			'escape':
     			EventBus.player_flee_attempted.emit()
     
     func paginate(action_array : Array, base_node : GridContainer, page : int = 0):
@@ -4108,11 +4140,11 @@ _______________
     			targets.append(target_array[target_index])
     			EventBus.player_targets_selected.emit(targets)
     			selecting_targets = false
-    		elif event.is_action_pressed('move_right') or event.is_action_pressed("move_down"):
-    			target_index = wrapi(target_index + 1, 0, target_array.size())
-    			update_target_arrow()
-    		elif event.is_action_pressed('move_left') or event.is_action_pressed("move_up"):
+			elif event.is_action_pressed('move_right') or event.is_action_pressed("move_down"):
     			target_index = wrapi(target_index - 1, 0, target_array.size())
+    			update_target_arrow()
+			elif event.is_action_pressed('move_left') or event.is_action_pressed("move_up"):
+    			target_index = wrapi(target_index + 1, 0, target_array.size())
     			update_target_arrow()
     		elif event.is_action_pressed("combat_cancel"):
     			selecting_targets = false
@@ -4155,8 +4187,8 @@ _______________
     
     [sub_resource type="Resource" id="Resource_hiu05"]
     script = ExtResource("4_2esgy")
-    target_scene = "res://scenes/world/Overworld.tscn"
-    target_warp_id = "overworld_from_dungeon"
+    target_scene = "res://scenes/towns/Hogsforth.tscn"
+    target_warp_id = "Building2"
     metadata/_custom_type_script = "uid://drag68vt7goeq"
     
     [node name="TestDungeon" type="Node2D" unique_id=1952397873]
@@ -4213,6 +4245,7 @@ _______________
     
     [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=57997453]
     shape = SubResource("RectangleShape2D_1j1qh")
+    debug_color = Color(1, 1, 1, 0.41960785)
     
     [connection signal="body_entered" from="." to="." method="_on_body_entered"]
     [connection signal="body_exited" from="." to="." method="_on_body_exited"]
@@ -4236,14 +4269,14 @@ _______________
     func _on_body_entered(body: Node2D) -> void:
     	if just_spawned:
     		return
-    	if require_interact == false and body.is_in_group('player'):
+		if require_interact == false and body.is_in_group('player'):
     		_execute_warp()
     
     func try_interact():
     	if not require_interact:
     		return
     	for body in get_overlapping_bodies():
-    		if body.is_in_group('player'):
+			if body.is_in_group('player'):
     			_execute_warp()
     			return
     
@@ -4259,6 +4292,806 @@ _______________
     _______________
     TOWNS:
     _______________
+    (Hogsforth.tscn):
+    [gd_scene format=4 uid="uid://dk6ijwufw6ny0"]
+    
+    [ext_resource type="TileSet" uid="uid://c4ud3h5ggwebv" path="res://ground_tiles.tres" id="1_ve0s3"]
+    [ext_resource type="Texture2D" uid="uid://qrysim67be0d" path="res://art/world/tilesets/hogsforth.png" id="2_5wgt2"]
+    [ext_resource type="TileSet" uid="uid://cwyyum82v6v2w" path="res://wall_tiles.tres" id="2_t4lhn"]
+    [ext_resource type="PackedScene" uid="uid://d3o28qbr54rdd" path="res://scenes/player.tscn" id="3_buwca"]
+    [ext_resource type="Script" uid="uid://3jhcfyj08wdl" path="res://scenes/world/map_controller.gd" id="4_3o1rd"]
+    [ext_resource type="PackedScene" uid="uid://b0jw6cq16goiy" path="res://scenes/shared/WarpPoint.tscn" id="4_ruy0x"]
+    [ext_resource type="Script" uid="uid://drag68vt7goeq" path="res://src/resources/WarpDefinition.gd" id="5_j7ijb"]
+    
+    [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ruy0x"]
+    texture = ExtResource("2_5wgt2")
+    texture_region_size = Vector2i(32, 32)
+    0:0/0 = 0
+    1:0/0 = 0
+    2:0/0 = 0
+    3:0/0 = 0
+    4:0/0 = 0
+    5:0/0 = 0
+    6:0/0 = 0
+    7:0/0 = 0
+    8:0/0 = 0
+    9:0/0 = 0
+    10:0/0 = 0
+    11:0/0 = 0
+    12:0/0 = 0
+    13:0/0 = 0
+    14:0/0 = 0
+    15:0/0 = 0
+    16:0/0 = 0
+    17:0/0 = 0
+    18:0/0 = 0
+    19:0/0 = 0
+    22:0/0 = 0
+    23:0/0 = 0
+    24:0/0 = 0
+    25:0/0 = 0
+    26:0/0 = 0
+    27:0/0 = 0
+    28:0/0 = 0
+    29:0/0 = 0
+    34:0/0 = 0
+    35:0/0 = 0
+    36:0/0 = 0
+    37:0/0 = 0
+    38:0/0 = 0
+    39:0/0 = 0
+    40:0/0 = 0
+    41:0/0 = 0
+    0:1/0 = 0
+    1:1/0 = 0
+    2:1/0 = 0
+    3:1/0 = 0
+    4:1/0 = 0
+    5:1/0 = 0
+    6:1/0 = 0
+    7:1/0 = 0
+    8:1/0 = 0
+    9:1/0 = 0
+    10:1/0 = 0
+    11:1/0 = 0
+    12:1/0 = 0
+    13:1/0 = 0
+    14:1/0 = 0
+    15:1/0 = 0
+    16:1/0 = 0
+    17:1/0 = 0
+    18:1/0 = 0
+    19:1/0 = 0
+    20:1/0 = 0
+    21:1/0 = 0
+    22:1/0 = 0
+    23:1/0 = 0
+    24:1/0 = 0
+    25:1/0 = 0
+    26:1/0 = 0
+    27:1/0 = 0
+    28:1/0 = 0
+    29:1/0 = 0
+    30:1/0 = 0
+    31:1/0 = 0
+    32:1/0 = 0
+    33:1/0 = 0
+    34:1/0 = 0
+    35:1/0 = 0
+    36:1/0 = 0
+    37:1/0 = 0
+    38:1/0 = 0
+    39:1/0 = 0
+    40:1/0 = 0
+    41:1/0 = 0
+    42:1/0 = 0
+    43:1/0 = 0
+    0:2/0 = 0
+    1:2/0 = 0
+    2:2/0 = 0
+    3:2/0 = 0
+    4:2/0 = 0
+    5:2/0 = 0
+    6:2/0 = 0
+    7:2/0 = 0
+    8:2/0 = 0
+    9:2/0 = 0
+    10:2/0 = 0
+    11:2/0 = 0
+    12:2/0 = 0
+    13:2/0 = 0
+    14:2/0 = 0
+    15:2/0 = 0
+    16:2/0 = 0
+    17:2/0 = 0
+    18:2/0 = 0
+    20:2/0 = 0
+    21:2/0 = 0
+    22:2/0 = 0
+    23:2/0 = 0
+    24:2/0 = 0
+    25:2/0 = 0
+    26:2/0 = 0
+    27:2/0 = 0
+    28:2/0 = 0
+    29:2/0 = 0
+    30:2/0 = 0
+    31:2/0 = 0
+    32:2/0 = 0
+    33:2/0 = 0
+    34:2/0 = 0
+    35:2/0 = 0
+    36:2/0 = 0
+    37:2/0 = 0
+    38:2/0 = 0
+    39:2/0 = 0
+    40:2/0 = 0
+    41:2/0 = 0
+    42:2/0 = 0
+    43:2/0 = 0
+    0:3/0 = 0
+    1:3/0 = 0
+    2:3/0 = 0
+    3:3/0 = 0
+    4:3/0 = 0
+    5:3/0 = 0
+    6:3/0 = 0
+    7:3/0 = 0
+    8:3/0 = 0
+    9:3/0 = 0
+    10:3/0 = 0
+    11:3/0 = 0
+    12:3/0 = 0
+    13:3/0 = 0
+    14:3/0 = 0
+    15:3/0 = 0
+    16:3/0 = 0
+    17:3/0 = 0
+    18:3/0 = 0
+    20:3/0 = 0
+    21:3/0 = 0
+    22:3/0 = 0
+    23:3/0 = 0
+    24:3/0 = 0
+    25:3/0 = 0
+    26:3/0 = 0
+    27:3/0 = 0
+    28:3/0 = 0
+    29:3/0 = 0
+    30:3/0 = 0
+    31:3/0 = 0
+    32:3/0 = 0
+    33:3/0 = 0
+    34:3/0 = 0
+    35:3/0 = 0
+    36:3/0 = 0
+    37:3/0 = 0
+    38:3/0 = 0
+    39:3/0 = 0
+    40:3/0 = 0
+    41:3/0 = 0
+    42:3/0 = 0
+    43:3/0 = 0
+    0:4/0 = 0
+    1:4/0 = 0
+    2:4/0 = 0
+    3:4/0 = 0
+    4:4/0 = 0
+    5:4/0 = 0
+    6:4/0 = 0
+    7:4/0 = 0
+    8:4/0 = 0
+    9:4/0 = 0
+    10:4/0 = 0
+    11:4/0 = 0
+    12:4/0 = 0
+    13:4/0 = 0
+    14:4/0 = 0
+    15:4/0 = 0
+    16:4/0 = 0
+    17:4/0 = 0
+    18:4/0 = 0
+    19:4/0 = 0
+    20:4/0 = 0
+    21:4/0 = 0
+    22:4/0 = 0
+    23:4/0 = 0
+    24:4/0 = 0
+    25:4/0 = 0
+    26:4/0 = 0
+    27:4/0 = 0
+    28:4/0 = 0
+    29:4/0 = 0
+    30:4/0 = 0
+    31:4/0 = 0
+    32:4/0 = 0
+    33:4/0 = 0
+    34:4/0 = 0
+    35:4/0 = 0
+    36:4/0 = 0
+    37:4/0 = 0
+    38:4/0 = 0
+    39:4/0 = 0
+    40:4/0 = 0
+    41:4/0 = 0
+    42:4/0 = 0
+    43:4/0 = 0
+    0:5/0 = 0
+    1:5/0 = 0
+    2:5/0 = 0
+    3:5/0 = 0
+    4:5/0 = 0
+    5:5/0 = 0
+    6:5/0 = 0
+    7:5/0 = 0
+    8:5/0 = 0
+    9:5/0 = 0
+    10:5/0 = 0
+    13:5/0 = 0
+    14:5/0 = 0
+    15:5/0 = 0
+    16:5/0 = 0
+    17:5/0 = 0
+    18:5/0 = 0
+    19:5/0 = 0
+    20:5/0 = 0
+    21:5/0 = 0
+    22:5/0 = 0
+    23:5/0 = 0
+    24:5/0 = 0
+    25:5/0 = 0
+    26:5/0 = 0
+    27:5/0 = 0
+    28:5/0 = 0
+    29:5/0 = 0
+    30:5/0 = 0
+    31:5/0 = 0
+    32:5/0 = 0
+    33:5/0 = 0
+    34:5/0 = 0
+    35:5/0 = 0
+    36:5/0 = 0
+    37:5/0 = 0
+    38:5/0 = 0
+    39:5/0 = 0
+    40:5/0 = 0
+    41:5/0 = 0
+    42:5/0 = 0
+    43:5/0 = 0
+    0:6/0 = 0
+    1:6/0 = 0
+    2:6/0 = 0
+    3:6/0 = 0
+    4:6/0 = 0
+    5:6/0 = 0
+    6:6/0 = 0
+    7:6/0 = 0
+    8:6/0 = 0
+    9:6/0 = 0
+    10:6/0 = 0
+    11:6/0 = 0
+    12:6/0 = 0
+    13:6/0 = 0
+    14:6/0 = 0
+    15:6/0 = 0
+    16:6/0 = 0
+    17:6/0 = 0
+    18:6/0 = 0
+    19:6/0 = 0
+    21:6/0 = 0
+    22:6/0 = 0
+    23:6/0 = 0
+    24:6/0 = 0
+    25:6/0 = 0
+    26:6/0 = 0
+    27:6/0 = 0
+    28:6/0 = 0
+    29:6/0 = 0
+    30:6/0 = 0
+    33:6/0 = 0
+    34:6/0 = 0
+    35:6/0 = 0
+    36:6/0 = 0
+    37:6/0 = 0
+    38:6/0 = 0
+    39:6/0 = 0
+    40:6/0 = 0
+    41:6/0 = 0
+    42:6/0 = 0
+    0:7/0 = 0
+    1:7/0 = 0
+    2:7/0 = 0
+    3:7/0 = 0
+    4:7/0 = 0
+    5:7/0 = 0
+    6:7/0 = 0
+    7:7/0 = 0
+    8:7/0 = 0
+    9:7/0 = 0
+    10:7/0 = 0
+    11:7/0 = 0
+    12:7/0 = 0
+    13:7/0 = 0
+    14:7/0 = 0
+    15:7/0 = 0
+    16:7/0 = 0
+    17:7/0 = 0
+    18:7/0 = 0
+    19:7/0 = 0
+    21:7/0 = 0
+    22:7/0 = 0
+    23:7/0 = 0
+    24:7/0 = 0
+    25:7/0 = 0
+    26:7/0 = 0
+    27:7/0 = 0
+    28:7/0 = 0
+    29:7/0 = 0
+    30:7/0 = 0
+    33:7/0 = 0
+    34:7/0 = 0
+    35:7/0 = 0
+    36:7/0 = 0
+    37:7/0 = 0
+    38:7/0 = 0
+    39:7/0 = 0
+    40:7/0 = 0
+    41:7/0 = 0
+    42:7/0 = 0
+    0:8/0 = 0
+    1:8/0 = 0
+    2:8/0 = 0
+    3:8/0 = 0
+    4:8/0 = 0
+    5:8/0 = 0
+    6:8/0 = 0
+    7:8/0 = 0
+    9:8/0 = 0
+    10:8/0 = 0
+    11:8/0 = 0
+    12:8/0 = 0
+    13:8/0 = 0
+    14:8/0 = 0
+    15:8/0 = 0
+    16:8/0 = 0
+    17:8/0 = 0
+    18:8/0 = 0
+    19:8/0 = 0
+    21:8/0 = 0
+    22:8/0 = 0
+    23:8/0 = 0
+    24:8/0 = 0
+    25:8/0 = 0
+    26:8/0 = 0
+    27:8/0 = 0
+    28:8/0 = 0
+    29:8/0 = 0
+    33:8/0 = 0
+    34:8/0 = 0
+    35:8/0 = 0
+    36:8/0 = 0
+    37:8/0 = 0
+    38:8/0 = 0
+    39:8/0 = 0
+    40:8/0 = 0
+    41:8/0 = 0
+    0:9/0 = 0
+    1:9/0 = 0
+    2:9/0 = 0
+    3:9/0 = 0
+    4:9/0 = 0
+    5:9/0 = 0
+    6:9/0 = 0
+    7:9/0 = 0
+    8:9/0 = 0
+    9:9/0 = 0
+    10:9/0 = 0
+    11:9/0 = 0
+    12:9/0 = 0
+    13:9/0 = 0
+    14:9/0 = 0
+    15:9/0 = 0
+    16:9/0 = 0
+    17:9/0 = 0
+    18:9/0 = 0
+    19:9/0 = 0
+    21:9/0 = 0
+    22:9/0 = 0
+    23:9/0 = 0
+    24:9/0 = 0
+    25:9/0 = 0
+    26:9/0 = 0
+    27:9/0 = 0
+    28:9/0 = 0
+    29:9/0 = 0
+    33:9/0 = 0
+    34:9/0 = 0
+    35:9/0 = 0
+    36:9/0 = 0
+    37:9/0 = 0
+    38:9/0 = 0
+    39:9/0 = 0
+    40:9/0 = 0
+    41:9/0 = 0
+    0:10/0 = 0
+    1:10/0 = 0
+    2:10/0 = 0
+    3:10/0 = 0
+    4:10/0 = 0
+    5:10/0 = 0
+    6:10/0 = 0
+    7:10/0 = 0
+    8:10/0 = 0
+    9:10/0 = 0
+    10:10/0 = 0
+    11:10/0 = 0
+    12:10/0 = 0
+    13:10/0 = 0
+    14:10/0 = 0
+    15:10/0 = 0
+    16:10/0 = 0
+    17:10/0 = 0
+    18:10/0 = 0
+    19:10/0 = 0
+    22:10/0 = 0
+    23:10/0 = 0
+    24:10/0 = 0
+    25:10/0 = 0
+    26:10/0 = 0
+    27:10/0 = 0
+    28:10/0 = 0
+    29:10/0 = 0
+    34:10/0 = 0
+    35:10/0 = 0
+    36:10/0 = 0
+    37:10/0 = 0
+    38:10/0 = 0
+    39:10/0 = 0
+    40:10/0 = 0
+    41:10/0 = 0
+    8:11/0 = 0
+    9:11/0 = 0
+    10:11/0 = 0
+    11:11/0 = 0
+    12:11/0 = 0
+    13:11/0 = 0
+    14:11/0 = 0
+    15:11/0 = 0
+    16:11/0 = 0
+    17:11/0 = 0
+    18:11/0 = 0
+    19:11/0 = 0
+    22:11/0 = 0
+    23:11/0 = 0
+    24:11/0 = 0
+    25:11/0 = 0
+    26:11/0 = 0
+    27:11/0 = 0
+    28:11/0 = 0
+    29:11/0 = 0
+    34:11/0 = 0
+    35:11/0 = 0
+    36:11/0 = 0
+    37:11/0 = 0
+    38:11/0 = 0
+    39:11/0 = 0
+    40:11/0 = 0
+    41:11/0 = 0
+    2:12/0 = 0
+    3:12/0 = 0
+    4:12/0 = 0
+    5:12/0 = 0
+    6:12/0 = 0
+    7:12/0 = 0
+    8:12/0 = 0
+    9:12/0 = 0
+    12:12/0 = 0
+    13:12/0 = 0
+    14:12/0 = 0
+    17:12/0 = 0
+    18:12/0 = 0
+    19:12/0 = 0
+    22:12/0 = 0
+    23:12/0 = 0
+    24:12/0 = 0
+    25:12/0 = 0
+    26:12/0 = 0
+    34:12/0 = 0
+    35:12/0 = 0
+    36:12/0 = 0
+    37:12/0 = 0
+    38:12/0 = 0
+    0:13/0 = 0
+    1:13/0 = 0
+    2:13/0 = 0
+    3:13/0 = 0
+    4:13/0 = 0
+    5:13/0 = 0
+    6:13/0 = 0
+    7:13/0 = 0
+    8:13/0 = 0
+    9:13/0 = 0
+    10:13/0 = 0
+    11:13/0 = 0
+    13:13/0 = 0
+    14:13/0 = 0
+    15:13/0 = 0
+    16:13/0 = 0
+    22:13/0 = 0
+    23:13/0 = 0
+    24:13/0 = 0
+    25:13/0 = 0
+    26:13/0 = 0
+    34:13/0 = 0
+    35:13/0 = 0
+    36:13/0 = 0
+    37:13/0 = 0
+    38:13/0 = 0
+    0:14/0 = 0
+    1:14/0 = 0
+    2:14/0 = 0
+    3:14/0 = 0
+    4:14/0 = 0
+    5:14/0 = 0
+    6:14/0 = 0
+    7:14/0 = 0
+    8:14/0 = 0
+    9:14/0 = 0
+    10:14/0 = 0
+    11:14/0 = 0
+    12:14/0 = 0
+    13:14/0 = 0
+    14:14/0 = 0
+    15:14/0 = 0
+    16:14/0 = 0
+    17:14/0 = 0
+    18:14/0 = 0
+    19:14/0 = 0
+    20:14/0 = 0
+    21:14/0 = 0
+    0:15/0 = 0
+    1:15/0 = 0
+    2:15/0 = 0
+    3:15/0 = 0
+    4:15/0 = 0
+    5:15/0 = 0
+    6:15/0 = 0
+    7:15/0 = 0
+    8:15/0 = 0
+    9:15/0 = 0
+    10:15/0 = 0
+    11:15/0 = 0
+    12:15/0 = 0
+    13:15/0 = 0
+    14:15/0 = 0
+    15:15/0 = 0
+    16:15/0 = 0
+    17:15/0 = 0
+    18:15/0 = 0
+    19:15/0 = 0
+    20:15/0 = 0
+    21:15/0 = 0
+    0:16/0 = 0
+    1:16/0 = 0
+    2:16/0 = 0
+    3:16/0 = 0
+    4:16/0 = 0
+    5:16/0 = 0
+    6:16/0 = 0
+    7:16/0 = 0
+    8:16/0 = 0
+    9:16/0 = 0
+    10:16/0 = 0
+    11:16/0 = 0
+    12:16/0 = 0
+    13:16/0 = 0
+    14:16/0 = 0
+    15:16/0 = 0
+    16:16/0 = 0
+    17:16/0 = 0
+    18:16/0 = 0
+    19:16/0 = 0
+    20:16/0 = 0
+    21:16/0 = 0
+    0:17/0 = 0
+    1:17/0 = 0
+    2:17/0 = 0
+    3:17/0 = 0
+    4:17/0 = 0
+    5:17/0 = 0
+    6:17/0 = 0
+    7:17/0 = 0
+    8:17/0 = 0
+    9:17/0 = 0
+    10:17/0 = 0
+    11:17/0 = 0
+    12:17/0 = 0
+    13:17/0 = 0
+    14:17/0 = 0
+    15:17/0 = 0
+    16:17/0 = 0
+    17:17/0 = 0
+    18:17/0 = 0
+    19:17/0 = 0
+    20:17/0 = 0
+    21:17/0 = 0
+    0:18/0 = 0
+    1:18/0 = 0
+    2:18/0 = 0
+    3:18/0 = 0
+    4:18/0 = 0
+    5:18/0 = 0
+    6:18/0 = 0
+    7:18/0 = 0
+    8:18/0 = 0
+    9:18/0 = 0
+    10:18/0 = 0
+    11:18/0 = 0
+    12:18/0 = 0
+    13:18/0 = 0
+    16:18/0 = 0
+    17:18/0 = 0
+    18:18/0 = 0
+    19:18/0 = 0
+    20:18/0 = 0
+    21:18/0 = 0
+    0:19/0 = 0
+    1:19/0 = 0
+    2:19/0 = 0
+    3:19/0 = 0
+    4:19/0 = 0
+    5:19/0 = 0
+    6:19/0 = 0
+    7:19/0 = 0
+    8:19/0 = 0
+    9:19/0 = 0
+    10:19/0 = 0
+    11:19/0 = 0
+    18:19/0 = 0
+    19:19/0 = 0
+    20:19/0 = 0
+    21:19/0 = 0
+    0:20/0 = 0
+    1:20/0 = 0
+    2:20/0 = 0
+    3:20/0 = 0
+    4:20/0 = 0
+    5:20/0 = 0
+    6:20/0 = 0
+    7:20/0 = 0
+    8:20/0 = 0
+    9:20/0 = 0
+    10:20/0 = 0
+    11:20/0 = 0
+    0:21/0 = 0
+    1:21/0 = 0
+    2:21/0 = 0
+    3:21/0 = 0
+    4:21/0 = 0
+    5:21/0 = 0
+    6:21/0 = 0
+    7:21/0 = 0
+    8:21/0 = 0
+    9:21/0 = 0
+    10:21/0 = 0
+    11:21/0 = 0
+    0:22/0 = 0
+    1:22/0 = 0
+    2:22/0 = 0
+    3:22/0 = 0
+    8:22/0 = 0
+    9:22/0 = 0
+    10:22/0 = 0
+    11:22/0 = 0
+    
+    [sub_resource type="TileSet" id="TileSet_4jb3m"]
+    tile_size = Vector2i(32, 32)
+    sources/1 = SubResource("TileSetAtlasSource_ruy0x")
+    
+    [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_j7ijb"]
+    texture = ExtResource("2_5wgt2")
+    texture_region_size = Vector2i(32, 32)
+    48:0/0 = 0
+    48:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+    
+    [sub_resource type="TileSet" id="TileSet_lxxjp"]
+    tile_size = Vector2i(32, 32)
+    physics_layer_0/collision_layer = 1
+    physics_layer_0/collision_mask = 6
+    sources/0 = SubResource("TileSetAtlasSource_j7ijb")
+    
+    [sub_resource type="Resource" id="Resource_lxxjp"]
+    script = ExtResource("5_j7ijb")
+    target_scene = "res://scenes/towns/TestTown.tscn"
+    target_warp_id = "test_town_entrance"
+    metadata/_custom_type_script = "uid://drag68vt7goeq"
+    
+    [sub_resource type="Resource" id="Resource_2hb0a"]
+    script = ExtResource("5_j7ijb")
+    target_scene = "res://scenes/dungeons/TestDungeon.tscn"
+    target_warp_id = "dungeon_entrance"
+    metadata/_custom_type_script = "uid://drag68vt7goeq"
+    
+    [sub_resource type="Resource" id="Resource_4yntq"]
+    script = ExtResource("5_j7ijb")
+    target_scene = "res://scenes/world/Overworld.tscn"
+    target_warp_id = "overworld_from_town"
+    metadata/_custom_type_script = "uid://drag68vt7goeq"
+    
+    [sub_resource type="Resource" id="Resource_85tp5"]
+    script = ExtResource("5_j7ijb")
+    target_scene = "res://scenes/world/Overworld.tscn"
+    target_warp_id = "overworld_from_town"
+    metadata/_custom_type_script = "uid://drag68vt7goeq"
+    
+    [node name="Hosforth" type="Node2D" unique_id=1952397873]
+    texture_filter = 1
+    
+    [node name="TileMapLayers" type="Node2D" parent="." unique_id=103524705]
+    
+    [node name="GroundLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=1731891896]
+    tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAAEAAAAAAAAAAAACAAEAAAAAAAAAAAACAAAAAAAAAAAAAAABAAAAAAAAAAAAAAADAAAAAAAAAAIAAAADAAEAAAAAAAIAAAADAAIAAAAAAAIAAAACAAIAAAAAAAAAAAABAAIAAAAAAAAAAAAAAAIAAAAAAAAAAAAEAAIAAAAGAAAAAAAEAAEAAAAGAAAAAAAEAAAAAAAGAAAAAAAFAAAAAAACAAIAAAAFAAEAAAACAAIAAAAFAAIAAAACAAIAAAAFAAMAAAACAAIAAAAEAAMAAAAGAAAAAAADAAMAAAAAAAIAAAACAAMAAAAAAAAAAAABAAMAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAAAAAAAAAAACAAQAAAAAAAAAAAADAAQAAAAAAAIAAAAEAAQAAAAGAAAAAAAFAAQAAAACAAIAAAAFAAUAAAACAAIAAAAEAAUAAAAGAAAAAAADAAUAAAAAAAIAAAACAAUAAAAAAAAAAAABAAUAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAAoAAAAAAAAAAAABAAYAAAAAAAAAAAABAAcAAAAAAAAAAAABAAgAAAAAAAAAAAABAAkAAAAAAAAAAAABAAoAAAAAAAAAAAACAAYAAAAAAAAAAAACAAcAAAAAAAAAAAACAAgAAAAAAAAAAAACAAkAAAAAAAAAAAACAAoAAAAAAAAAAAADAAYAAAAAAAIAAAADAAcAAAAAAAIAAAADAAgAAAAAAAIAAAADAAkAAAAAAAIAAAADAAoAAAAAAAMAAAAEAAYAAAAGAAAAAAAEAAcAAAAGAAAAAAAEAAgAAAAGAAAAAAAEAAkAAAABAAIAAAAEAAoAAAABAAMAAAAFAAYAAAACAAIAAAAFAAcAAAACAAIAAAAFAAgAAAADAAMAAAAFAAkAAAABAAIAAAAFAAoAAAABAAMAAAAGAAAAAAAAAAAAAAAGAAEAAAAAAAAAAAAGAAIAAAAAAAAAAAAGAAMAAAAAAAAAAAAGAAQAAAAAAAAAAAAGAAUAAAAAAAAAAAAGAAYAAAAAAAAAAAAGAAcAAAAAAAAAAAAGAAgAAAABAAEAAAAGAAkAAAAGAAAAAAAGAAoAAAABAAMAAAAHAAAAAAAAAAAAAAAHAAEAAAAAAAAAAAAHAAIAAAAAAAAAAAAHAAMAAAAAAAAAAAAHAAQAAAAAAAAAAAAHAAUAAAAAAAAAAAAHAAYAAAAAAAAAAAAHAAcAAAAAAAAAAAAHAAgAAAABAAEAAAAHAAkAAAAGAAAAAAAHAAoAAAABAAMAAAAIAAAAAAAAAAAAAAAIAAEAAAAAAAAAAAAIAAIAAAAAAAAAAAAIAAMAAAAAAAAAAAAIAAQAAAAAAAAAAAAIAAUAAAAAAAAAAAAIAAYAAAAAAAAAAAAIAAcAAAAAAAAAAAAIAAgAAAABAAEAAAAIAAkAAAAGAAAAAAAIAAoAAAABAAMAAAAJAAAAAAAAAAAAAAAJAAEAAAAAAAAAAAAJAAIAAAAAAAAAAAAJAAMAAAAAAAAAAAAJAAQAAAAAAAAAAAAJAAUAAAAAAAAAAAAJAAYAAAAAAAAAAAAJAAcAAAAAAAAAAAAJAAgAAAABAAEAAAAJAAkAAAABAAIAAAAJAAoAAAABAAMAAAAKAAAAAAAAAAAAAAAKAAEAAAAAAAAAAAAKAAIAAAAAAAAAAAAKAAMAAAAAAAAAAAAKAAQAAAAAAAAAAAAKAAUAAAAAAAAAAAAKAAYAAAAAAAAAAAAKAAcAAAAAAAAAAAAKAAgAAAABAAEAAAAKAAkAAAABAAIAAAAKAAoAAAABAAMAAAALAAAAAAAAAAAAAAALAAEAAAAAAAAAAAALAAIAAAAAAAAAAAALAAMAAAAAAAAAAAALAAQAAAAAAAAAAAALAAUAAAAAAAAAAAALAAYAAAAAAAAAAAALAAcAAAAAAAAAAAALAAgAAAABAAEAAAALAAkAAAABAAIAAAALAAoAAAABAAMAAAAMAAAAAAAAAAAAAAAMAAEAAAAAAAAAAAAMAAIAAAAAAAAAAAAMAAMAAAAAAAAAAAAMAAQAAAAAAAAAAAAMAAUAAAAAAAAAAAAMAAYAAAAAAAAAAAAMAAcAAAAAAAAAAAAMAAgAAAABAAEAAAAMAAkAAAABAAIAAAAMAAoAAAABAAMAAAANAAAAAAAAAAAAAAANAAEAAAAAAAAAAAANAAIAAAAAAAAAAAANAAMAAAAAAAAAAAANAAQAAAAAAAAAAAANAAUAAAAAAAAAAAANAAYAAAAAAAAAAAANAAcAAAAAAAAAAAANAAgAAAABAAEAAAANAAkAAAABAAIAAAANAAoAAAABAAMAAAAOAAAAAAAAAAAAAAAOAAEAAAAAAAAAAAAOAAIAAAAAAAAAAAAOAAMAAAAAAAAAAAAOAAQAAAAAAAAAAAAOAAUAAAAAAAAAAAAOAAYAAAAAAAAAAAAOAAcAAAAAAAAAAAAOAAgAAAABAAEAAAAOAAkAAAABAAIAAAAOAAoAAAABAAMAAAAPAAAAAAAAAAAAAAAPAAEAAAAAAAAAAAAPAAIAAAAAAAAAAAAPAAMAAAAAAAAAAAAPAAQAAAAAAAAAAAAPAAUAAAAAAAAAAAAPAAYAAAAAAAAAAAAPAAcAAAAAAAAAAAAPAAgAAAABAAEAAAAPAAkAAAABAAIAAAAPAAoAAAABAAMAAAAQAAAAAAAAAAAAAAAQAAEAAAAAAAAAAAAQAAIAAAAAAAAAAAAQAAMAAAAAAAAAAAAQAAQAAAAAAAAAAAAQAAUAAAAAAAAAAAAQAAYAAAAAAAAAAAAQAAcAAAAAAAAAAAAQAAgAAAABAAEAAAAQAAkAAAABAAIAAAAQAAoAAAABAAMAAAARAAAAAAAAAAAAAAARAAEAAAAAAAAAAAARAAIAAAAAAAAAAAARAAMAAAAAAAAAAAARAAQAAAAAAAAAAAARAAUAAAAAAAAAAAARAAYAAAAAAAAAAAARAAcAAAAAAAAAAAARAAgAAAABAAEAAAARAAkAAAABAAIAAAARAAoAAAABAAMAAAASAAAAAAAAAAAAAAASAAEAAAAAAAAAAAASAAIAAAAAAAAAAAASAAMAAAAAAAAAAAASAAQAAAAAAAAAAAASAAUAAAAAAAAAAAASAAYAAAAAAAAAAAASAAcAAAAAAAAAAAASAAgAAAABAAEAAAASAAkAAAABAAIAAAASAAoAAAABAAMAAAATAAAAAAAAAAAAAAATAAEAAAAAAAAAAAATAAIAAAAAAAAAAAATAAMAAAAAAAAAAAATAAQAAAAAAAAAAAATAAUAAAAAAAAAAAATAAYAAAAAAAAAAAATAAcAAAAAAAAAAAATAAgAAAABAAEAAAATAAkAAAABAAIAAAATAAoAAAABAAMAAAAUAAAAAAAAAAAAAAAUAAEAAAAAAAAAAAAUAAIAAAAAAAAAAAAUAAMAAAAAAAAAAAAUAAQAAAAAAAAAAAAUAAUAAAAAAAAAAAAUAAYAAAAAAAAAAAAUAAcAAAAAAAAAAAAUAAgAAAABAAEAAAAUAAkAAAABAAIAAAAUAAoAAAABAAMAAAAVAAAAAAAAAAAAAAAVAAEAAAAAAAAAAAAVAAIAAAAAAAAAAAAVAAMAAAAAAAAAAAAVAAQAAAAAAAAAAAAVAAUAAAAAAAAAAAAVAAYAAAAAAAAAAAAVAAcAAAAAAAAAAAAVAAgAAAABAAEAAAAVAAkAAAABAAIAAAAVAAoAAAABAAMAAAAWAAAAAAAAAAAAAAAWAAEAAAAAAAAAAAAWAAIAAAAAAAAAAAAWAAMAAAAAAAAAAAAWAAQAAAAAAAAAAAAWAAUAAAAAAAAAAAAWAAYAAAAAAAAAAAAWAAcAAAAAAAAAAAAWAAgAAAABAAEAAAAWAAkAAAABAAIAAAAWAAoAAAABAAMAAAAXAAAAAAAAAAAAAAAXAAEAAAAAAAAAAAAXAAIAAAAAAAAAAAAXAAMAAAAAAAAAAAAXAAQAAAAAAAAAAAAXAAUAAAAAAAAAAAAXAAYAAAAAAAAAAAAXAAcAAAAAAAIAAAAXAAgAAAAFAAMAAAAXAAkAAAABAAIAAAAXAAoAAAABAAMAAAAAAAsAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA8AAAAAAAAAAAAAABAAAAAAAAAAAAAAABEAAAAAAAAAAAAAABIAAAAAAAAAAAAAABMAAAAAAAAAAAAAABQAAAAAAAAAAAAAABUAAAAAAAAAAAAAABYAAAAAAAAAAAAAABcAAAAAAAAAAAAAABgAAAAAAAAAAAAAABkAAAAAAAAAAAAAABoAAAAAAAAAAAAAABsAAAAAAAAAAAAAABwAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAB4AAAAAAAAAAAAAAB8AAAAAAAAAAAABAAsAAAAAAAAAAAABAAwAAAAAAAAAAAABAA0AAAAAAAAAAAABAA4AAAAAAAAAAAABAA8AAAAAAAAAAAABABAAAAAAAAAAAAABABEAAAAAAAAAAAABABIAAAAAAAAAAAABABMAAAAAAAAAAAABABQAAAAAAAAAAAABABUAAAAAAAAAAAABABYAAAAAAAAAAAABABcAAAAAAAAAAAABABgAAAAAAAAAAAABABkAAAAAAAAAAAABABoAAAAAAAAAAAABABsAAAAAAAAAAAABABwAAAAAAAAAAAABAB0AAAAAAAAAAAABAB4AAAAAAAAAAAABAB8AAAAAAAAAAAACAAsAAAAAAAAAAAACAAwAAAAAAAAAAAACAA0AAAAAAAAAAAACAA4AAAAAAAAAAAACAA8AAAAAAAAAAAACABAAAAAAAAAAAAACABEAAAAAAAAAAAACABIAAAAAAAAAAAACABMAAAAAAAAAAAACABQAAAAAAAAAAAACABUAAAAAAAAAAAACABYAAAAAAAAAAAACABcAAAAAAAAAAAACABgAAAAAAAAAAAACABkAAAAAAAAAAAACABoAAAAAAAAAAAACABsAAAAAAAAAAAACABwAAAAAAAAAAAACAB0AAAAAAAAAAAACAB4AAAAAAAAAAAACAB8AAAAAAAAAAAADAAsAAAAAAAAAAAADAAwAAAAAAAAAAAADAA0AAAAAAAAAAAADAA4AAAAAAAAAAAADAA8AAAAAAAAAAAADABAAAAAAAAAAAAADABEAAAAAAAAAAAADABIAAAAAAAAAAAADABMAAAAAAAAAAAADABQAAAAAAAAAAAADABUAAAAAAAAAAAADABYAAAAAAAAAAAADABcAAAAAAAAAAAADABgAAAAAAAAAAAADABkAAAAAAAAAAAADABoAAAAAAAAAAAADABsAAAAAAAAAAAADABwAAAAAAAAAAAADAB0AAAAAAAAAAAADAB4AAAAAAAAAAAADAB8AAAAAAAAAAAAEAAsAAAAAAAAAAAAEAAwAAAAAAAAAAAAEAA0AAAAAAAAAAAAEAA4AAAAAAAAAAAAEAA8AAAAAAAAAAAAEABAAAAAAAAAAAAAEABEAAAAAAAAAAAAEABIAAAAAAAAAAAAEABMAAAAAAAAAAAAEABQAAAAAAAAAAAAEABUAAAAAAAAAAAAEABYAAAAAAAAAAAAEABcAAAAAAAAAAAAEABgAAAAAAAAAAAAEABkAAAAAAAAAAAAEABoAAAAAAAAAAAAEABsAAAAAAAAAAAAEABwAAAAAAAAAAAAEAB0AAAAAAAAAAAAEAB4AAAAAAAAAAAAEAB8AAAAAAAAAAAAFAAsAAAAAAAAAAAAFAAwAAAAAAAAAAAAFAA0AAAAAAAAAAAAFAA4AAAAAAAAAAAAFAA8AAAAAAAAAAAAFABAAAAAAAAEAAAAFABEAAAAAAAIAAAAFABIAAAAAAAIAAAAFABMAAAAAAAIAAAAFABQAAAAAAAIAAAAFABUAAAAAAAIAAAAFABYAAAAAAAIAAAAFABcAAAAAAAIAAAAFABgAAAAAAAIAAAAFABkAAAAAAAIAAAAFABoAAAAAAAIAAAAFABsAAAAAAAIAAAAFABwAAAAAAAIAAAAFAB0AAAAAAAMAAAAFAB4AAAAAAAAAAAAFAB8AAAAAAAAAAAAGAAsAAAAAAAAAAAAGAAwAAAAAAAAAAAAGAA0AAAAAAAAAAAAGAA4AAAAAAAAAAAAGAA8AAAAAAAAAAAAGABAAAAABAAEAAAAGABEAAAAGAAAAAAAGABIAAAABAAIAAAAGABMAAAABAAIAAAAGABQAAAABAAIAAAAGABUAAAABAAIAAAAGABYAAAABAAIAAAAGABcAAAABAAIAAAAGABgAAAABAAIAAAAGABkAAAABAAIAAAAGABoAAAABAAIAAAAGABsAAAABAAIAAAAGABwAAAAGAAAAAAAGAB0AAAABAAMAAAAGAB4AAAAAAAAAAAAGAB8AAAAAAAAAAAAHAAsAAAAAAAAAAAAHAAwAAAAAAAAAAAAHAA0AAAAAAAAAAAAHAA4AAAAAAAAAAAAHAA8AAAAAAAAAAAAHABAAAAABAAEAAAAHABEAAAABAAIAAAAHABIAAAADAAEAAAAHABMAAAACAAIAAAAHABQAAAACAAIAAAAHABUAAAACAAIAAAAHABYAAAACAAIAAAAHABcAAAACAAIAAAAHABgAAAACAAIAAAAHABkAAAACAAIAAAAHABoAAAACAAIAAAAHABsAAAADAAMAAAAHABwAAAABAAIAAAAHAB0AAAABAAMAAAAHAB4AAAAAAAAAAAAHAB8AAAAAAAAAAAAIAAsAAAAAAAAAAAAIAAwAAAAAAAAAAAAIAA0AAAAAAAAAAAAIAA4AAAAAAAAAAAAIAA8AAAAAAAAAAAAIABAAAAABAAEAAAAIABEAAAABAAIAAAAIABIAAAABAAMAAAAIABMAAAAAAAAAAAAIABQAAAAAAAAAAAAIABUAAAAAAAAAAAAIABYAAAAAAAAAAAAIABcAAAAAAAAAAAAIABgAAAAAAAAAAAAIABkAAAAAAAAAAAAIABoAAAAAAAAAAAAIABsAAAABAAEAAAAIABwAAAABAAIAAAAIAB0AAAABAAMAAAAIAB4AAAAAAAAAAAAIAB8AAAAAAAAAAAAJAAsAAAAAAAAAAAAJAAwAAAAAAAAAAAAJAA0AAAAAAAAAAAAJAA4AAAAAAAAAAAAJAA8AAAAAAAAAAAAJABAAAAABAAEAAAAJABEAAAABAAIAAAAJABIAAAABAAMAAAAJABMAAAAAAAAAAAAJABQAAAAAAAAAAAAJABUAAAAAAAAAAAAJABYAAAAAAAAAAAAJABcAAAAAAAAAAAAJABgAAAAAAAAAAAAJABkAAAAAAAAAAAAJABoAAAAAAAAAAAAJABsAAAABAAEAAAAJABwAAAABAAIAAAAJAB0AAAABAAMAAAAJAB4AAAAAAAAAAAAJAB8AAAAAAAAAAAAKAAsAAAAAAAAAAAAKAAwAAAAAAAAAAAAKAA0AAAAAAAAAAAAKAA4AAAAAAAAAAAAKAA8AAAAAAAAAAAAKABAAAAABAAEAAAAKABEAAAABAAIAAAAKABIAAAABAAMAAAAKABMAAAAAAAAAAAAKABQAAAAAAAAAAAAKABUAAAAAAAAAAAAKABYAAAAAAAAAAAAKABcAAAAAAAAAAAAKABgAAAAAAAAAAAAKABkAAAAAAAAAAAAKABoAAAAAAAAAAAAKABsAAAABAAEAAAAKABwAAAABAAIAAAAKAB0AAAABAAMAAAAKAB4AAAAAAAAAAAAKAB8AAAAAAAAAAAALAAsAAAAAAAAAAAALAAwAAAAAAAAAAAALAA0AAAAAAAAAAAALAA4AAAAAAAAAAAALAA8AAAAAAAAAAAALABAAAAABAAEAAAALABEAAAABAAIAAAALABIAAAABAAMAAAALABMAAAAAAAAAAAALABQAAAAAAAAAAAALABUAAAAAAAAAAAALABYAAAAAAAAAAAALABcAAAAAAAAAAAALABgAAAAAAAAAAAALABkAAAAAAAAAAAALABoAAAAAAAAAAAALABsAAAABAAEAAAALABwAAAABAAIAAAALAB0AAAABAAMAAAALAB4AAAAAAAAAAAALAB8AAAAAAAAAAAAMAAsAAAAAAAAAAAAMAAwAAAAAAAAAAAAMAA0AAAAAAAAAAAAMAA4AAAAAAAAAAAAMAA8AAAAAAAAAAAAMABAAAAABAAEAAAAMABEAAAABAAIAAAAMABIAAAABAAMAAAAMABMAAAAAAAAAAAAMABQAAAAAAAAAAAAMABUAAAAAAAAAAAAMABYAAAAAAAAAAAAMABcAAAAAAAAAAAAMABgAAAAAAAAAAAAMABkAAAAAAAAAAAAMABoAAAAAAAAAAAAMABsAAAABAAEAAAAMABwAAAABAAIAAAAMAB0AAAABAAMAAAAMAB4AAAAAAAAAAAAMAB8AAAAAAAAAAAANAAsAAAAAAAAAAAANAAwAAAAAAAAAAAANAA0AAAAAAAAAAAANAA4AAAAAAAAAAAANAA8AAAAAAAAAAAANABAAAAABAAEAAAANABEAAAABAAIAAAANABIAAAABAAMAAAANABMAAAAAAAAAAAANABQAAAAAAAAAAAANABUAAAAAAAAAAAANABYAAAAAAAAAAAANABcAAAAAAAAAAAANABgAAAAAAAAAAAANABkAAAAAAAAAAAANABoAAAAAAAAAAAANABsAAAABAAEAAAANABwAAAABAAIAAAANAB0AAAABAAMAAAANAB4AAAAAAAAAAAANAB8AAAAAAAAAAAAOAAsAAAAAAAAAAAAOAAwAAAAAAAAAAAAOAA0AAAAAAAAAAAAOAA4AAAAAAAAAAAAOAA8AAAAAAAAAAAAOABAAAAABAAEAAAAOABEAAAABAAIAAAAOABIAAAABAAMAAAAOABMAAAAAAAAAAAAOABQAAAAAAAAAAAAOABUAAAAAAAAAAAAOABYAAAAAAAAAAAAOABcAAAAAAAAAAAAOABgAAAAAAAAAAAAOABkAAAAAAAAAAAAOABoAAAAAAAAAAAAOABsAAAABAAEAAAAOABwAAAABAAIAAAAOAB0AAAABAAMAAAAOAB4AAAAAAAAAAAAOAB8AAAAAAAAAAAAPAAsAAAAAAAAAAAAPAAwAAAAAAAAAAAAPAA0AAAAAAAAAAAAPAA4AAAAAAAAAAAAPAA8AAAAAAAAAAAAPABAAAAABAAEAAAAPABEAAAABAAIAAAAPABIAAAABAAMAAAAPABMAAAAAAAAAAAAPABQAAAAAAAAAAAAPABUAAAAAAAAAAAAPABYAAAAAAAAAAAAPABcAAAAAAAAAAAAPABgAAAAAAAAAAAAPABkAAAAAAAAAAAAPABoAAAAAAAAAAAAPABsAAAABAAEAAAAPABwAAAABAAIAAAAPAB0AAAABAAMAAAAPAB4AAAAAAAAAAAAPAB8AAAAAAAAAAAAQAAsAAAAAAAAAAAAQAAwAAAAAAAAAAAAQAA0AAAAAAAAAAAAQAA4AAAAAAAAAAAAQAA8AAAAAAAAAAAAQABAAAAABAAEAAAAQABEAAAABAAIAAAAQABIAAAABAAMAAAAQABMAAAAAAAAAAAAQABQAAAAAAAAAAAAQABUAAAAAAAAAAAAQABYAAAAAAAAAAAAQABcAAAAAAAAAAAAQABgAAAAAAAAAAAAQABkAAAAAAAAAAAAQABoAAAAAAAAAAAAQABsAAAABAAEAAAAQABwAAAABAAIAAAAQAB0AAAABAAMAAAAQAB4AAAAAAAAAAAAQAB8AAAAAAAAAAAARAAsAAAAAAAAAAAARAAwAAAAAAAAAAAARAA0AAAAAAAAAAAARAA4AAAAAAAAAAAARAA8AAAAAAAAAAAARABAAAAABAAEAAAARABEAAAABAAIAAAARABIAAAABAAMAAAARABMAAAAAAAAAAAARABQAAAAAAAAAAAARABUAAAAAAAAAAAARABYAAAAAAAAAAAARABcAAAAAAAAAAAARABgAAAAAAAAAAAARABkAAAAAAAAAAAARABoAAAAAAAAAAAARABsAAAABAAEAAAARABwAAAABAAIAAAARAB0AAAABAAMAAAARAB4AAAAAAAAAAAARAB8AAAAAAAAAAAASAAsAAAAAAAAAAAASAAwAAAAAAAAAAAASAA0AAAAAAAAAAAASAA4AAAAAAAAAAAASAA8AAAAAAAAAAAASABAAAAABAAEAAAASABEAAAABAAIAAAASABIAAAABAAMAAAASABMAAAAAAAAAAAASABQAAAAAAAAAAAASABUAAAAAAAAAAAASABYAAAAAAAAAAAASABcAAAAAAAAAAAASABgAAAAAAAAAAAASABkAAAAAAAAAAAASABoAAAAAAAAAAAASABsAAAABAAEAAAASABwAAAABAAIAAAASAB0AAAABAAMAAAASAB4AAAAAAAAAAAASAB8AAAAAAAAAAAATAAsAAAAAAAAAAAATAAwAAAAAAAAAAAATAA0AAAAAAAAAAAATAA4AAAAAAAAAAAATAA8AAAAAAAAAAAATABAAAAABAAEAAAATABEAAAABAAIAAAATABIAAAABAAMAAAATABMAAAAAAAAAAAATABQAAAAAAAAAAAATABUAAAAAAAAAAAATABYAAAAAAAAAAAATABcAAAAAAAAAAAATABgAAAAAAAAAAAATABkAAAAAAAAAAAATABoAAAAAAAAAAAATABsAAAABAAEAAAATABwAAAABAAIAAAATAB0AAAABAAMAAAATAB4AAAAAAAAAAAATAB8AAAAAAAAAAAAUAAsAAAAAAAAAAAAUAAwAAAAAAAAAAAAUAA0AAAAAAAAAAAAUAA4AAAAAAAAAAAAUAA8AAAAAAAAAAAAUABAAAAABAAEAAAAUABEAAAABAAIAAAAUABIAAAABAAMAAAAUABMAAAAAAAAAAAAUABQAAAAAAAAAAAAUABUAAAAAAAAAAAAUABYAAAAAAAAAAAAUABcAAAAAAAAAAAAUABgAAAAAAAAAAAAUABkAAAAAAAAAAAAUABoAAAAAAAAAAAAUABsAAAABAAEAAAAUABwAAAABAAIAAAAUAB0AAAABAAMAAAAUAB4AAAAAAAAAAAAUAB8AAAAAAAAAAAAVAAsAAAAAAAAAAAAVAAwAAAAAAAAAAAAVAA0AAAAAAAAAAAAVAA4AAAAAAAAAAAAVAA8AAAAAAAAAAAAVABAAAAABAAEAAAAVABEAAAABAAIAAAAVABIAAAABAAMAAAAVABMAAAAAAAAAAAAVABQAAAAAAAAAAAAVABUAAAAAAAAAAAAVABYAAAAAAAAAAAAVABcAAAAAAAAAAAAVABgAAAAAAAAAAAAVABkAAAAAAAAAAAAVABoAAAAAAAAAAAAVABsAAAABAAEAAAAVABwAAAABAAIAAAAVAB0AAAABAAMAAAAVAB4AAAAAAAAAAAAVAB8AAAAAAAAAAAAWAAsAAAAAAAAAAAAWAAwAAAAAAAAAAAAWAA0AAAAAAAAAAAAWAA4AAAAAAAAAAAAWAA8AAAAAAAAAAAAWABAAAAABAAEAAAAWABEAAAABAAIAAAAWABIAAAABAAMAAAAWABMAAAAAAAAAAAAWABQAAAAAAAAAAAAWABUAAAAAAAAAAAAWABYAAAAAAAAAAAAWABcAAAAAAAAAAAAWABgAAAAAAAAAAAAWABkAAAAAAAAAAAAWABoAAAAAAAAAAAAWABsAAAABAAEAAAAWABwAAAABAAIAAAAWAB0AAAABAAMAAAAWAB4AAAAAAAAAAAAWAB8AAAAAAAAAAAAXAAsAAAAAAAAAAAAXAAwAAAAAAAAAAAAXAA0AAAAAAAAAAAAXAA4AAAAAAAAAAAAXAA8AAAAAAAAAAAAXABAAAAABAAEAAAAXABEAAAABAAIAAAAXABIAAAABAAMAAAAXABMAAAAAAAAAAAAXABQAAAAAAAAAAAAXABUAAAAAAAAAAAAXABYAAAAAAAAAAAAXABcAAAAAAAAAAAAXABgAAAAAAAAAAAAXABkAAAAAAAAAAAAXABoAAAAAAAAAAAAXABsAAAABAAEAAAAXABwAAAABAAIAAAAXAB0AAAABAAMAAAAXAB4AAAAAAAAAAAAXAB8AAAAAAAAAAAAYAAAAAAAAAAAAAAAYAAEAAAAAAAAAAAAYAAIAAAAAAAAAAAAYAAMAAAAAAAAAAAAYAAQAAAAAAAAAAAAYAAUAAAAAAAAAAAAYAAYAAAAAAAAAAAAYAAcAAAABAAIAAAAYAAgAAAABAAIAAAAYAAkAAAABAAIAAAAYAAoAAAABAAMAAAAYAAsAAAAAAAAAAAAYAAwAAAAAAAAAAAAYAA0AAAAAAAAAAAAYAA4AAAAAAAAAAAAYAA8AAAAAAAAAAAAYABAAAAABAAEAAAAYABEAAAABAAIAAAAYABIAAAABAAMAAAAYABMAAAAAAAAAAAAYABQAAAAAAAAAAAAYABUAAAAAAAAAAAAYABYAAAAAAAAAAAAYABcAAAAAAAAAAAAYABgAAAAAAAAAAAAYABkAAAAAAAAAAAAYABoAAAAAAAAAAAAYABsAAAABAAEAAAAYABwAAAABAAIAAAAYAB0AAAABAAMAAAAYAB4AAAAAAAAAAAAYAB8AAAAAAAAAAAAZAAAAAAAAAAAAAAAZAAEAAAAAAAAAAAAZAAIAAAAAAAAAAAAZAAMAAAAAAAAAAAAZAAQAAAAAAAAAAAAZAAUAAAAAAAAAAAAZAAYAAAAAAAAAAAAZAAcAAAACAAIAAAAZAAgAAAADAAMAAAAZAAkAAAABAAIAAAAZAAoAAAABAAMAAAAZAAsAAAAAAAAAAAAZAAwAAAAAAAAAAAAZAA0AAAAAAAAAAAAZAA4AAAAAAAAAAAAZAA8AAAAAAAAAAAAZABAAAAABAAEAAAAZABEAAAABAAIAAAAZABIAAAABAAMAAAAZABMAAAAAAAAAAAAZABQAAAAAAAAAAAAZABUAAAAAAAAAAAAZABYAAAAAAAAAAAAZABcAAAAAAAAAAAAZABgAAAAAAAAAAAAZABkAAAAAAAAAAAAZABoAAAAAAAAAAAAZABsAAAABAAEAAAAZABwAAAABAAIAAAAZAB0AAAABAAMAAAAZAB4AAAAAAAAAAAAZAB8AAAAAAAAAAAAaAAAAAAAAAAAAAAAaAAEAAAAAAAAAAAAaAAIAAAAAAAAAAAAaAAMAAAAAAAAAAAAaAAQAAAAAAAAAAAAaAAUAAAAAAAAAAAAaAAYAAAAAAAAAAAAaAAcAAAAAAAAAAAAaAAgAAAABAAEAAAAaAAkAAAABAAIAAAAaAAoAAAABAAMAAAAaAAsAAAAAAAAAAAAaAAwAAAAAAAAAAAAaAA0AAAAAAAAAAAAaAA4AAAAAAAAAAAAaAA8AAAAAAAAAAAAaABAAAAABAAEAAAAaABEAAAABAAIAAAAaABIAAAABAAMAAAAaABMAAAAAAAAAAAAaABQAAAAAAAAAAAAaABUAAAAAAAAAAAAaABYAAAAAAAAAAAAaABcAAAAAAAAAAAAaABgAAAAAAAAAAAAaABkAAAAAAAAAAAAaABoAAAAAAAAAAAAaABsAAAABAAEAAAAaABwAAAABAAIAAAAaAB0AAAABAAMAAAAaAB4AAAAAAAAAAAAaAB8AAAAAAAAAAAAbAAAAAAAAAAAAAAAbAAEAAAAAAAAAAAAbAAIAAAAAAAAAAAAbAAMAAAAAAAAAAAAbAAQAAAAAAAAAAAAbAAUAAAAAAAAAAAAbAAYAAAAAAAAAAAAbAAcAAAAAAAAAAAAbAAgAAAABAAEAAAAbAAkAAAABAAIAAAAbAAoAAAABAAMAAAAbAAsAAAAAAAAAAAAbAAwAAAAAAAAAAAAbAA0AAAAAAAAAAAAbAA4AAAAAAAAAAAAbAA8AAAAAAAAAAAAbABAAAAABAAEAAAAbABEAAAABAAIAAAAbABIAAAABAAMAAAAbABMAAAAAAAAAAAAbABQAAAAAAAAAAAAbABUAAAAAAAAAAAAbABYAAAAAAAAAAAAbABcAAAAAAAAAAAAbABgAAAAAAAAAAAAbABkAAAAAAAAAAAAbABoAAAAAAAAAAAAbABsAAAABAAEAAAAbABwAAAABAAIAAAAbAB0AAAABAAMAAAAbAB4AAAAAAAAAAAAbAB8AAAAAAAAAAAAcAAAAAAAAAAAAAAAcAAEAAAAAAAAAAAAcAAIAAAAAAAAAAAAcAAMAAAAAAAAAAAAcAAQAAAAAAAAAAAAcAAUAAAAAAAAAAAAcAAYAAAAAAAAAAAAcAAcAAAAAAAAAAAAcAAgAAAABAAEAAAAcAAkAAAABAAIAAAAcAAoAAAABAAMAAAAcAAsAAAAAAAAAAAAcAAwAAAAAAAAAAAAcAA0AAAAAAAAAAAAcAA4AAAAAAAAAAAAcAA8AAAAAAAAAAAAcABAAAAABAAEAAAAcABEAAAABAAIAAAAcABIAAAABAAMAAAAcABMAAAAAAAAAAAAcABQAAAAAAAAAAAAcABUAAAAAAAAAAAAcABYAAAAAAAAAAAAcABcAAAAAAAAAAAAcABgAAAAAAAAAAAAcABkAAAAAAAAAAAAcABoAAAAAAAAAAAAcABsAAAABAAEAAAAcABwAAAABAAIAAAAcAB0AAAABAAMAAAAcAB4AAAAAAAAAAAAcAB8AAAAAAAAAAAAdAAAAAAAAAAAAAAAdAAEAAAAAAAAAAAAdAAIAAAAAAAAAAAAdAAMAAAAAAAAAAAAdAAQAAAAAAAAAAAAdAAUAAAAAAAAAAAAdAAYAAAAAAAAAAAAdAAcAAAAAAAAAAAAdAAgAAAABAAEAAAAdAAkAAAABAAIAAAAdAAoAAAABAAMAAAAdAAsAAAAAAAAAAAAdAAwAAAAAAAAAAAAdAA0AAAAAAAAAAAAdAA4AAAAAAAAAAAAdAA8AAAAAAAAAAAAdABAAAAABAAEAAAAdABEAAAABAAIAAAAdABIAAAABAAMAAAAdABMAAAAAAAAAAAAdABQAAAAAAAAAAAAdABUAAAAAAAAAAAAdABYAAAAAAAAAAAAdABcAAAAAAAAAAAAdABgAAAAAAAAAAAAdABkAAAAAAAAAAAAdABoAAAAAAAAAAAAdABsAAAABAAEAAAAdABwAAAABAAIAAAAdAB0AAAABAAMAAAAdAB4AAAAAAAAAAAAdAB8AAAAAAAAAAAAeAAAAAAAAAAAAAAAeAAEAAAAAAAAAAAAeAAIAAAAAAAAAAAAeAAMAAAAAAAAAAAAeAAQAAAAAAAAAAAAeAAUAAAAAAAAAAAAeAAYAAAAAAAAAAAAeAAcAAAAAAAAAAAAeAAgAAAABAAEAAAAeAAkAAAABAAIAAAAeAAoAAAABAAMAAAAeAAsAAAAAAAAAAAAeAAwAAAAAAAAAAAAeAA0AAAAAAAAAAAAeAA4AAAAAAAAAAAAeAA8AAAAAAAAAAAAeABAAAAABAAEAAAAeABEAAAABAAIAAAAeABIAAAABAAMAAAAeABMAAAAAAAAAAAAeABQAAAAAAAAAAAAeABUAAAAAAAAAAAAeABYAAAAAAAAAAAAeABcAAAAAAAAAAAAeABgAAAAAAAAAAAAeABkAAAAAAAAAAAAeABoAAAAAAAAAAAAeABsAAAABAAEAAAAeABwAAAABAAIAAAAeAB0AAAABAAMAAAAeAB4AAAAAAAAAAAAeAB8AAAAAAAAAAAAfAAAAAAAAAAAAAAAfAAEAAAAAAAAAAAAfAAIAAAAAAAAAAAAfAAMAAAAAAAAAAAAfAAQAAAAAAAAAAAAfAAUAAAAAAAAAAAAfAAYAAAAAAAIAAAAfAAcAAAAAAAIAAAAfAAgAAAAFAAMAAAAfAAkAAAABAAIAAAAfAAoAAAABAAMAAAAfAAsAAAAAAAAAAAAfAAwAAAAAAAAAAAAfAA0AAAAAAAAAAAAfAA4AAAAAAAAAAAAfAA8AAAAAAAAAAAAfABAAAAABAAEAAAAfABEAAAABAAIAAAAfABIAAAABAAMAAAAfABMAAAAAAAAAAAAfABQAAAAAAAAAAAAfABUAAAAAAAAAAAAfABYAAAAAAAAAAAAfABcAAAAAAAAAAAAfABgAAAAAAAAAAAAfABkAAAAAAAAAAAAfABoAAAAAAAAAAAAfABsAAAABAAEAAAAfABwAAAABAAIAAAAfAB0AAAABAAMAAAAfAB4AAAAAAAAAAAAfAB8AAAAAAAAAAAAgAAAAAAAAAAAAAAAgAAEAAAAAAAAAAAAgAAIAAAAAAAAAAAAgAAMAAAAAAAAAAAAgAAQAAAAAAAAAAAAgAAYAAAABAAIAAAAgAAcAAAABAAIAAAAgAAgAAAABAAIAAAAgAAkAAAABAAIAAAAgAAoAAAABAAMAAAAgAAsAAAAAAAAAAAAgAAwAAAAAAAAAAAAgAA0AAAAAAAAAAAAgAA4AAAAAAAAAAAAgAA8AAAAAAAAAAAAgABAAAAABAAEAAAAgABEAAAABAAIAAAAgABIAAAABAAMAAAAgABMAAAAAAAAAAAAgABQAAAAAAAAAAAAgABUAAAAAAAAAAAAgABYAAAAAAAAAAAAgABcAAAAAAAAAAAAgABgAAAAAAAAAAAAgABkAAAAAAAAAAAAgABoAAAAAAAAAAAAgABsAAAABAAEAAAAgABwAAAABAAIAAAAgAB0AAAABAAMAAAAgAB4AAAAAAAAAAAAgAB8AAAAAAAAAAAAhAAAAAAAAAAAAAAAhAAEAAAAAAAAAAAAhAAIAAAAAAAAAAAAhAAMAAAAAAAAAAAAhAAQAAAAAAAAAAAAhAAUAAAAAAAAAAAAhAAgAAAADAAMAAAAhAAkAAAABAAIAAAAhAAoAAAABAAMAAAAhAAsAAAAAAAAAAAAhAAwAAAAAAAAAAAAhAA0AAAAAAAAAAAAhAA4AAAAAAAAAAAAhAA8AAAAAAAAAAAAhABAAAAABAAEAAAAhABEAAAABAAIAAAAhABIAAAABAAMAAAAhABMAAAAAAAAAAAAhABQAAAAAAAAAAAAhABUAAAAAAAAAAAAhABYAAAAAAAAAAAAhABcAAAAAAAAAAAAhABgAAAAAAAAAAAAhABkAAAAAAAAAAAAhABoAAAAAAAAAAAAhABsAAAABAAEAAAAhABwAAAABAAIAAAAhAB0AAAABAAMAAAAhAB4AAAAAAAAAAAAhAB8AAAAAAAAAAAAiAAAAAAAAAAAAAAAiAAEAAAAAAAAAAAAiAAIAAAAAAAAAAAAiAAMAAAAAAAAAAAAiAAQAAAAAAAAAAAAiAAUAAAAAAAAAAAAiAAYAAAAAAAAAAAAiAAcAAAAAAAAAAAAiAAgAAAABAAEAAAAiAAkAAAABAAIAAAAiAAoAAAABAAMAAAAiAAsAAAAAAAAAAAAiAAwAAAAAAAAAAAAiAA0AAAAAAAAAAAAiAA4AAAAAAAAAAAAiAA8AAAAAAAAAAAAiABAAAAABAAEAAAAiABEAAAABAAIAAAAiABIAAAABAAMAAAAiABMAAAAAAAAAAAAiABQAAAAAAAAAAAAiABUAAAAAAAAAAAAiABYAAAAAAAAAAAAiABcAAAAAAAAAAAAiABgAAAAAAAAAAAAiABkAAAAAAAAAAAAiABoAAAAAAAAAAAAiABsAAAABAAEAAAAiABwAAAABAAIAAAAiAB0AAAABAAMAAAAiAB4AAAAAAAAAAAAiAB8AAAAAAAAAAAAjAAAAAAAAAAAAAAAjAAEAAAAAAAAAAAAjAAIAAAAAAAAAAAAjAAMAAAAAAAAAAAAjAAQAAAAAAAAAAAAjAAUAAAAAAAAAAAAjAAYAAAAAAAAAAAAjAAcAAAAAAAAAAAAjAAgAAAABAAEAAAAjAAkAAAABAAIAAAAjAAoAAAAFAAEAAAAjAAsAAAAAAAIAAAAjAAwAAAAAAAIAAAAjAA0AAAAAAAIAAAAjAA4AAAAAAAIAAAAjAA8AAAAAAAIAAAAjABAAAAAFAAMAAAAjABEAAAABAAIAAAAjABIAAAABAAMAAAAjABMAAAAAAAAAAAAjABQAAAAAAAAAAAAjABUAAAAAAAAAAAAjABYAAAAAAAAAAAAjABcAAAAAAAAAAAAjABgAAAAAAAAAAAAjABkAAAAAAAAAAAAjABoAAAAAAAAAAAAjABsAAAABAAEAAAAjABwAAAABAAIAAAAjAB0AAAABAAMAAAAjAB4AAAAAAAAAAAAjAB8AAAAAAAAAAAAkAAAAAAAAAAAAAAAkAAEAAAAAAAAAAAAkAAIAAAAAAAAAAAAkAAMAAAAAAAAAAAAkAAQAAAAAAAAAAAAkAAUAAAAAAAAAAAAkAAYAAAAAAAAAAAAkAAcAAAAAAAAAAAAkAAgAAAABAAEAAAAkAAkAAAABAAIAAAAkAAoAAAABAAIAAAAkAAsAAAABAAIAAAAkAAwAAAABAAIAAAAkAA0AAAABAAIAAAAkAA4AAAABAAIAAAAkAA8AAAABAAIAAAAkABAAAAABAAIAAAAkABEAAAABAAIAAAAkABIAAAABAAMAAAAkABMAAAAAAAAAAAAkABQAAAAAAAAAAAAkABUAAAAAAAAAAAAkABYAAAAAAAAAAAAkABcAAAAAAAAAAAAkABgAAAAAAAAAAAAkABkAAAAAAAAAAAAkABoAAAAAAAAAAAAkABsAAAABAAEAAAAkABwAAAABAAIAAAAkAB0AAAABAAMAAAAkAB4AAAAAAAAAAAAkAB8AAAAAAAAAAAAlAAAAAAAAAAAAAAAlAAEAAAAAAAAAAAAlAAIAAAAAAAAAAAAlAAMAAAAAAAAAAAAlAAQAAAAAAAAAAAAlAAUAAAAAAAAAAAAlAAYAAAAAAAAAAAAlAAcAAAAAAAAAAAAlAAgAAAACAAEAAAAlAAkAAAACAAIAAAAlAAoAAAACAAIAAAAlAAsAAAACAAIAAAAlAAwAAAACAAIAAAAlAA0AAAACAAIAAAAlAA4AAAACAAIAAAAlAA8AAAACAAIAAAAlABAAAAACAAIAAAAlABEAAAACAAIAAAAlABIAAAACAAMAAAAlABMAAAAAAAAAAAAlABQAAAAAAAAAAAAlABUAAAAAAAAAAAAlABYAAAAAAAAAAAAlABcAAAAAAAAAAAAlABgAAAAAAAAAAAAlABkAAAAAAAAAAAAlABoAAAAAAAAAAAAlABsAAAABAAEAAAAlABwAAAABAAIAAAAlAB0AAAABAAMAAAAlAB4AAAAAAAAAAAAlAB8AAAAAAAAAAAAmAAAAAAAAAAAAAAAmAAEAAAAAAAAAAAAmAAIAAAAAAAAAAAAmAAMAAAAAAAAAAAAmAAQAAAAAAAAAAAAmAAUAAAAAAAAAAAAmAAYAAAAAAAAAAAAmAAcAAAAAAAAAAAAmAAgAAAAAAAAAAAAmAAkAAAAAAAAAAAAmAAoAAAAAAAAAAAAmAAsAAAAAAAAAAAAmAAwAAAAAAAAAAAAmAA0AAAAAAAAAAAAmAA4AAAAAAAAAAAAmAA8AAAAAAAAAAAAmABAAAAAAAAAAAAAmABEAAAAAAAAAAAAmABIAAAAAAAAAAAAmABMAAAAAAAAAAAAmABQAAAAAAAAAAAAmABUAAAAAAAAAAAAmABYAAAAAAAAAAAAmABcAAAAAAAAAAAAmABgAAAAAAAAAAAAmABkAAAAAAAAAAAAmABoAAAAAAAAAAAAmABsAAAABAAEAAAAmABwAAAABAAIAAAAmAB0AAAABAAMAAAAmAB4AAAAAAAAAAAAmAB8AAAAAAAAAAAAnAAAAAAAAAAAAAAAnAAEAAAAAAAAAAAAnAAIAAAAAAAAAAAAnAAMAAAAAAAAAAAAnAAQAAAAAAAAAAAAnAAUAAAAAAAAAAAAnAAYAAAAAAAAAAAAnAAcAAAAAAAAAAAAnAAgAAAAAAAAAAAAnAAkAAAAAAAAAAAAnAAoAAAAAAAAAAAAnAAsAAAAAAAAAAAAnAAwAAAAAAAAAAAAnAA0AAAAAAAAAAAAnAA4AAAAAAAAAAAAnAA8AAAAAAAAAAAAnABAAAAAAAAAAAAAnABEAAAAAAAAAAAAnABIAAAAAAAAAAAAnABMAAAAAAAAAAAAnABQAAAAAAAAAAAAnABUAAAAAAAAAAAAnABYAAAAAAAAAAAAnABcAAAAAAAAAAAAnABgAAAAAAAAAAAAnABkAAAAAAAAAAAAnABoAAAAAAAAAAAAnABsAAAABAAEAAAAnABwAAAABAAIAAAAnAB0AAAABAAMAAAAnAB4AAAAAAAAAAAAnAB8AAAAAAAAAAAAoAAAAAAAAAAAAAAAoAAEAAAAAAAAAAAAoAAIAAAAAAAAAAAAoAAMAAAAAAAAAAAAoAAQAAAAAAAAAAAAoAAUAAAAAAAAAAAAoAAYAAAAAAAAAAAAoAAcAAAAAAAAAAAAoAAgAAAAAAAAAAAAoAAkAAAAAAAAAAAAoAAoAAAAAAAAAAAAoAAsAAAAAAAAAAAAoAAwAAAAAAAAAAAAoAA0AAAAAAAAAAAAoAA4AAAAAAAAAAAAoAA8AAAAAAAAAAAAoABAAAAAAAAAAAAAoABEAAAAAAAAAAAAoABIAAAAAAAAAAAAoABMAAAAAAAAAAAAoABQAAAAAAAAAAAAoABUAAAAAAAAAAAAoABYAAAAAAAAAAAAoABcAAAAAAAAAAAAoABgAAAAAAAAAAAAoABkAAAAAAAAAAAAoABoAAAAAAAAAAAAoABsAAAABAAEAAAAoABwAAAABAAIAAAAoAB0AAAABAAMAAAAoAB4AAAAAAAAAAAAoAB8AAAAAAAAAAAApAAAAAAAAAAAAAAApAAEAAAAAAAAAAAApAAIAAAAAAAAAAAApAAMAAAAAAAAAAAApAAQAAAAAAAAAAAApAAUAAAAAAAAAAAApAAYAAAAAAAAAAAApAAcAAAAAAAAAAAApAAgAAAAAAAAAAAApAAkAAAAAAAAAAAApAAoAAAAAAAAAAAApAAsAAAAAAAAAAAApAAwAAAAAAAAAAAApAA0AAAAAAAAAAAApAA4AAAAAAAAAAAApAA8AAAAAAAAAAAApABAAAAAAAAAAAAApABEAAAAAAAAAAAApABIAAAAAAAAAAAApABMAAAAAAAAAAAApABQAAAAAAAAAAAApABUAAAAAAAAAAAApABYAAAAAAAAAAAApABcAAAAAAAAAAAApABgAAAAAAAAAAAApABkAAAAAAAAAAAApABoAAAAAAAAAAAApABsAAAABAAEAAAApABwAAAABAAIAAAApAB0AAAABAAMAAAApAB4AAAAAAAAAAAApAB8AAAAAAAAAAAAhAAcAAAACAAIAAAAhAAYAAAACAAIAAAAgAAUAAAABAAIAAAA=")
+    tile_set = ExtResource("1_ve0s3")
+    
+    [node name="DetailLayerBack" type="TileMapLayer" parent="TileMapLayers" unique_id=414661615]
+    tile_map_data = PackedByteArray("AAAvAAsAAQAXAAsAAAAvAAwAAQAXAAwAAAAvAA0AAQAXAA0AAAAwAAoAAQAYAAoAAAAwAAsAAQAYAAsAAAAwAAwAAQAYAAwAAAAwAA0AAQAYAA0AAAAxAAoAAQAZAAoAAAAxAAsAAQAZAAsAAAAxAAwAAQAZAAwAAAAxAA0AAQAZAA0AAAAyAAsAAQAaAAsAAAAyAAwAAQAaAAwAAAAyAA0AAQAaAA0AAAAuAA0AAQAXAAoAAAAuAAwAAQAXAAoAAAAuAAsAAQAXAAoAAAAzAA0AAQAXAAoAAAAzAAwAAQAXAAoAAAAzAAsAAQAXAAoAAAAtAAoAAQAWAAsAAAAtAAsAAQAWAAsAAAAtAAwAAQAWAAwAAAAtAA0AAQAWAA0AAAA0AAsAAQAdAAkAAAA0AAwAAQAdAAoAAAA0AA0AAQAdAAsAAAAuAAkAAQAVAAYAAAAuAAoAAQAVAAcAAAAvAAkAAQAWAAYAAAAvAAoAAQAWAAcAAAAyAAkAAQAVAAYAAAAyAAoAAQAVAAcAAAAzAAkAAQAWAAYAAAAzAAoAAQAWAAcAAAAwAAkAAQAXAAoAAAAxAAkAAQAXAAoAAAA0AAkAAQAdAAgAAAA0AAoAAQAdAAkAAAAtAAkAAQAWAAoAAAAsAAcAAQATAAYAAAAsAAgAAQATAAcAAAAtAAcAAQATAAYAAAAtAAgAAQATAAcAAAAuAAcAAQATAAYAAAAuAAgAAQATAAcAAAAvAAcAAQATAAYAAAAvAAgAAQATAAcAAAAwAAcAAQATAAYAAAAwAAgAAQATAAcAAAAxAAcAAQATAAYAAAAxAAgAAQATAAcAAAAyAAcAAQATAAYAAAAyAAgAAQATAAcAAAAzAAcAAQATAAYAAAAzAAgAAQATAAcAAAA0AAcAAQATAAYAAAA0AAgAAQATAAcAAAA1AAcAAQATAAYAAAA1AAgAAQATAAcAAAA+AAkAAQAIAAoAAAA+AAoAAQAIAAsAAAA+AAsAAQAIAAsAAAA+AAwAAQAIAAsAAAA/AAkAAQAJAAoAAAA/AAoAAQAJAAsAAAA/AAsAAQAJAAsAAAA/AAwAAQAJAAsAAABAAAkAAQAKAAcAAABAAAoAAQAMAAcAAABAAAsAAQAMAAcAAABAAAwAAQAMAAcAAABBAAkAAQAKAAcAAABBAAoAAQAIAAcAAABBAAsAAQAIAAcAAABBAAwAAQAIAAcAAABCAAkAAQAKAAoAAABCAAoAAQAKAAsAAABCAAsAAQAKAAsAAABCAAwAAQAKAAsAAABDAAkAAQALAAoAAABDAAoAAQALAAsAAABDAAsAAQALAAsAAABDAAwAAQALAAsAAAA=")
+    tile_set = SubResource("TileSet_4jb3m")
+    
+    [node name="DetailLayerFront" type="TileMapLayer" parent="TileMapLayers" unique_id=226078261]
+    z_index = 1
+    y_sort_enabled = true
+    tile_map_data = PackedByteArray("AAAsAAUAAQANAAgAAAAsAAYAAQANAAsAAAAsAAcAAQANAAsAAAAsAAgAAQANAAsAAAAsAAkAAQANAAwAAAAtAAQAAQAMAAgAAAAtAAUAAQAMAAkAAAAtAAYAAQAMAAoAAAAtAAcAAQAMAAsAAAAtAAgAAQAOAAsAAAAtAAkAAQAOAAwAAAAuAAMAAQANAAcAAAAuAAQAAQANAAgAAAAuAAUAAQANAAkAAAAuAAYAAQANAAoAAAAuAAcAAQANAAsAAAAuAAgAAQANAAwAAAAvAAMAAQAOAAcAAAAvAAQAAQAOAAgAAAAvAAUAAQAOAAkAAAAvAAYAAQAOAAoAAAAvAAcAAQAOAAsAAAAvAAgAAQAOAAwAAAAwAAMAAQAPAAcAAAAwAAQAAQAPAAgAAAAwAAUAAQAPAAkAAAAwAAYAAQAPAAoAAAAwAAcAAQAPAAsAAAAxAAMAAQAQAAcAAAAxAAQAAQAQAAgAAAAxAAUAAQAQAAkAAAAxAAYAAQAQAAoAAAAxAAcAAQAQAAsAAAAyAAMAAQARAAcAAAAyAAQAAQARAAgAAAAyAAUAAQARAAkAAAAyAAYAAQARAAoAAAAyAAcAAQARAAsAAAAyAAgAAQARAAwAAAAzAAMAAQASAAcAAAAzAAQAAQASAAgAAAAzAAUAAQASAAkAAAAzAAYAAQASAAoAAAAzAAcAAQASAAsAAAAzAAgAAQASAAwAAAA0AAQAAQATAAgAAAA0AAUAAQATAAkAAAA0AAYAAQATAAoAAAA0AAcAAQATAAsAAAA0AAgAAQARAAsAAAA0AAkAAQARAAwAAAA1AAUAAQASAAgAAAA1AAYAAQASAAkAAAA1AAcAAQASAAoAAAA1AAgAAQASAAsAAAA1AAkAAQASAAwAAAA9AAYAAQAAAAgAAAA9AAcAAQAAAAkAAAA9AAgAAQAAAAoAAAA9AAUAAQAAAAcAAAA+AAUAAQABAAcAAAA+AAYAAQABAAgAAAA+AAcAAQABAAkAAAA+AAgAAQABAAoAAAA/AAUAAQACAAcAAAA/AAYAAQACAAgAAAA/AAcAAQACAAkAAAA/AAgAAQACAAoAAABAAAUAAQADAAcAAABAAAYAAQADAAgAAABAAAcAAQADAAkAAABAAAgAAQADAAoAAABBAAUAAQAEAAcAAABBAAYAAQAEAAgAAABBAAcAAQAEAAkAAABBAAgAAQAEAAoAAABCAAUAAQAFAAcAAABCAAYAAQAFAAgAAABCAAcAAQAFAAkAAABCAAgAAQAFAAoAAABDAAUAAQAGAAcAAABDAAYAAQAGAAgAAABDAAcAAQAGAAkAAABDAAgAAQAGAAoAAABEAAUAAQAHAAcAAABEAAYAAQAHAAgAAABEAAcAAQAHAAkAAABEAAgAAQAHAAoAAAA=")
+    tile_set = SubResource("TileSet_4jb3m")
+    
+    [node name="WallLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=582539627]
+    tile_map_data = PackedByteArray("AAAAAB8AAgACAAAAAAAAAB4AAgACAAAAAAAAAB0AAgACAAAAAAAAABwAAgACAAAAAAAAABsAAgACAAAAAAAAABoAAgACAAAAAAAAABkAAgACAAAAAAAAABgAAgACAAAAAAAAABcAAgACAAAAAAAAABYAAgACAAAAAAAAABUAAgACAAAAAAAAABQAAgACAAAAAAAAABMAAgACAAAAAAAAABIAAgACAAAAAAAAABEAAgACAAAAAAAAABAAAgACAAAAAAAAAA8AAgACAAAAAAAAAA4AAgACAAAAAAAAAA0AAgACAAAAAAAAAAwAAgACAAAAAAAAAAsAAgACAAAAAAAAAAoAAgACAAAAAAAAAAkAAgACAAAAAAAAAAgAAgACAAAAAAAAAAcAAgACAAAAAAAAAAYAAgACAAAAAAAAAAUAAgACAAAAAAAAAAQAAgACAAAAAAAAAAMAAgACAAAAAAAAAAIAAgACAAAAAAAAAAEAAgACAAAAAAAAAAAAAgACAAAAAAApAAAAAgACAAAAAAAoAAAAAgACAAAAAAAnAAAAAgACAAAAAAAmAAAAAgACAAAAAAAlAAAAAgACAAAAAAAkAAAAAgACAAAAAAAjAAAAAgACAAAAAAAiAAAAAgACAAAAAAAhAAAAAgACAAAAAAAgAAAAAgACAAAAAAAfAAAAAgACAAAAAAAeAAAAAgACAAAAAAAdAAAAAgACAAAAAAAcAAAAAgACAAAAAAAbAAAAAgACAAAAAAAaAAAAAgACAAAAAAAZAAAAAgACAAAAAAAYAAAAAgACAAAAAAAXAAAAAgACAAAAAAAWAAAAAgACAAAAAAAVAAAAAgACAAAAAAAUAAAAAgACAAAAAAATAAAAAgACAAAAAAASAAAAAgACAAAAAAARAAAAAgACAAAAAAAQAAAAAgACAAAAAAAPAAAAAgACAAAAAAAOAAAAAgACAAAAAAANAAAAAgACAAAAAAAMAAAAAgACAAAAAAALAAAAAgACAAAAAAAKAAAAAgACAAAAAAAJAAAAAgACAAAAAAAIAAAAAgACAAAAAAAHAAAAAgACAAAAAAAGAAAAAgACAAAAAAAFAAAAAgACAAAAAAAEAAAAAgACAAAAAAADAAAAAgACAAAAAAACAAAAAgACAAAAAAABAAAAAgACAAAAAAABAB8AAgACAAAAAAACAB8AAgACAAAAAAADAB8AAgACAAAAAAAEAB8AAgACAAAAAAAFAB8AAgACAAAAAAAGAB8AAgACAAAAAAAHAB8AAgACAAAAAAAIAB8AAgACAAAAAAAJAB8AAgACAAAAAAAKAB8AAgACAAAAAAALAB8AAgACAAAAAAAMAB8AAgACAAAAAAANAB8AAgACAAAAAAAOAB8AAgACAAAAAAAPAB8AAgACAAAAAAAQAB8AAgACAAAAAAARAB8AAgACAAAAAAASAB8AAgACAAAAAAATAB8AAgACAAAAAAAUAB8AAgACAAAAAAAVAB8AAgACAAAAAAAWAB8AAgACAAAAAAAXAB8AAgACAAAAAAAYAB8AAgACAAAAAAAZAB8AAgACAAAAAAAaAB8AAgACAAAAAAAbAB8AAgACAAAAAAAcAB8AAgACAAAAAAAdAB8AAgACAAAAAAAeAB8AAgACAAAAAAAfAB8AAgACAAAAAAAgAB8AAgACAAAAAAAhAB8AAgACAAAAAAAiAB8AAgACAAAAAAAjAB8AAgACAAAAAAAkAB8AAgACAAAAAAAlAB8AAgACAAAAAAAmAB8AAgACAAAAAAAnAB8AAgACAAAAAAAoAB8AAgACAAAAAAApAB8AAgACAAAAAAApAB4AAgACAAAAAAApAB0AAgACAAAAAAApABwAAgACAAAAAAApABsAAgACAAAAAAApABoAAgACAAAAAAApABkAAgACAAAAAAApABgAAgACAAAAAAApABcAAgACAAAAAAApABYAAgACAAAAAAApABUAAgACAAAAAAApABQAAgACAAAAAAApABMAAgACAAAAAAApABIAAgACAAAAAAApABEAAgACAAAAAAApABAAAgACAAAAAAApAA8AAgACAAAAAAApAA4AAgACAAAAAAApAA0AAgACAAAAAAApAAwAAgACAAAAAAApAAsAAgACAAAAAAApAAoAAgACAAAAAAApAAkAAgACAAAAAAApAAgAAgACAAAAAAApAAcAAgACAAAAAAApAAYAAgACAAAAAAApAAUAAgACAAAAAAApAAQAAgACAAAAAAApAAMAAgACAAAAAAApAAIAAgACAAAAAAApAAEAAgACAAAAAAA=")
+    tile_set = ExtResource("2_t4lhn")
+    
+    [node name="BlockingLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=1290911956]
+    visible = false
+    modulate = Color(1, 1, 1, 0.40392157)
+    tile_map_data = PackedByteArray("AAAyAA0AAAAwAAAAAAAzAA0AAAAwAAAAAAA0AA0AAAAwAAAAAAA0AAwAAAAwAAAAAAAzAAwAAAAwAAAAAAAyAAwAAAAwAAAAAAAyAAsAAAAwAAAAAAAzAAsAAAAwAAAAAAA0AAsAAAAwAAAAAAA0AAoAAAAwAAAAAAAzAAoAAAAwAAAAAAAyAAoAAAAwAAAAAAAxAAoAAAAwAAAAAAAwAAoAAAAwAAAAAAAvAAoAAAAwAAAAAAAvAAsAAAAwAAAAAAAvAAwAAAAwAAAAAAAvAA0AAAAwAAAAAAAuAA0AAAAwAAAAAAAuAAwAAAAwAAAAAAAuAAsAAAAwAAAAAAAuAAoAAAAwAAAAAAAtAAoAAAAwAAAAAAAtAAsAAAAwAAAAAAAtAAwAAAAwAAAAAAAtAA0AAAAwAAAAAAA0AAkAAAAwAAAAAAAzAAkAAAAwAAAAAAAyAAkAAAAwAAAAAAAxAAkAAAAwAAAAAAAwAAkAAAAwAAAAAAAvAAkAAAAwAAAAAAAuAAkAAAAwAAAAAAAtAAkAAAAwAAAAAAAtAAgAAAAwAAAAAAAuAAgAAAAwAAAAAAAvAAgAAAAwAAAAAAAwAAgAAAAwAAAAAAAxAAgAAAAwAAAAAAAyAAgAAAAwAAAAAAAzAAgAAAAwAAAAAAA0AAgAAAAwAAAAAAA0AAcAAAAwAAAAAAAzAAcAAAAwAAAAAAAyAAcAAAAwAAAAAAAxAAcAAAAwAAAAAAAwAAcAAAAwAAAAAAAvAAcAAAAwAAAAAAAuAAcAAAAwAAAAAAAtAAcAAAAwAAAAAAAtAAYAAAAwAAAAAAAuAAYAAAAwAAAAAAAvAAYAAAAwAAAAAAAwAAYAAAAwAAAAAAAxAAYAAAAwAAAAAAAyAAYAAAAwAAAAAAAzAAYAAAAwAAAAAAA0AAYAAAAwAAAAAAA+AAYAAAAwAAAAAAA+AAcAAAAwAAAAAAA+AAgAAAAwAAAAAAA+AAkAAAAwAAAAAAA+AAoAAAAwAAAAAAA+AAsAAAAwAAAAAAA+AAwAAAAwAAAAAAA/AAYAAAAwAAAAAAA/AAcAAAAwAAAAAAA/AAgAAAAwAAAAAAA/AAkAAAAwAAAAAAA/AAoAAAAwAAAAAAA/AAsAAAAwAAAAAAA/AAwAAAAwAAAAAABAAAYAAAAwAAAAAABAAAcAAAAwAAAAAABAAAgAAAAwAAAAAABAAAkAAAAwAAAAAABBAAYAAAAwAAAAAABBAAcAAAAwAAAAAABBAAgAAAAwAAAAAABBAAkAAAAwAAAAAABCAAYAAAAwAAAAAABCAAcAAAAwAAAAAABCAAgAAAAwAAAAAABCAAkAAAAwAAAAAABCAAoAAAAwAAAAAABCAAsAAAAwAAAAAABCAAwAAAAwAAAAAABDAAYAAAAwAAAAAABDAAcAAAAwAAAAAABDAAgAAAAwAAAAAABDAAkAAAAwAAAAAABDAAoAAAAwAAAAAABDAAsAAAAwAAAAAABDAAwAAAAwAAAAAAA=")
+    tile_set = SubResource("TileSet_lxxjp")
+    
+    [node name="Warps" type="Node2D" parent="." unique_id=1008206038]
+    
+    [node name="Building1WarpPoint" parent="Warps" unique_id=1105175947 instance=ExtResource("4_ruy0x")]
+    position = Vector2(1569, 423)
+    warp_id = "Building1"
+    warp_definition = SubResource("Resource_lxxjp")
+    
+    [node name="Building2WarpPoint" parent="Warps" unique_id=1474979962 instance=ExtResource("4_ruy0x")]
+    position = Vector2(2080, 392)
+    warp_id = "Building2"
+    warp_definition = SubResource("Resource_2hb0a")
+    
+    [node name="NorthExitWarpPoint" parent="Warps" unique_id=703110016 instance=ExtResource("4_ruy0x")]
+    position = Vector2(291, 82)
+    warp_id = "NorthExit"
+    warp_definition = SubResource("Resource_4yntq")
+    
+    [node name="EastExitWarpPoint" parent="Warps" unique_id=1682822818 instance=ExtResource("4_ruy0x")]
+    position = Vector2(2601, 1822)
+    warp_id = "EastExit"
+    warp_definition = SubResource("Resource_85tp5")
+    
+    [node name="YSort" type="Node2D" parent="." unique_id=719166860]
+    y_sort_enabled = true
+    
+    [node name="NPCs" type="Node2D" parent="YSort" unique_id=1354959080]
+    
+    [node name="Entities" type="Node2D" parent="YSort" unique_id=561890850]
+    
+    [node name="Player" parent="YSort" unique_id=1122482979 instance=ExtResource("3_buwca")]
+    y_sort_enabled = true
+    position = Vector2(1286, 437)
+    
+    [node name="MapController" type="Node" parent="." unique_id=690899599]
+    script = ExtResource("4_3o1rd")
+    camera_bounds = Rect2(0, 0, 2688, 2048)
+    
+    _______________
+    _______________
     (TestTown.tscn):
     [gd_scene format=4 uid="uid://bmqoe0sya3knp"]
     
@@ -4269,15 +5102,14 @@ _______________
     [ext_resource type="Script" uid="uid://drag68vt7goeq" path="res://src/resources/WarpDefinition.gd" id="4_3jy7c"]
     [ext_resource type="Script" uid="uid://3jhcfyj08wdl" path="res://scenes/world/map_controller.gd" id="4_r720c"]
     [ext_resource type="PackedScene" uid="uid://dv8dvat866384" path="res://scenes/NPC.tscn" id="5_7vg7e"]
-    [ext_resource type="Resource" uid="uid://ce0tqxb746j5v" path="res://data/dialogue/test1.tres" id="6_at1v2"]
     
     [sub_resource type="TileSet" id="TileSet_4jb3m"]
     tile_size = Vector2i(64, 64)
     
     [sub_resource type="Resource" id="Resource_3jy7c"]
     script = ExtResource("4_3jy7c")
-    target_scene = "res://scenes/world/Overworld.tscn"
-    target_warp_id = "overworld_from_town"
+    target_scene = "res://scenes/towns/Hogsforth.tscn"
+    target_warp_id = "Building1"
     metadata/_custom_type_script = "uid://drag68vt7goeq"
     
     [node name="TestTown" type="Node2D" unique_id=1952397873]
@@ -4312,8 +5144,7 @@ _______________
     [node name="Npc" parent="YSort/NPCs" unique_id=1190844843 instance=ExtResource("5_7vg7e")]
     y_sort_enabled = true
     position = Vector2(1056, 597)
-    queued_dialogue = ExtResource("6_at1v2")
-    wander_radius = 640.0
+    wander_radius = 300.0
     
     [node name="Entities" type="Node2D" parent="YSort" unique_id=561890850]
     
@@ -5283,9 +6114,11 @@ _______________
     			current_party_member = get_active_player()
     			show()
     			EventBus.world_menu_opened.emit()
+    			EventBus.player_movement_locked.emit()
     			refresh_item_list()
     		else:
     			hide()
+    			EventBus.player_movement_unlocked.emit()
     			EventBus.world_menu_closed.emit()
     
     func refresh_item_list():
@@ -5427,7 +6260,9 @@ _______________
     var pending_warp : WarpPoint
     
     func _ready() -> void:
-    	player = get_tree().get_nodes_in_group('player')[0]
+    	print("pending_warp_id: ", GameState.pending_warp_id)
+    	print("previous_player_location: ", GameState.previous_player_location)
+		player = get_tree().get_nodes_in_group('player')[0]
     	for warp in warps.get_children():
     		if warp is WarpPoint and (warp as WarpPoint).warp_id == GameState.pending_warp_id:
     			pending_warp = warp
@@ -5436,10 +6271,15 @@ _______________
     		pending_warp.just_spawned = true
     		player.set_camera_limits(camera_bounds)
     		player.global_position = pending_warp.global_position
+    	elif GameState.previous_player_location != Vector2(-1, -1):
+    		player.set_camera_limits(camera_bounds)
+    		player.global_position = GameState.previous_player_location
+    		player.party_member.previous_location = null
     
     func _unhandled_input(event: InputEvent) -> void:
     	if event.is_action_pressed("ui_accept"):
-    		var group = load("res://data/enemies/slime_group.tres")
+    		var group = load("res://data/enemy_groups/Slime_Slime_Slime.tres")
+    		GameState.previous_player_location = player.global_position
     		SceneManager.start_combat(group)
     
     _______________
@@ -5457,16 +6297,22 @@ _______________
     [sub_resource type="TileSet" id="TileSet_4jb3m"]
     tile_size = Vector2i(64, 64)
     
+    [sub_resource type="Resource" id="Resource_pvfq6"]
+    script = ExtResource("4_d5ghx")
+    target_scene = "res://scenes/dungeons/TestDungeon.tscn"
+    target_warp_id = "dungeon_entrance"
+    metadata/_custom_type_script = "uid://drag68vt7goeq"
+    
     [sub_resource type="Resource" id="Resource_awhr7"]
     script = ExtResource("4_d5ghx")
-    target_scene = "res://scenes/towns/TestTown.tscn"
-    target_warp_id = "test_town_entrance"
+    target_scene = "res://scenes/towns/Hogsforth.tscn"
+    target_warp_id = "NorthExit"
     metadata/_custom_type_script = "uid://drag68vt7goeq"
     
     [sub_resource type="Resource" id="Resource_xjdhy"]
     script = ExtResource("4_d5ghx")
-    target_scene = "res://scenes/dungeons/TestDungeon.tscn"
-    target_warp_id = "dungeon_entrance"
+    target_scene = "res://scenes/towns/Hogsforth.tscn"
+    target_warp_id = "EastExit"
     metadata/_custom_type_script = "uid://drag68vt7goeq"
     
     [node name="Overworld" type="Node2D" unique_id=1952397873]
@@ -5486,7 +6332,15 @@ _______________
     
     [node name="Warps" type="Node2D" parent="." unique_id=1008206038]
     
-    [node name="Town" parent="Warps" unique_id=1105175947 instance=ExtResource("3_pvfq6")]
+    [node name="InteractPoint" parent="Warps" unique_id=1105175947 instance=ExtResource("3_pvfq6")]
+    modulate = Color(1, 0, 0, 1)
+    position = Vector2(736, 229)
+    warp_id = "overworld_interact"
+    warp_definition = SubResource("Resource_pvfq6")
+    require_interact = true
+    
+    [node name="Town" parent="Warps" unique_id=975121074 instance=ExtResource("3_pvfq6")]
+    modulate = Color(0.15686275, 1, 1, 1)
     position = Vector2(471, 235)
     warp_id = "overworld_from_town"
     warp_definition = SubResource("Resource_awhr7")
@@ -5503,7 +6357,7 @@ _______________
     
     [node name="Entities" type="Node2D" parent="YSort" unique_id=561890850]
     
-    [node name="Player" parent="YSort" unique_id=1122482979 instance=ExtResource("3_xjdhy")]
+    [node name="Player" parent="YSort" unique_id=1122482979 groups=["party"] instance=ExtResource("3_xjdhy")]
     
     [node name="MapController" type="Node" parent="." unique_id=690899599]
     script = ExtResource("4_pvfq6")
@@ -5558,6 +6412,7 @@ _______________
     func start_dialogue(dialogue : DialogueSequence):
     	if _current_sequence != null:
     		return
+    	EventBus.player_movement_locked.emit()
     	_current_sequence = dialogue
     	_current_lines = dialogue.lines
     	_current_index = 0
@@ -5608,6 +6463,7 @@ _______________
     	_current_lines = []
     	_current_index = 0
     	_awaiting_choices = false
+    	EventBus.player_movement_unlocked.emit()
     	EventBus.dialogue_finished.emit()
     
     _______________
@@ -5616,6 +6472,10 @@ _______________
     extends Node
     
     @warning_ignore_start("unused_signal")
+    
+    # Utility Signals
+    signal player_movement_locked()
+    signal player_movement_unlocked()
     
     # Scene/world signals
     signal scene_transition_requested(scene_path: String, transition: String)
@@ -5629,1031 +6489,1036 @@ _______________
     signal combat_animations_finished()
     signal combat_action_resolving()
     signal combat_log_updated(text: String) # anything that happens in battle gets narrated here: "Norb attacks!", "Slime is poisoned!", "Norb takes 14 damage!"
-    signal turn_started(combatant: BattleCombatant) # fired when a new combatant's turn begins, UI uses this to highlight whose turn it is
-    signal combatant_damaged(combatant: BattleCombatant, amount: int) # fired after damage is applied, HP bar animates in response
-    signal combatant_healed(combatant: BattleCombatant, amount: int) # same pattern for healing
-    signal combatant_status_applied(combatant: BattleCombatant, status: StatusEffect) # UI shows the status icon
-    signal combatant_status_expired(combatant: BattleCombatant, status: StatusEffect) # UI removes the status icon
-    signal combatant_died(combatant: BattleCombatant) # UI plays death state, CombatManager checks victory/defeat condition
-    signal player_turn_started()
-    signal player_action_selected(action: BattleAction)
-    signal player_targets_selected(targets: Array[BattleCombatant])
-    signal player_item_selected(item : ItemResource)
-    signal player_flee_attempted()
-    signal target_select_requested(targets: Array[BattleCombatant])
-    signal all_targets()
-    
-    
-    # Dialogue signals
-    signal dialogue_started(sequence: DialogueSequence)
-    signal advance_dialogue_requested()
-    signal dialogue_line_advanced(line : DialogueLine)
-    signal dialogue_choices_available(choices: Array[DialogueChoice])
-    signal dialogue_choice_selected(choice : DialogueChoice)
-    signal dialogue_finished()
-    
-    # Inventory signals
-    signal item_acquired(item: Resource)
-    signal item_used(item: Resource)
-    signal item_dropped(item: Resource)
-    
-    # Game state signals
-    signal flag_changed(flag_name: String, value: Variant)
-    signal gold_changed(new_amount: int)
-    
-    # Progression signals
-    signal level_increased(character : PartyMemberResource, new_value : int)
-    signal stat_increased(character : PartyMemberResource, stat : String, new_value : int)
-    
-    # Audio signals
-    signal music_change_requested(track_path: String, transition: String)
-    signal sfx_requested(sfx_path: String)
-    
-    # Manipulation signals
-    signal interact_pressed
-    signal world_menu_opened
-    signal world_menu_closed
-    
-    _______________
-    _______________
-    (GameState.gd):
-    extends Node
-    
-    # World flags — anything that "happened": doors opened, quests advanced,
-    # NPCs talked to. Key is a string, value is bool/int/String.
-    var flags: Dictionary = {}
-    
-    # Economy
-    var gold: int = 0
-    var pending_inventory: Array[ItemResource] = []
-    var inventory: Array[ItemResource] = []
-    
-    # Party
-    var party: Array[PartyMemberResource] = []
-    
-    # Tracking
-    var current_map_path: String = ""
-    var save_slot: int = 0
-    var pending_warp_id : String = "test_town_entrance"
-    
-    var pending_enemy_group : EnemyGroupResource = null
-    var in_combat := false
-    
-    func _ready() -> void:
-    	EventBus.combat_started.connect(func(enemy_group):in_combat=true)
-    	EventBus.combat_ended.connect(func(result):in_combat=false)
-    	party.append(load("res://data/characters/norb_party_member.tres").duplicate(true))
-    	inventory.append_array([load("res://data/items/elixer.tres"), load("res://data/items/magicrestore.tres"), load("res://data/items/potion.tres"), load("res://data/items/sword.tres")])
-    
-    func set_flag(flag_name: String, value: Variant) -> void:
-    	flags[flag_name] = value
-    	EventBus.flag_changed.emit(flag_name, value)
-    
-    
-    func get_flag(flag_name: String, default: Variant = false) -> Variant:
-    	return flags.get(flag_name, default)
-    
-    
-    func add_gold(amount: int) -> void:
-    	gold += amount
-    	EventBus.gold_changed.emit(gold)
-    
-    func spend_gold(amount: int) -> bool:
-    	if gold < amount:
-    		return false
-    	gold -= amount
-    	EventBus.gold_changed.emit(gold)
-    	return true
-    
-    func inventory_drop(drop_table : Array[ItemResource]):
-    	if drop_table.is_empty():
-    		return
-    	var dropped_items = randi_range(0, drop_table.size()-1)
-    	for i in dropped_items:
-    		give_item(drop_table[i])
-    
-    func give_item(item : ItemResource):
-    	pending_inventory.append(item)
-    	EventBus.item_dropped.emit(item)
-    
-    func inventory_transfer():
-    	for i in pending_inventory:
-    		inventory.append(i)
-    		EventBus.item_acquired.emit(i)
-    	pending_inventory = []
-    
-    _______________
-    _______________
-    (SaveManager.gd):
-    extends Node
-    @warning_ignore_start("unused_parameter")
-    func save(slot: int) -> void:
-    	pass  # Phase 9
-    
-    
-    func load_save(slot: int) -> void:
-    	pass  # Phase 9
-    
-    
-    func save_exists(slot: int) -> bool:
-    	return false  # Phase 9
-    
-    _______________
-    _______________
-    (SceneManager.gd):
-    extends Node
-    
-    var _is_transitioning: bool = false
-    
-    
-    func travel_to(scene_path: String, warp_id : String = "", transition: String = "fade") -> void:
-    	if _is_transitioning:
-    		return
-    	_is_transitioning = true
-    	EventBus.scene_transition_requested.emit(scene_path, transition)
-    	# Transition animation plays, then calls _do_scene_change()
-    	# For now, skip the animation and swap directly
-    	GameState.pending_warp_id = warp_id
-    	_do_scene_change(scene_path)
-    
-    
-    func _do_scene_change(scene_path: String) -> void:
-    	get_tree().call_deferred('change_scene_to_file',scene_path)
-    	_is_transitioning = false
-    	EventBus.scene_transition_finished.emit()
-    
-    
-    func start_combat(enemy_group: Resource) -> void:
-    	# Store the return scene so we can come back after combat
-    	GameState.current_map_path = get_tree().current_scene.scene_file_path
-    	EventBus.combat_started.emit(enemy_group)
-    	GameState.pending_enemy_group = enemy_group
-    	travel_to("res://scenes/battle/Battle.tscn", "", "flash")
-    
-    
-    func end_combat(result: String) -> void:
-    	EventBus.combat_ended.emit(result)
-    	#for i : PartyMemberResource in GameState.party:
-    		#GameState.hp_cache[i.stats.character_name] = i.stats.current_hp
-    		#GameState.mp_cache[i.stats.character_name] = i.stats.current_mp
-    	travel_to(GameState.current_map_path, "", "fade")
-    
-    _______________
-    COMBAT:
-    _______________
-    (BattleCombatant.gd):
-    class_name BattleCombatant
-    extends RefCounted
-    
-    var stats: CharacterStatBlock 
-    var is_player_controlled: bool
-    #var active_statuses: Array[Dictionary] = []
-    var source_resource : EntityResource
-    var physical_actions: Array[BattleAction] = []
-    var magic_actions: Array[BattleAction] = []
-    var healing_actions: Array[BattleAction] = []
-    var other_actions: Array[BattleAction] = []
-    #var inventory : Array[ItemResource] = []
-    
-    func _init(char_stats : CharacterStatBlock) -> void:
-    	stats = char_stats
-    	if stats.current_hp == -1:
-    		stats.current_hp = stats.max_hp()
-    	if stats.current_mp == -1:
-    		stats.current_mp = stats.max_mp()
-    
-    static func create_enemy(character : EnemyResource) -> BattleCombatant:
-    	var combatant = BattleCombatant.new(character.stats.duplicate(true))
-    	combatant.is_player_controlled = false
-    	combatant.source_resource = character
-    	combatant.create_action_arrays(character.actions)
-    	return combatant
-    
-    static func create_party_member(character : PartyMemberResource) -> BattleCombatant:
-    	var combatant = BattleCombatant.new(character.stats)
-    	combatant.is_player_controlled = true
-    	combatant.source_resource = character
-    	combatant.create_action_arrays(character.actions)
-    	return combatant
-    
-    func create_action_arrays(actions : Array[BattleAction]):
-    	for action : BattleAction in actions:
-    		match action.damage_type:
-    			action.DamageType.PHYSICAL:
-    				physical_actions.append(action)
-    			action.DamageType.MAGICAL:
-    				magic_actions.append(action)
-    			action.DamageType.HEALING:
-    				healing_actions.append(action)
-    			action.DamageType.NONE:
-    				other_actions.append(action)
-    
-    func return_available_magic_actions() -> Array[BattleAction]:
-    	var array : Array[BattleAction] = []
-    	for action : BattleAction in magic_actions:
-    		if action.mp_cost <= stats.current_mp:
-    			array.append(action)
-    	return array
-    
-    func return_available_healing_actions() -> Array[BattleAction]:
-    	var array : Array[BattleAction] = []
-    	for action : BattleAction in healing_actions:
-    		if action.mp_cost <= stats.current_mp:
-    			array.append(action)
-    	return array
-    
-    #func max_hp() -> int:
-    	#return 20 + (stats.vit * 8) + (stats.level * 5)
-    #func max_mp() -> int:
-    	#return 10 + (stats.wil * 5) + (stats.level * 3)
-    func is_alive() -> bool: # reads stats.current_hp
-    	return stats.current_hp > 0
-    func can_act() -> bool: # checks is_alive() and whether any active status blocks_action
-    	if is_alive():
-    		if source_resource.active_statuses.is_empty():
-    			return true
-    		else:
-    			for i in source_resource.active_statuses:
-    				if i["effect"].blocks_action == true:
-    					return false
-    			return true
-    	else:
-    		return false
-    func take_damage(amount: int) -> void: # subtracts from stats.current_hp, clamps to zero
-    	stats.current_hp = clampi(stats.current_hp - amount, 0, stats.max_hp())
-    	print("%s HP: %s" % [stats.character_name, stats.current_hp])
-    func heal(amount: int) -> void: # adds to stats.current_hp, clamps to max_hp()
-    	stats.current_hp = clampi(stats.current_hp + amount, 0, stats.max_hp())
-    func apply_status(status: StatusEffect) -> bool: # appends to active_statuses, but only if not already present
-    	var new = true
-    	for i in source_resource.active_statuses:
-    		if i["effect"] == status:
-    			new = false
-    	if new == true:
-    		source_resource.active_statuses.append({"effect" = status, "turns_remaining" = status.duration_turns})
-    	return new
-    func tick_statuses() -> void: #decrements duration_turns on each status, removes expired ones, applies damage_per_turn for POISON
-    	var statuses = source_resource.active_statuses.duplicate()
-    	for status in statuses:
-    		status["turns_remaining"] -= 1
-    		take_damage(status["effect"].damage_per_turn)
-    		if status["turns_remaining"] <= 0:
-    			source_resource.active_statuses.erase(status)
-    func effective_stat(stat : String) -> float:
-    	var base_stat = source_resource.stats.get(stat)
-    	var stat_mod = source_resource.stat_mods.get(stat, 0.0)
-    	var stat_bonus = source_resource.get_bonus(stat)
-    	if base_stat != null:
-    		return base_stat + stat_mod + stat_bonus
-    	else:
-    		push_error("effective stat typo: %s" % stat)
-    		return stat_mod + stat_bonus
-    
-    _______________
-    _______________
-    (combat_manager.gd):
-    extends Node
-    
-    @warning_ignore_start("integer_division")
-    
-    enum State {
-    	IDLE          , # waiting for something to happen (brief, between states)
-    	PLAYER_INPUT  , # player is choosing an action
-    	TARGET_SELECT , # player is choosing a target
-    	RESOLVING     , # an action is executing (damage applied, log updated)
-    	# STATUS_TICK   , # status effects proc at start/end of turn
-    	ENEMY_TURN    , # AI is selecting and executing an action
-    	VICTORY       , # all enemies dead, award EXP/gold
-    	DEFEAT        , # all party members dead
-    	FLED          , # ran successfully
-    }
-    
-    var _turn_queue: Array[BattleCombatant] = []
-    var _current_turn_index: int = -1
-    var current_combatant : BattleCombatant = null
-    var _state: State = State.IDLE
-    var _pending_action: BattleAction = null
-    var _pending_targets: Array[BattleCombatant] = []
-    var _pending_item: ItemResource = null
-    var _enemy_group: EnemyGroupResource = null
-    var _party_members: Array[PartyMemberResource] = []
-    var _enemy_combatants : Array[BattleCombatant] = []
-    var _party_combatants: Array[BattleCombatant] = []
-    
-    func _ready() -> void:
-    	#EventBus.combat_started.connect(start_battle)
-    	EventBus.player_action_selected.connect(_on_player_action_selected)
-    	EventBus.player_item_selected.connect(_on_player_item_selected)
-    	EventBus.player_targets_selected.connect(_on_player_targets_selected)
-    	EventBus.player_flee_attempted.connect(_on_player_flee_attempted)
-    	EventBus.combat_visuals_ready.connect(start_next_turn)
-    	if GameState.pending_enemy_group != null:
-    		start_battle(GameState.pending_enemy_group)
-    		GameState.pending_enemy_group = null
-    
-    func start_battle(enemy_group : EnemyGroupResource):
-    	_enemy_group = enemy_group
-    	_party_members = GameState.party
-    	for entity in _party_members + _enemy_group.enemies:
-    		var combatant : BattleCombatant
-    		if entity is PartyMemberResource:
-    			combatant = BattleCombatant.create_party_member(entity)
-    			_party_combatants.append(combatant)
-    		elif entity is EnemyResource:
-    			combatant = BattleCombatant.create_enemy(entity)
-    			_enemy_combatants.append(combatant)
-    		_turn_queue.append(combatant)
-    	_turn_queue.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.effective_stat("agi") > b.effective_stat("agi"))
-    	EventBus.combat_queued.emit(_turn_queue)
-    	#start_next_turn()
-    
-    func start_next_turn():
-    	await get_tree().create_timer(0.3).timeout
-    	_state = State.IDLE
-    	advance_index()
-    	if !any_alive(true): # handle failure
-    		_state = State.DEFEAT
-    		#EventBus.combat_ended.emit("defeat")
-    		_process_party_progression()
-    		SceneManager.end_combat("defeat")
-    		return
-    	if !any_alive(false): # handle victory
-    		_state = State.VICTORY
-    		for i in _enemy_group.enemies:
-    			GameState.add_gold(i.gold_reward)
-    			for ii : PartyMemberResource in _party_members:
-    				ii.pending_xp += i.experience_reward 
-    			GameState.inventory_drop(i.drop_table)
-    			for equipment in i.equipped.keys():
-    				if !(i.equipped[equipment] is Array):
-    					if i.equipped[equipment] != null:
-    						var item : ItemResource = i.equipped[equipment]
-    						if randf() < i.equip_drop_chance:
-    							GameState.give_item(item)
-    				else:
-    					for item in i.equipped[equipment]:
-    						if item is ItemResource:
-    							if randf() < i.equip_drop_chance:
-    								GameState.give_item(item)
-    		GameState.inventory_transfer()
-    		#EventBus.combat_ended.emit("victory")
-    		_process_party_progression()
-    		
-    		SceneManager.end_combat("victory")
-    		return
-    	current_combatant = _turn_queue[_current_turn_index]
-    	while not current_combatant.is_alive():
-    		advance_index()
-    		current_combatant = _turn_queue[_current_turn_index]
-    	EventBus.turn_started.emit(current_combatant)
-    	if current_combatant.is_player_controlled:
-    		_state = State.PLAYER_INPUT
-    		EventBus.player_turn_started.emit()
-    	else:
-    		_state = State.ENEMY_TURN
-    		_run_enemy_turn()
-    
-    func _run_enemy_turn():
-    	if !current_combatant.can_act():
-    		var log_string = "%s is " % current_combatant.stats.character_name
-    		for status in current_combatant.source_resource.active_statuses:
-    			if status["effect"].status_type == StatusEffect.StatusType.SLEEP:
-    				log_string += "asleep"
-    				break
-    			elif status["effect"].status_type == StatusEffect.StatusType.STUN:
-    				log_string += "stunned"
-    				break
-    		EventBus.combat_log_updated.emit(log_string)
-    		start_next_turn()
-    	else:
-    		var enemy_data = current_combatant.source_resource as EnemyResource
-    		var party = living_entities(_party_combatants)
-    		party.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
-    		var enemies = living_entities(_enemy_combatants)
-    		enemies.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
-    		var targets : Array[BattleCombatant] = []
-    		var action : BattleAction
-    		match enemy_data.behavior:
-    			EnemyResource.AIBehavior.RANDOM: 
-    				targets.append(party.pick_random())
-    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-    			EnemyResource.AIBehavior.AGGRESSIVE:
-    				targets.append(party[0])
-    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-    			EnemyResource.AIBehavior.DEFENSIVE:
-    				targets.append(party[-1])
-    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-    			EnemyResource.AIBehavior.HEALER:
-    				targets.append(enemies[-1])
-    				action = current_combatant.return_available_healing_actions().pick_random()
-    			EnemyResource.AIBehavior.BERSERKER:
-    				targets.append(party[0])
-    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-    		if action == null:
-    			EventBus.combat_log_updated.emit("%s does nothing" % current_combatant.stats.character_name)
-    			start_next_turn()
-    			return
-    		_resolve_action(current_combatant, targets, action)
-    
-    func living_entities(array : Array[BattleCombatant]) -> Array[BattleCombatant]:
-    	var new_array = array.duplicate()
-    	for i in array:
-    		if !i.is_alive():
-    			new_array.erase(i)
-    	return new_array
-    
-    func _resolve_action(attacker : BattleCombatant, targets : Array[BattleCombatant], action : BattleAction):
-    	EventBus.combat_action_resolving.emit()
-    	_state = State.RESOLVING
-    	var healing = action.damage_type == BattleAction.DamageType.HEALING
-    	if action.category == BattleAction.ActionCategory.MAGIC:
-    		attacker.stats.current_mp -= action.mp_cost
-    	for target in targets:
-    		if action.category == BattleAction.ActionCategory.ATTACK:
-    			EventBus.combat_log_updated.emit("%s attacks %s" % [attacker.stats.character_name, target.stats.character_name])
-    			var damage = (attacker.effective_stat("str") * action.power) / maxf(1.0, target.effective_stat("vit"))
-    			if accuracy_check(attacker):
-    				if attacker.is_player_controlled:
-    					(attacker.source_resource as PartyMemberResource).accumulate("str", target.effective_stat("vit"))
-    					(attacker.source_resource as PartyMemberResource).accumulate("agi", target.effective_stat("agi"))
-    				elif target.is_player_controlled:
-    					(target.source_resource as PartyMemberResource).accumulate("vit", damage)
-    					(target.source_resource as PartyMemberResource).accumulate("agi", attacker.effective_stat("agi"))
-    				target.take_damage(roundi(damage))
-    				EventBus.combatant_damaged.emit(target, roundi(damage))
-    			else:
-    				EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
-    		elif action.category == BattleAction.ActionCategory.MAGIC:
-    			if !healing:
-    				var damage = (attacker.effective_stat("intelligence") * action.power) / maxf(1.0, target.effective_stat("wil"))
-    				EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
-    				if accuracy_check(attacker):
-    					if attacker.is_player_controlled:
-    						(attacker.source_resource as PartyMemberResource).accumulate("intelligence", target.effective_stat("wil"))
-    					target.take_damage(roundi(damage))
-    					EventBus.combatant_damaged.emit(target, roundi(damage))
-    				else:
-    					EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
-    			else:
-    				var amount = (attacker.effective_stat("intelligence") * action.power)
-    				EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
-    				if attacker.is_player_controlled:
-    					(attacker.source_resource as PartyMemberResource).accumulate("wil", amount)
-    					(attacker.source_resource as PartyMemberResource).accumulate("intelligence", amount * 0.5)
-    				target.heal(roundi(amount))
-    				EventBus.combatant_healed.emit(target, roundi(amount))
-    		elif action.category == BattleAction.ActionCategory.SKILL:
-    			EventBus.combat_log_updated.emit("%s uses %s" % [attacker.stats.character_name, action.action_name])
-    		if action.status_to_apply != null:
-    			if randf()<action.status_chance:
-    				if target.apply_status(action.status_to_apply):
-    					EventBus.combatant_status_applied.emit(target, action.status_to_apply)
-    		if !target.is_alive():
-    			EventBus.combatant_died.emit(target)
-    			
-    	attacker.tick_statuses()
-    	#start_next_turn.call_deferred()
-    	EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
-    	_pending_action = null
-    
-    func _resolve_item(attacker : BattleCombatant, targets : Array[BattleCombatant], item : ItemResource):
-    	EventBus.combat_action_resolving.emit()
-    	_state = State.RESOLVING
-    	var item_used : bool = false
-    	for combatant : BattleCombatant in targets:
-    		var hp_before = combatant.stats.current_hp
-    		item_used = item.apply_to(combatant.stats)
-    		if item_used:
-    			if combatant.stats.current_hp > hp_before:
-    				EventBus.combatant_healed.emit(combatant, combatant.stats.current_hp - hp_before)
-    			if item.effect_type == ItemResource.ConsumableEffect.CURE_STATUS:
-    				if combatant.source_resource.active_statuses.size() > 0:
-    					combatant.source_resource.active_statuses = []
-    			elif item.effect_type == ItemResource.ConsumableEffect.CUSTOM:
-    					for i in item.custom_effects.size():
-    						if item.custom_effects[i] == ItemResource.ConsumableEffect.CURE_STATUS:
-    							if combatant.source_resource.active_statuses.size() > 0:
-    								combatant.source_resource.active_statuses = []
-    	if item_used:
-    		item.quantity -= 1
-    		if item.quantity <= 0:
-    			if attacker.is_player_controlled:
-    				GameState.inventory.erase(item)
-    			else:
-    				attacker.source_resource.inventory.erase(item)
-    		EventBus.item_used.emit(item)
-    		attacker.tick_statuses()
-    		#start_next_turn.call_deferred()
-    		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
-    	else:
-    		#EventBus.item_used.emit(ItemResource.new())
-    		attacker.tick_statuses()
-    		#start_next_turn.call_deferred()
-    		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
-    	_pending_item = null
-    
-    func _on_player_action_selected(action: BattleAction):
-    	if _state == State.PLAYER_INPUT:
-    		_pending_action = action
-    		_state = State.TARGET_SELECT
-    		if action.target_type == BattleAction.TargetType.ALL_ENEMIES or action.target_type == BattleAction.TargetType.ALL_ALLIES:
-    			EventBus.all_targets.emit()
-    		var valid_targets = get_targets(action.target_type)
-    		EventBus.target_select_requested.emit(valid_targets)
-    
-    func _on_player_item_selected(item: ItemResource):
-    	if _state == State.PLAYER_INPUT:
-    		_pending_item = item
-    		_state = State.TARGET_SELECT
-    		var valid_targets = get_targets(BattleAction.TargetType.SINGLE_ALLY)
-    		EventBus.target_select_requested.emit(valid_targets)
-    
-    func get_targets(target_type : BattleAction.TargetType):
-    	if target_type == BattleAction.TargetType.SINGLE_ENEMY or target_type == BattleAction.TargetType.ALL_ENEMIES:
-    		if current_combatant.is_player_controlled:
-    			return living_entities(_enemy_combatants)
-    		else:
-    			return living_entities(_party_combatants)
-    	elif target_type == BattleAction.TargetType.SINGLE_ALLY or target_type == BattleAction.TargetType.ALL_ALLIES:
-    		if current_combatant.is_player_controlled:
-    			return living_entities(_party_combatants)
-    		else:
-    			return living_entities(_enemy_combatants)
-    	elif target_type == BattleAction.TargetType.SELF:
-    		return [current_combatant]
-    
-    func _on_player_targets_selected(targets: Array[BattleCombatant]):
-    	if _state == State.TARGET_SELECT:
-    		_pending_targets = targets
-    		if _pending_action != null:
-    			_resolve_action(current_combatant, _pending_targets, _pending_action)
-    		elif _pending_item != null:
-    			_resolve_item(current_combatant, _pending_targets, _pending_item)
-    	
-    func _on_player_flee_attempted():
-    	if _state == State.PLAYER_INPUT:
-    		var player_agi = 0
-    		var player_count = 0
-    		var enemy_agi = 0
-    		var enemy_count = 0
-    		for i : BattleCombatant in _turn_queue:
-    			if i.is_alive():
-    				if i.is_player_controlled:
-    					player_agi += i.effective_stat("agi")
-    					player_count += 1
-    				else:
-    					enemy_agi += i.effective_stat("agi")
-    					enemy_count += 1
-    		for i : BattleCombatant in _turn_queue:
-    			if i.is_alive() and i.is_player_controlled:
-    				(i.source_resource as PartyMemberResource).accumulate("agi", enemy_agi / enemy_count)
-    		EventBus.combat_log_updated.emit("%s attempted to flee" % current_combatant.stats.character_name)
-    		if float(player_agi) / float(player_count) > (float(enemy_agi) / float(enemy_count) * 0.8):
-    			_state = State.FLED
-    			EventBus.combat_log_updated.emit("%s fled" % current_combatant.stats.character_name)
-    			#EventBus.combat_ended.emit("fled")
-    			_process_party_progression()
-    			SceneManager.end_combat("fled")
-    		else:
-    			EventBus.combat_log_updated.emit("%s failed to escape" % current_combatant.stats.character_name)
-    			start_next_turn()
-    
-    func _process_party_progression():
-    	for i : BattleCombatant in _turn_queue:
-    		if i.is_player_controlled:
-    			(i.source_resource as PartyMemberResource).process_progression()
-    
-    func accuracy_check(attacker : BattleCombatant) -> bool:
-    	var hit_roll = randf()
-    	var accuracy = 1.0
-    	# apply accuracy modifier from any BLIND status on attacker
-    	for status in attacker.source_resource.active_statuses:
-    		accuracy *= status["effect"].accuracy_modifier
-    	if hit_roll > accuracy:
-    		return false
-    	return true
-    
-    func advance_index() -> void:
-    	_current_turn_index = (_current_turn_index + 1) % _turn_queue.size()
-    
-    func any_alive(player_controlled : bool) -> bool:
-    	for i : BattleCombatant in _turn_queue:
-    		if i.is_player_controlled == player_controlled and i.is_alive():
-    			return true
-    	return false
-    
-    _______________
-    ENTITIES:
-    RESOURCES:
-    _______________
-    (BattleAction.gd):
-    class_name BattleAction
-    extends Resource
-    
-    enum ActionCategory {ATTACK, MAGIC, SKILL}
-    enum TargetType {SINGLE_ENEMY, ALL_ENEMIES, SINGLE_ALLY, ALL_ALLIES, SELF}
-    enum DamageType {PHYSICAL, MAGICAL, HEALING, NONE}
-    
-    @export var action_name: String = ""
-    @export var description: String = ""
-    @export var category: ActionCategory = ActionCategory.ATTACK
-    @export var mp_cost: int = 0 # zero for physical attacks
-    @export var target_type: TargetType = TargetType.SINGLE_ENEMY
-    @export var damage_type: DamageType = DamageType.PHYSICAL
-    @export var power: int = 1 #the base value the damage formula will scale from
-    @export var status_to_apply: StatusEffect = null # null means no status, so no default needed
-    @export_range(0.0, 1.0, 0.1) var status_chance: float = 0.5 # probability the status applies, 0.0 to 1.0
-    @export var animation_key: String = ""
-    
-    _______________
-    _______________
-    (CharacterStatBlock.gd):
-    class_name CharacterStatBlock
-    extends Resource
-    
-    @warning_ignore_start("shadowed_global_identifier")
-    
-    @export var character_name: String = ""
-    @export var level: int = 1
-    @export var base_move_speed: float = 150.0
-    
-    @export_group("Primary Stats")
-    @export var str: int = 10   # Physical attack, carry weight
-    @export var agi: int = 10   # Turn order, evasion, accuracy
-    @export var vit: int = 10   # Max HP, physical defense
-    @export var intelligence: int = 10  # Magic attack, item effectiveness
-    @export var wil: int = 10   # Max MP, magic resist, status resist
-    
-    @export_group("Runtime State")
-    @export var current_hp : int = -1
-    @export var current_mp : int = -1
-    
-    func max_hp() -> int:
-    	return 20 + (vit * 8) + (level * 5)
-    func max_mp() -> int:
-    	return 10 + (wil * 5) + (level * 3)
-    
-    _______________
-    _______________
-    (DialogueChoice.gd):
-    class_name DialogueChoice
-    extends Resource
-    
-    @export var label: String = ""  # What the player sees in the menu
-    
-    # Condition — leave flag_required empty for always-available choices
-    @export var flag_required: String = ""
-    @export var required_value: Variant = null
-    
-    # Consequence
-    @export var sets_flag: String = ""
-    @export var sets_value: Variant = null
-    
-    # Where this choice leads
-    @export var next_lines: Array[DialogueLine] = []
-    @export var next_sequence_id : String = ""
-    
-    _______________
-    _______________
-    (DialogueLine.gd):
-    class_name DialogueLine
-    extends Resource
-    
-    @export var speaker_name: String = ""
-    @export var portrait: Texture2D  # null = no portrait shown
-    @export var text: String = ""
-    
-    # Empty array = linear advance. Populated = show choice menu.
-    @export var choices: Array[DialogueChoice] = []
-    
-    _______________
-    _______________
-    (DialogueSequence.gd):
-    class_name DialogueSequence
-    extends Resource
-    
-    @export var sequence_id: String = ""
-    @export var lines: Array[DialogueLine] = []
-    
-    _______________
-    _______________
-    (EnemyGroupResource.gd):
-    class_name EnemyGroupResource
-    extends Resource
-    
-    @export var enemies: Array[EnemyResource] = []
-    @export var encounter_music: String = ""  # res://audio/music/... path
-    
-    _______________
-    _______________
-    (EnemyResource.gd):
-    class_name EnemyResource
-    extends EntityResource
-    
-    enum AIBehavior { RANDOM, AGGRESSIVE, DEFENSIVE, HEALER, BERSERKER }
-    
-    @export var enemy_name: String = ""
-    @export var sprite_frames: SpriteFrames
-    
-    @export_group("Rewards")
-    @export var experience_reward: int = 0
-    @export var gold_reward: int = 0
-    @export var drop_table: Array[ItemResource] = []
-    @export var equip_drop_chance : float = 0.5
-    
-    @export_group("Battle")
-    @export var behavior: AIBehavior = AIBehavior.RANDOM
-    
-    _______________
-    _______________
-    (EntityResource.gd):
-    class_name EntityResource
-    extends Resource
-    
-    @export var stats: CharacterStatBlock
-    @export var actions: Array[BattleAction]
-    @export var inventory: Array[ItemResource]
-    @export var is_player := false
-    var active_statuses: Array[Dictionary] = []
-    var equipped: Dictionary
-    var stat_mods = {
-    	"str": 0.0,
-    	"agi": 0.0,
-    	"vit": 0.0,
-    	"intelligence": 0.0,
-    	"wil": 0.0,
-    }
-    
-    const BLOCKED_SLOT = "blocked"
-    
-    func _init() -> void:
-    	equipped = {
-    		"head": null,
-    		"torso": null,
-    		"legs": null,
-    		"hand": [null, null],
-    		"foot": [null, null],
-    		"ring": [null, null, null, null, null, null, null, null, null, null],
-    		"toe_ring": [null, null, null, null, null, null, null, null, null, null],
-    	}
-    
-    func get_bonus(stat_name: String) -> int:
-    	var amount = 0
-    	for key in equipped.keys():
-    		if equipped[key] is Array:
-    			for value in equipped[key]:
-    				if value is ItemResource:
-    					var item : ItemResource = value
-    					amount += item.stat_modifiers.get(stat_name, 0)
-    		else:
-    			if equipped[key] is ItemResource:
-    				var item : ItemResource = equipped[key]
-    				amount += item.stat_modifiers.get(stat_name, 0)
-    	return amount
-    
-    func equip_item(item:ItemResource) -> bool:
-    	if item.item_type != ItemResource.ItemType.EQUIPMENT:
-    		return false
-    	var slot_key : String = locate_equip_slot(item)
-    	if slot_key == "":
-    		return false
-    	if slot_key not in equipped.keys():
-    		return false
-    	var current_equip = equipped[slot_key]
-    	if !(current_equip is Array):
-    		if current_equip == null:
-    			equipped[slot_key] = item
-    			return true
-    		else:
-    			unequip_item(current_equip)
-    			equipped[slot_key] = item
-    			return true
-    	else:
-    		var index = 0
-    		for i : int in current_equip.size():
-    			index = i
-    			if current_equip[index] == null:
-    				equipped[slot_key][index] = item
-    				return true
-    		unequip_item(current_equip[-1])
-    		(current_equip as Array).remove_at(-1)
-    		(current_equip as Array).insert(0, item)
-    		if item.two_handed:
-    			current_equip[0] = item
-    			if current_equip[1] is ItemResource:
-    				unequip_item(current_equip[1])
-    			equipped[slot_key][1] = BLOCKED_SLOT
-    		return true
-    
-    func unequip_item(item:ItemResource):
-    	var _inventory
-    	if is_player:
-    		_inventory = GameState.inventory.duplicate()
-    	else:
-    		_inventory = inventory.duplicate()
-    	var slot = locate_equip_slot(item)
-    	var current_equip = equipped[slot]
-    	if current_equip is Array:
-    		if current_equip.has(item):
-    			_inventory.append(item)
-    			equipped[slot][current_equip.find(item)] = null
-    			#return true
-    		#else:
-    			#return false
-    	else:
-    		if current_equip == item:
-    			_inventory.append(current_equip)
-    			equipped[slot] = null
-    			#return true
-    		#else:
-    			#return false
-    	if is_player:
-    		GameState.inventory = _inventory
-    	else:
-    		inventory = _inventory
-    	
-    
-    func locate_equip_slot(item : ItemResource) -> String:
-    	if item.item_type != ItemResource.ItemType.EQUIPMENT:
-    		return ""
-    	return (ItemResource.EquipSlot.keys()[item.equip_slot] as String).to_lower()
-    
-    _______________
-    _______________
-    (ItemResource.gd):
-    class_name ItemResource
-    extends Resource
-    
-    enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM }
-    enum ConsumableEffect {NONE, HEAL_HP, HEAL_MP, REVIVE, CURE_STATUS, CUSTOM}
-    enum EquipSlot {NONE, HEAD, TORSO, LEGS, HAND, FOOT, RING, TOE_RING}
-    
-    @export_group("Item")
-    @export var item_name: String = ""
-    @export var description: String = ""
-    @export var icon: Texture2D
-    @export var item_type: ItemType = ItemType.CONSUMABLE
-    @export var value: int = 0       # Gold value for shops
-    @export var stackable: bool = true
-    @export var max_stack: int = 99
-    @export var quantity: int = 1
-    @export_group("Consumable Effect")
-    @export var effect_type: ConsumableEffect = ConsumableEffect.NONE
-    @export var effect_value: int
-    @export var custom_effects: Array[int] # Only in use for custom ConsumableEffects. CUSTOM is not allowed here
-    @export var custom_values: Array[int] # Only in use for custom ConsumableEffects, must have same number of entries as Custom Effects, valuless effects use 0
-    @export_group("Equipment")
-    @export var equip_slot: EquipSlot = EquipSlot.NONE
-    @export var two_handed : bool = false
-    @export var stat_modifiers: Dictionary # Must match statblock keys EXACTLY "str", "agi", "vit", "intelligence", "wil"
-    @export_group("Key Item")
-    @export var sets_flag: String = ""
-    func apply_to(stats : CharacterStatBlock) -> bool:
-    	match effect_type:
-    		ItemResource.ConsumableEffect.HEAL_HP:
-    			if stats.current_hp == stats.max_hp():
-    				return false
-    			stats.current_hp = clampi(stats.current_hp + effect_value, 0, stats.max_hp())
-    		ItemResource.ConsumableEffect.HEAL_MP:
-    			if stats.current_mp == stats.max_mp():
-    				return false
-    			stats.current_mp = clampi(stats.current_mp + effect_value, 0, stats.max_mp())
-    		ItemResource.ConsumableEffect.REVIVE:
-    			if stats.current_hp <= 0:
-    				stats.current_hp = 10
-    			else:
-    				return false
-    		ItemResource.ConsumableEffect.CURE_STATUS:
-    			pass # handled via combatmanager
-    			#if combatant.active_statuses.size() > 0:
-    				#combatant.active_statuses = []
-    		ItemResource.ConsumableEffect.CUSTOM:
-    			var is_true = false
-    			for i in custom_effects.size():
-    				match custom_effects[i]:
-    					ItemResource.ConsumableEffect.HEAL_HP:
-    						if stats.current_hp != stats.max_hp():
-    							is_true = true
-    						stats.current_hp = clampi(stats.current_hp + custom_values[i], 0, stats.max_hp())
-    					ItemResource.ConsumableEffect.HEAL_MP:
-    						if stats.current_mp != stats.max_mp():
-    							is_true = true
-    						stats.current_mp = clampi(stats.current_mp + custom_values[i], 0, stats.max_mp())
-    					ItemResource.ConsumableEffect.REVIVE:
-    						if stats.current_hp <= 0:
-    							is_true = true
-    							stats.current_hp = 10
-    					ItemResource.ConsumableEffect.CURE_STATUS:
-    						pass # handled via combatmanager
-    						#if combatant.active_statuses.size() > 0:
-    							#combatant.active_statuses = []
-    			return is_true
-    		ItemResource.ConsumableEffect.NONE:
-    			pass
-    	return true
-    
-    func stats_to_text() -> String:
-    	var output = ""
-    	for i in stat_modifiers.keys().size():
-    		output += "%s: " % stat_modifiers.keys()[i]
-    		if stat_modifiers[stat_modifiers.keys()[i]] > 0:
-    			output += "+"
-    		output += "%s" % stat_modifiers[stat_modifiers.keys()[i]]
-    		if i < stat_modifiers.keys().size() -1:
-    			output += ", "
-    	if !(effect_type == ConsumableEffect.NONE):
-    		if output != "":
-    			output += " | "
-    		if effect_type != ConsumableEffect.CUSTOM:
-    			output += "%s " % ItemResource.ConsumableEffect.keys()[effect_type]
-    			if effect_value > 0:
-    				output += "+"
-    			output += "%s" % effect_value
-    		else:
-    			for i in custom_effects.size():
-    				output += "%s " % ItemResource.ConsumableEffect.keys()[custom_effects[i]]
-    				if custom_values[i] > 0:
-    					output += "+"
-    				output += "%s" % custom_values[i]
-    				if i < custom_effects.size()-1:
-    					output += ", "
-    	return output
-    
-    _______________
-    _______________
-    (PartyMemberResource.gd):
-    class_name PartyMemberResource
-    extends EntityResource
-    
-    @export var battle_sprite_frames: SpriteFrames
-    @export var portrait: Texture2D
-    @export var pending_xp : float = 0.0
-    @export var xp_gauge: float = 0.0
-    @export var xp_till_level_up : float = 100.0
-    
-    @export var stat_levels = {
-    	"str" : [0.0, 100.0],
-    	"agi" : [0.0, 100.0],
-    	"vit" : [0.0, 100.0],
-    	"intelligence" : [0.0, 100.0],
-    	"wil" : [0.0, 100.0],
-    }
-    
-    func accumulate(stat_name : String, amount : float):
-    	stat_levels[stat_name][0] += amount
-    	pending_xp += amount * 0.5
-    
-    func process_progression():
-    	for i in stat_levels.keys():
-    		while stat_levels[i][0] >= stat_levels[i][1]:
-    			stat_levels[i][0] -= stat_levels[i][1]
-    			stat_levels[i][1] = stat_levels[i][1] * 1.2
-    			stats.set(i, stats.get(i)+1)
-    			EventBus.stat_increased.emit(self, i, stats.get(i))
-    			print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
-    	xp_gauge += pending_xp
-    	pending_xp = 0
-    	while xp_gauge >= xp_till_level_up:
-    		xp_gauge -= xp_till_level_up
-    		xp_till_level_up = xp_till_level_up * 1.2
-    		stats.level += 1
-    		EventBus.level_increased.emit(self, stats.level)
-    		print("%s's level raised to %s" % [stats.character_name, stats.level])
-    		for i in stat_levels.keys():
-    			stat_levels[i][0] = stat_levels[i][0] * 1.2
-    			if stat_levels[i][0] >= stat_levels[i][1]:
-    				stat_levels[i][0] -= stat_levels[i][1]
-    				stat_levels[i][1] = stat_levels[i][1] * 1.2
-    				stats.set(i, stats.get(i)+1)
-    				EventBus.stat_increased.emit(self, i, stats.get(i))
-    				print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
-    	
-    
-    _______________
-    _______________
-    (StatusEffect.gd):
-    class_name StatusEffect
-    extends Resource
-    
-    enum StatusType {POISON, SLEEP, BLIND, STUN, BERSERK}
-    
-    @export var status_name : String = ""
-    @export var status_type : StatusType = StatusType.POISON
-    @export var duration_turns : int = -1
-    @export var damage_per_turn : int = 0
-    @export var blocks_action : bool = false
-    @export var accuracy_modifier : float = 1.0
-    
-    _______________
-    _______________
-    (WarpDefinition.gd):
-    class_name WarpDefinition
-    extends Resource
-    
-    @export var target_scene: String = ""    # res://scenes/... path
-    @export var target_warp_id: String = ""  # ID of the arrival warp in target scene
-    @export var transition: String = "fade"  # matches SceneManager transition names
-    
-    _______________
-    UI:
-    WORLD:
+	signal turn_started(combatant: BattleCombatant) # fired when a new combatant's turn begins, UI uses this to highlight whose turn it is
+	signal combatant_damaged(combatant: BattleCombatant, amount: int) # fired after damage is applied, HP bar animates in response
+	signal combatant_healed(combatant: BattleCombatant, amount: int) # same pattern for healing
+	signal combatant_status_applied(combatant: BattleCombatant, status: StatusEffect) # UI shows the status icon
+	signal combatant_status_expired(combatant: BattleCombatant, status: StatusEffect) # UI removes the status icon
+	signal combatant_died(combatant: BattleCombatant) # UI plays death state, CombatManager checks victory/defeat condition
+	signal player_turn_started()
+	signal player_action_selected(action: BattleAction)
+	signal player_targets_selected(targets: Array[BattleCombatant])
+	signal player_item_selected(item : ItemResource)
+	signal player_flee_attempted()
+	signal target_select_requested(targets: Array[BattleCombatant])
+	signal all_targets()
+	
+	
+	# Dialogue signals
+	signal dialogue_started(sequence: DialogueSequence)
+	signal advance_dialogue_requested()
+	signal dialogue_line_advanced(line : DialogueLine)
+	signal dialogue_choices_available(choices: Array[DialogueChoice])
+	signal dialogue_choice_selected(choice : DialogueChoice)
+	signal dialogue_finished()
+	
+	# Inventory signals
+	signal item_acquired(item: Resource)
+	signal item_used(item: Resource)
+	signal item_dropped(item: Resource)
+	
+	# Game state signals
+	signal flag_changed(flag_name: String, value: Variant)
+	signal gold_changed(new_amount: int)
+	
+	# Progression signals
+	signal level_increased(character : PartyMemberResource, new_value : int)
+	signal stat_increased(character : PartyMemberResource, stat : String, new_value : int)
+	
+	# Audio signals
+	signal music_change_requested(track_path: String, transition: String)
+	signal sfx_requested(sfx_path: String)
+	
+	# Manipulation signals
+	signal interact_pressed
+	signal world_menu_opened
+	signal world_menu_closed
+	
+	_______________
+	_______________
+	(GameState.gd):
+	extends Node
+	
+	# World flags — anything that "happened": doors opened, quests advanced,
+	# NPCs talked to. Key is a string, value is bool/int/String.
+	var flags: Dictionary = {}
+	
+	# Economy
+	var gold: int = 0
+	var pending_inventory: Array[ItemResource] = []
+	var inventory: Array[ItemResource] = []
+	
+	# Party
+	var party: Array[PartyMemberResource] = []
+	
+	# Tracking
+	var current_map_path: String = ""
+	var save_slot: int = 0
+	var pending_warp_id : String = "test_town_entrance"
+	var previous_player_location : Vector2 = Vector2(-1, -1)
+	
+	var pending_enemy_group : EnemyGroupResource = null
+	var in_combat := false
+	
+	func _ready() -> void:
+		EventBus.combat_started.connect(func(enemy_group):in_combat=true)
+		EventBus.combat_ended.connect(func(result):in_combat=false)
+		party.append(load("res://data/characters/norb_party_member.tres").duplicate(true))
+		party.append(load("res://data/characters/dog_party_member.tres").duplicate(true))
+		inventory.append_array([load("res://data/items/elixer.tres"), load("res://data/items/magicrestore.tres"), load("res://data/items/potion.tres"), load("res://data/items/sword.tres")])
+	
+	func set_flag(flag_name: String, value: Variant) -> void:
+		flags[flag_name] = value
+		EventBus.flag_changed.emit(flag_name, value)
+	
+	
+	func get_flag(flag_name: String, default: Variant = null) -> Variant:
+		return flags.get(flag_name, default)
+	
+	
+	func add_gold(amount: int) -> void:
+		gold += amount
+		EventBus.gold_changed.emit(gold)
+	
+	func spend_gold(amount: int) -> bool:
+		if gold < amount:
+			return false
+		gold -= amount
+		EventBus.gold_changed.emit(gold)
+		return true
+	
+	func inventory_drop(drop_table : Array[ItemResource]):
+		if drop_table.is_empty():
+			return
+		var dropped_items = randi_range(0, drop_table.size()-1)
+		for i in dropped_items:
+			give_item(drop_table[i])
+	
+	func give_item(item : ItemResource):
+		pending_inventory.append(item)
+		EventBus.item_dropped.emit(item)
+	
+	func inventory_transfer():
+		for i in pending_inventory:
+			inventory.append(i)
+			EventBus.item_acquired.emit(i)
+		pending_inventory = []
+	
+	_______________
+	_______________
+	(SaveManager.gd):
+	extends Node
+	@warning_ignore_start("unused_parameter")
+	func save(slot: int) -> void:
+		pass  # Phase 9
+	
+	
+	func load_save(slot: int) -> void:
+		pass  # Phase 9
+	
+	
+	func save_exists(slot: int) -> bool:
+		return false  # Phase 9
+	
+	_______________
+	_______________
+	(SceneManager.gd):
+	extends Node
+	
+	var _is_transitioning: bool = false
+	
+	
+	func travel_to(scene_path: String, warp_id : String = "", transition: String = "fade") -> void:
+		if _is_transitioning:
+			return
+		_is_transitioning = true
+		EventBus.scene_transition_requested.emit(scene_path, transition)
+		# Transition animation plays, then calls _do_scene_change()
+		# For now, skip the animation and swap directly
+		GameState.pending_warp_id = warp_id
+		_do_scene_change(scene_path)
+	
+	
+	func _do_scene_change(scene_path: String) -> void:
+		get_tree().call_deferred('change_scene_to_file',scene_path)
+		_is_transitioning = false
+		EventBus.scene_transition_finished.emit()
+	
+	
+	func start_combat(enemy_group: Resource) -> void:
+		# Store the return scene so we can come back after combat
+		GameState.current_map_path = get_tree().current_scene.scene_file_path
+		print(GameState.current_map_path )
+		EventBus.combat_started.emit(enemy_group)
+		GameState.pending_enemy_group = enemy_group
+		travel_to("res://scenes/battle/Battle.tscn", "", "flash")
+	
+	
+	func end_combat(result: String) -> void:
+		EventBus.combat_ended.emit(result)
+		#for i : PartyMemberResource in GameState.party:
+			#GameState.hp_cache[i.stats.character_name] = i.stats.current_hp
+			#GameState.mp_cache[i.stats.character_name] = i.stats.current_mp
+		travel_to(GameState.current_map_path, "", "fade")
+	
+	_______________
+	COMBAT:
+	_______________
+	(BattleCombatant.gd):
+	class_name BattleCombatant
+	extends RefCounted
+	
+	var stats: CharacterStatBlock 
+	var is_player_controlled: bool
+	#var active_statuses: Array[Dictionary] = []
+	var source_resource : EntityResource
+	var physical_actions: Array[BattleAction] = []
+	var magic_actions: Array[BattleAction] = []
+	var healing_actions: Array[BattleAction] = []
+	var other_actions: Array[BattleAction] = []
+	#var inventory : Array[ItemResource] = []
+	
+	func _init(char_stats : CharacterStatBlock) -> void:
+		stats = char_stats
+		if stats.current_hp == -1:
+			stats.current_hp = stats.max_hp()
+		if stats.current_mp == -1:
+			stats.current_mp = stats.max_mp()
+	
+	static func create_enemy(character : EnemyResource) -> BattleCombatant:
+		var combatant = BattleCombatant.new(character.stats.duplicate(true))
+		combatant.is_player_controlled = false
+		combatant.source_resource = character
+		combatant.create_action_arrays(character.actions)
+		return combatant
+	
+	static func create_party_member(character : PartyMemberResource) -> BattleCombatant:
+		var combatant = BattleCombatant.new(character.stats)
+		combatant.is_player_controlled = true
+		combatant.source_resource = character
+		combatant.create_action_arrays(character.actions)
+		return combatant
+	
+	func create_action_arrays(actions : Array[BattleAction]):
+		for action : BattleAction in actions:
+			match action.damage_type:
+				action.DamageType.PHYSICAL:
+					physical_actions.append(action)
+				action.DamageType.MAGICAL:
+					magic_actions.append(action)
+				action.DamageType.HEALING:
+					healing_actions.append(action)
+				action.DamageType.NONE:
+					other_actions.append(action)
+	
+	func return_available_magic_actions() -> Array[BattleAction]:
+		var array : Array[BattleAction] = []
+		for action : BattleAction in magic_actions:
+			if action.mp_cost <= stats.current_mp:
+				array.append(action)
+		return array
+	
+	func return_available_healing_actions() -> Array[BattleAction]:
+		var array : Array[BattleAction] = []
+		for action : BattleAction in healing_actions:
+			if action.mp_cost <= stats.current_mp:
+				array.append(action)
+		return array
+	
+	#func max_hp() -> int:
+		#return 20 + (stats.vit * 8) + (stats.level * 5)
+	#func max_mp() -> int:
+		#return 10 + (stats.wil * 5) + (stats.level * 3)
+	func is_alive() -> bool: # reads stats.current_hp
+		return stats.current_hp > 0
+	func can_act() -> bool: # checks is_alive() and whether any active status blocks_action
+		if is_alive():
+			if source_resource.active_statuses.is_empty():
+				return true
+			else:
+				for i in source_resource.active_statuses:
+					if i["effect"].blocks_action == true:
+						return false
+				return true
+		else:
+			return false
+	func take_damage(amount: int) -> void: # subtracts from stats.current_hp, clamps to zero
+		stats.current_hp = clampi(stats.current_hp - amount, 0, stats.max_hp())
+		print("%s HP: %s" % [stats.character_name, stats.current_hp])
+	func heal(amount: int) -> void: # adds to stats.current_hp, clamps to max_hp()
+		stats.current_hp = clampi(stats.current_hp + amount, 0, stats.max_hp())
+	func apply_status(status: StatusEffect) -> bool: # appends to active_statuses, but only if not already present
+		var new = true
+		for i in source_resource.active_statuses:
+			if i["effect"] == status:
+				new = false
+		if new == true:
+			source_resource.active_statuses.append({"effect" = status, "turns_remaining" = status.duration_turns})
+		return new
+	func tick_statuses() -> void: #decrements duration_turns on each status, removes expired ones, applies damage_per_turn for POISON
+		var statuses = source_resource.active_statuses.duplicate()
+		for status in statuses:
+			status["turns_remaining"] -= 1
+			take_damage(status["effect"].damage_per_turn)
+			if status["turns_remaining"] <= 0:
+				source_resource.active_statuses.erase(status)
+	func effective_stat(stat : String) -> float:
+		var base_stat = source_resource.stats.get(stat)
+		var stat_mod = source_resource.stat_mods.get(stat, 0.0)
+		var stat_bonus = source_resource.get_bonus(stat)
+		if base_stat != null:
+			return base_stat + stat_mod + stat_bonus
+		else:
+			push_error("effective stat typo: %s" % stat)
+			return stat_mod + stat_bonus
+	
+	_______________
+	_______________
+	(combat_manager.gd):
+	extends Node
+	
+	@warning_ignore_start("integer_division")
+	
+	enum State {
+		IDLE          , # waiting for something to happen (brief, between states)
+		PLAYER_INPUT  , # player is choosing an action
+		TARGET_SELECT , # player is choosing a target
+		RESOLVING     , # an action is executing (damage applied, log updated)
+		# STATUS_TICK   , # status effects proc at start/end of turn
+		ENEMY_TURN    , # AI is selecting and executing an action
+		VICTORY       , # all enemies dead, award EXP/gold
+		DEFEAT        , # all party members dead
+		FLED          , # ran successfully
+	}
+	
+	var _turn_queue: Array[BattleCombatant] = []
+	var _current_turn_index: int = -1
+	var current_combatant : BattleCombatant = null
+	var _state: State = State.IDLE
+	var _pending_action: BattleAction = null
+	var _pending_targets: Array[BattleCombatant] = []
+	var _pending_item: ItemResource = null
+	var _enemy_group: EnemyGroupResource = null
+	var _party_members: Array[PartyMemberResource] = []
+	var _enemy_combatants : Array[BattleCombatant] = []
+	var _party_combatants: Array[BattleCombatant] = []
+	
+	func _ready() -> void:
+		#EventBus.combat_started.connect(start_battle)
+		EventBus.player_action_selected.connect(_on_player_action_selected)
+		EventBus.player_item_selected.connect(_on_player_item_selected)
+		EventBus.player_targets_selected.connect(_on_player_targets_selected)
+		EventBus.player_flee_attempted.connect(_on_player_flee_attempted)
+		EventBus.combat_visuals_ready.connect(start_next_turn)
+		if GameState.pending_enemy_group != null:
+			start_battle(GameState.pending_enemy_group)
+			GameState.pending_enemy_group = null
+	
+	func start_battle(enemy_group : EnemyGroupResource):
+		_enemy_group = enemy_group
+		_party_members = GameState.party
+		for entity in _party_members + _enemy_group.enemies:
+			var combatant : BattleCombatant
+			if entity is PartyMemberResource:
+				combatant = BattleCombatant.create_party_member(entity)
+				_party_combatants.append(combatant)
+			elif entity is EnemyResource:
+				combatant = BattleCombatant.create_enemy(entity)
+				_enemy_combatants.append(combatant)
+			_turn_queue.append(combatant)
+		_turn_queue.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.effective_stat("agi") > b.effective_stat("agi"))
+		EventBus.combat_queued.emit(_turn_queue)
+		#start_next_turn()
+	
+	func start_next_turn():
+		await get_tree().create_timer(0.3).timeout
+		_state = State.IDLE
+		advance_index()
+		if !any_alive(true): # handle failure
+			_state = State.DEFEAT
+			#EventBus.combat_ended.emit("defeat")
+			_process_party_progression()
+			SceneManager.end_combat("defeat")
+			return
+		if !any_alive(false): # handle victory
+			_state = State.VICTORY
+			for i in _enemy_group.enemies:
+				GameState.add_gold(i.gold_reward)
+				for ii : PartyMemberResource in _party_members:
+					ii.pending_xp += i.experience_reward 
+				GameState.inventory_drop(i.drop_table)
+				for equipment in i.equipped.keys():
+					if !(i.equipped[equipment] is Array):
+						if i.equipped[equipment] != null:
+							var item : ItemResource = i.equipped[equipment]
+							if randf() < i.equip_drop_chance:
+								GameState.give_item(item)
+					else:
+						for item in i.equipped[equipment]:
+							if item is ItemResource:
+								if randf() < i.equip_drop_chance:
+									GameState.give_item(item)
+			GameState.inventory_transfer()
+			#EventBus.combat_ended.emit("victory")
+			_process_party_progression()
+			
+			SceneManager.end_combat("victory")
+			return
+		current_combatant = _turn_queue[_current_turn_index]
+		while not current_combatant.is_alive():
+			advance_index()
+			current_combatant = _turn_queue[_current_turn_index]
+		EventBus.turn_started.emit(current_combatant)
+		if current_combatant.is_player_controlled:
+			_state = State.PLAYER_INPUT
+			EventBus.player_turn_started.emit()
+		else:
+			_state = State.ENEMY_TURN
+			_run_enemy_turn()
+	
+	func _run_enemy_turn():
+		if !current_combatant.can_act():
+			var log_string = "%s is " % current_combatant.stats.character_name
+			for status in current_combatant.source_resource.active_statuses:
+				if status["effect"].status_type == StatusEffect.StatusType.SLEEP:
+					log_string += "asleep"
+					break
+				elif status["effect"].status_type == StatusEffect.StatusType.STUN:
+					log_string += "stunned"
+					break
+			EventBus.combat_log_updated.emit(log_string)
+			start_next_turn()
+		else:
+			var enemy_data = current_combatant.source_resource as EnemyResource
+			var party = living_entities(_party_combatants)
+			party.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
+			var enemies = living_entities(_enemy_combatants)
+			enemies.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
+			var targets : Array[BattleCombatant] = []
+			var action : BattleAction
+			match enemy_data.behavior:
+				EnemyResource.AIBehavior.RANDOM: 
+					targets.append(party.pick_random())
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				EnemyResource.AIBehavior.AGGRESSIVE:
+					targets.append(party[0])
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				EnemyResource.AIBehavior.DEFENSIVE:
+					targets.append(party[-1])
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				EnemyResource.AIBehavior.HEALER:
+					targets.append(enemies[-1])
+					action = current_combatant.return_available_healing_actions().pick_random()
+				EnemyResource.AIBehavior.BERSERKER:
+					targets.append(party[0])
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+			if action == null:
+				EventBus.combat_log_updated.emit("%s does nothing" % current_combatant.stats.character_name)
+				start_next_turn()
+				return
+			_resolve_action(current_combatant, targets, action)
+	
+	func living_entities(array : Array[BattleCombatant]) -> Array[BattleCombatant]:
+		var new_array = array.duplicate()
+		for i in array:
+			if !i.is_alive():
+				new_array.erase(i)
+		return new_array
+	
+	func _resolve_action(attacker : BattleCombatant, targets : Array[BattleCombatant], action : BattleAction):
+		EventBus.combat_action_resolving.emit()
+		_state = State.RESOLVING
+		var healing = action.damage_type == BattleAction.DamageType.HEALING
+		if action.category == BattleAction.ActionCategory.MAGIC:
+			attacker.stats.current_mp -= action.mp_cost
+		for target in targets:
+			if action.category == BattleAction.ActionCategory.ATTACK:
+				EventBus.combat_log_updated.emit("%s attacks %s" % [attacker.stats.character_name, target.stats.character_name])
+				var damage = (attacker.effective_stat("str") * action.power) / maxf(1.0, target.effective_stat("vit"))
+				if accuracy_check(attacker):
+					if attacker.is_player_controlled:
+						(attacker.source_resource as PartyMemberResource).accumulate("str", target.effective_stat("vit"))
+						(attacker.source_resource as PartyMemberResource).accumulate("agi", target.effective_stat("agi"))
+					elif target.is_player_controlled:
+						(target.source_resource as PartyMemberResource).accumulate("vit", damage)
+						(target.source_resource as PartyMemberResource).accumulate("agi", attacker.effective_stat("agi"))
+					target.take_damage(roundi(damage))
+					EventBus.combatant_damaged.emit(target, roundi(damage))
+				else:
+					EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+			elif action.category == BattleAction.ActionCategory.MAGIC:
+				if !healing:
+					var damage = (attacker.effective_stat("intelligence") * action.power) / maxf(1.0, target.effective_stat("wil"))
+					EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+					if accuracy_check(attacker):
+						if attacker.is_player_controlled:
+							(attacker.source_resource as PartyMemberResource).accumulate("intelligence", target.effective_stat("wil"))
+						target.take_damage(roundi(damage))
+						EventBus.combatant_damaged.emit(target, roundi(damage))
+					else:
+						EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+				else:
+					var amount = (attacker.effective_stat("intelligence") * action.power)
+					EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+					if attacker.is_player_controlled:
+						(attacker.source_resource as PartyMemberResource).accumulate("wil", amount)
+						(attacker.source_resource as PartyMemberResource).accumulate("intelligence", amount * 0.5)
+					target.heal(roundi(amount))
+					EventBus.combatant_healed.emit(target, roundi(amount))
+			elif action.category == BattleAction.ActionCategory.SKILL:
+				EventBus.combat_log_updated.emit("%s uses %s" % [attacker.stats.character_name, action.action_name])
+			if action.status_to_apply != null:
+				if randf()<action.status_chance:
+					if target.apply_status(action.status_to_apply):
+						EventBus.combatant_status_applied.emit(target, action.status_to_apply)
+			if !target.is_alive():
+				EventBus.combatant_died.emit(target)
+				
+		attacker.tick_statuses()
+		#start_next_turn.call_deferred()
+		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
+		_pending_action = null
+	
+	func _resolve_item(attacker : BattleCombatant, targets : Array[BattleCombatant], item : ItemResource):
+		EventBus.combat_action_resolving.emit()
+		_state = State.RESOLVING
+		var item_used : bool = false
+		for combatant : BattleCombatant in targets:
+			var hp_before = combatant.stats.current_hp
+			item_used = item.apply_to(combatant.stats)
+			if item_used:
+				if combatant.stats.current_hp > hp_before:
+					EventBus.combatant_healed.emit(combatant, combatant.stats.current_hp - hp_before)
+				if item.effect_type == ItemResource.ConsumableEffect.CURE_STATUS:
+					if combatant.source_resource.active_statuses.size() > 0:
+						combatant.source_resource.active_statuses = []
+				elif item.effect_type == ItemResource.ConsumableEffect.CUSTOM:
+						for i in item.custom_effects.size():
+							if item.custom_effects[i] == ItemResource.ConsumableEffect.CURE_STATUS:
+								if combatant.source_resource.active_statuses.size() > 0:
+									combatant.source_resource.active_statuses = []
+		if item_used:
+			item.quantity -= 1
+			if item.quantity <= 0:
+				if attacker.is_player_controlled:
+					GameState.inventory.erase(item)
+				else:
+					attacker.source_resource.inventory.erase(item)
+			EventBus.item_used.emit(item)
+			attacker.tick_statuses()
+			#start_next_turn.call_deferred()
+			EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
+		else:
+			#EventBus.item_used.emit(ItemResource.new())
+			attacker.tick_statuses()
+			#start_next_turn.call_deferred()
+			EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
+		_pending_item = null
+	
+	func _on_player_action_selected(action: BattleAction):
+		if _state == State.PLAYER_INPUT:
+			_pending_action = action
+			_state = State.TARGET_SELECT
+			if action.target_type == BattleAction.TargetType.ALL_ENEMIES or action.target_type == BattleAction.TargetType.ALL_ALLIES:
+				EventBus.all_targets.emit()
+			var valid_targets = get_targets(action.target_type)
+			EventBus.target_select_requested.emit(valid_targets)
+	
+	func _on_player_item_selected(item: ItemResource):
+		if _state == State.PLAYER_INPUT:
+			_pending_item = item
+			_state = State.TARGET_SELECT
+			var valid_targets = get_targets(BattleAction.TargetType.SINGLE_ALLY)
+			EventBus.target_select_requested.emit(valid_targets)
+	
+	func get_targets(target_type : BattleAction.TargetType):
+		if target_type == BattleAction.TargetType.SINGLE_ENEMY or target_type == BattleAction.TargetType.ALL_ENEMIES:
+			if current_combatant.is_player_controlled:
+				return living_entities(_enemy_combatants)
+			else:
+				return living_entities(_party_combatants)
+		elif target_type == BattleAction.TargetType.SINGLE_ALLY or target_type == BattleAction.TargetType.ALL_ALLIES:
+			if current_combatant.is_player_controlled:
+				return living_entities(_party_combatants)
+			else:
+				return living_entities(_enemy_combatants)
+		elif target_type == BattleAction.TargetType.SELF:
+			return [current_combatant]
+	
+	func _on_player_targets_selected(targets: Array[BattleCombatant]):
+		if _state == State.TARGET_SELECT:
+			_pending_targets = targets
+			if _pending_action != null:
+				_resolve_action(current_combatant, _pending_targets, _pending_action)
+			elif _pending_item != null:
+				_resolve_item(current_combatant, _pending_targets, _pending_item)
+		
+	func _on_player_flee_attempted():
+		if _state == State.PLAYER_INPUT:
+			var player_agi = 0
+			var player_count = 0
+			var enemy_agi = 0
+			var enemy_count = 0
+			for i : BattleCombatant in _turn_queue:
+				if i.is_alive():
+					if i.is_player_controlled:
+						player_agi += i.effective_stat("agi")
+						player_count += 1
+					else:
+						enemy_agi += i.effective_stat("agi")
+						enemy_count += 1
+			for i : BattleCombatant in _turn_queue:
+				if i.is_alive() and i.is_player_controlled:
+					(i.source_resource as PartyMemberResource).accumulate("agi", enemy_agi / enemy_count)
+			EventBus.combat_log_updated.emit("%s attempted to flee" % current_combatant.stats.character_name)
+			if float(player_agi) / float(player_count) > (float(enemy_agi) / float(enemy_count) * 0.8):
+				_state = State.FLED
+				EventBus.combat_log_updated.emit("%s fled" % current_combatant.stats.character_name)
+				#EventBus.combat_ended.emit("fled")
+				_process_party_progression()
+				SceneManager.end_combat("fled")
+			else:
+				EventBus.combat_log_updated.emit("%s failed to escape" % current_combatant.stats.character_name)
+				start_next_turn()
+	
+	func _process_party_progression():
+		for i : BattleCombatant in _turn_queue:
+			if i.is_player_controlled:
+				(i.source_resource as PartyMemberResource).process_progression()
+	
+	func accuracy_check(attacker : BattleCombatant) -> bool:
+		var hit_roll = randf()
+		var accuracy = 1.0
+		# apply accuracy modifier from any BLIND status on attacker
+		for status in attacker.source_resource.active_statuses:
+			accuracy *= status["effect"].accuracy_modifier
+		if hit_roll > accuracy:
+			return false
+		return true
+	
+	func advance_index() -> void:
+		_current_turn_index = (_current_turn_index + 1) % _turn_queue.size()
+	
+	func any_alive(player_controlled : bool) -> bool:
+		for i : BattleCombatant in _turn_queue:
+			if i.is_player_controlled == player_controlled and i.is_alive():
+				return true
+		return false
+	
+	_______________
+	ENTITIES:
+	RESOURCES:
+	_______________
+	(BattleAction.gd):
+	class_name BattleAction
+	extends Resource
+	
+	enum ActionCategory {ATTACK, MAGIC, SKILL}
+	enum TargetType {SINGLE_ENEMY, ALL_ENEMIES, SINGLE_ALLY, ALL_ALLIES, SELF}
+	enum DamageType {PHYSICAL, MAGICAL, HEALING, NONE}
+	
+	@export var action_name: String = ""
+	@export var description: String = ""
+	@export var category: ActionCategory = ActionCategory.ATTACK
+	@export var mp_cost: int = 0 # zero for physical attacks
+	@export var target_type: TargetType = TargetType.SINGLE_ENEMY
+	@export var damage_type: DamageType = DamageType.PHYSICAL
+	@export var power: int = 1 #the base value the damage formula will scale from
+	@export var status_to_apply: StatusEffect = null # null means no status, so no default needed
+	@export_range(0.0, 1.0, 0.1) var status_chance: float = 0.5 # probability the status applies, 0.0 to 1.0
+	@export var animation_key: String = ""
+	
+	_______________
+	_______________
+	(CharacterStatBlock.gd):
+	class_name CharacterStatBlock
+	extends Resource
+	
+	@warning_ignore_start("shadowed_global_identifier")
+	
+	@export var character_name: String = ""
+	@export var level: int = 1
+	@export var base_move_speed: float = 150.0
+	
+	@export_group("Primary Stats")
+	@export var str: int = 10   # Physical attack, carry weight
+	@export var agi: int = 10   # Turn order, evasion, accuracy
+	@export var vit: int = 10   # Max HP, physical defense
+	@export var intelligence: int = 10  # Magic attack, item effectiveness
+	@export var wil: int = 10   # Max MP, magic resist, status resist
+	
+	@export_group("Runtime State")
+	@export var current_hp : int = -1
+	@export var current_mp : int = -1
+	
+	func max_hp() -> int:
+		return 20 + (vit * 8) + (level * 5)
+	func max_mp() -> int:
+		return 10 + (wil * 5) + (level * 3)
+	
+	_______________
+	_______________
+	(DialogueChoice.gd):
+	class_name DialogueChoice
+	extends Resource
+	
+	@export var label: String = ""  # What the player sees in the menu
+	
+	# Condition — leave flag_required empty for always-available choices
+	@export var flag_required: String = ""
+	@export var required_value: Variant = null
+	
+	# Consequence
+	@export var sets_flag: String = ""
+	@export var sets_value: Variant = null
+	
+	# Where this choice leads
+	@export var next_lines: Array[DialogueLine] = []
+	@export var next_sequence_id : String = ""
+	
+	_______________
+	_______________
+	(DialogueLine.gd):
+	class_name DialogueLine
+	extends Resource
+	
+	@export var speaker_name: String = ""
+	@export var portrait: Texture2D  # null = no portrait shown
+	@export var text: String = ""
+	
+	# Empty array = linear advance. Populated = show choice menu.
+	@export var choices: Array[DialogueChoice] = []
+	
+	_______________
+	_______________
+	(DialogueSequence.gd):
+	class_name DialogueSequence
+	extends Resource
+	
+	@export var sequence_id: String = ""
+	@export var lines: Array[DialogueLine] = []
+	
+	_______________
+	_______________
+	(EnemyGroupResource.gd):
+	class_name EnemyGroupResource
+	extends Resource
+	
+	@export var enemies: Array[EnemyResource] = []
+	@export var encounter_music: String = ""  # res://audio/music/... path
+	
+	_______________
+	_______________
+	(EnemyResource.gd):
+	class_name EnemyResource
+	extends EntityResource
+	
+	enum AIBehavior { RANDOM, AGGRESSIVE, DEFENSIVE, HEALER, BERSERKER }
+	
+	@export var enemy_name: String = ""
+	@export var sprite_frames: SpriteFrames
+	
+	@export_group("Rewards")
+	@export var experience_reward: int = 0
+	@export var gold_reward: int = 0
+	@export var drop_table: Array[ItemResource] = []
+	@export var equip_drop_chance : float = 0.5
+	
+	@export_group("Battle")
+	@export var behavior: AIBehavior = AIBehavior.RANDOM
+	
+	_______________
+	_______________
+	(EntityResource.gd):
+	class_name EntityResource
+	extends Resource
+	
+	@export var stats: CharacterStatBlock
+	@export var actions: Array[BattleAction]
+	@export var inventory: Array[ItemResource]
+	@export var is_player := false
+	var active_statuses: Array[Dictionary] = []
+	var equipped: Dictionary
+	var stat_mods = {
+		"str": 0.0,
+		"agi": 0.0,
+		"vit": 0.0,
+		"intelligence": 0.0,
+		"wil": 0.0,
+	}
+	
+	const BLOCKED_SLOT = "blocked"
+	
+	func _init() -> void:
+		equipped = {
+			"head": null,
+			"torso": null,
+			"legs": null,
+			"hand": [null, null],
+			"foot": [null, null],
+			"ring": [null, null, null, null, null, null, null, null, null, null],
+			"toe_ring": [null, null, null, null, null, null, null, null, null, null],
+		}
+	
+	func get_bonus(stat_name: String) -> int:
+		var amount = 0
+		for key in equipped.keys():
+			if equipped[key] is Array:
+				for value in equipped[key]:
+					if value is ItemResource:
+						var item : ItemResource = value
+						amount += item.stat_modifiers.get(stat_name, 0)
+			else:
+				if equipped[key] is ItemResource:
+					var item : ItemResource = equipped[key]
+					amount += item.stat_modifiers.get(stat_name, 0)
+		return amount
+	
+	func equip_item(item:ItemResource) -> bool:
+		if item.item_type != ItemResource.ItemType.EQUIPMENT:
+			return false
+		var slot_key : String = locate_equip_slot(item)
+		if slot_key == "":
+			return false
+		if slot_key not in equipped.keys():
+			return false
+		var current_equip = equipped[slot_key]
+		if !(current_equip is Array):
+			if current_equip == null:
+				equipped[slot_key] = item
+				return true
+			else:
+				unequip_item(current_equip)
+				equipped[slot_key] = item
+				return true
+		else:
+			var index = 0
+			for i : int in current_equip.size():
+				index = i
+				if current_equip[index] == null:
+					equipped[slot_key][index] = item
+					return true
+			unequip_item(current_equip[-1])
+			(current_equip as Array).remove_at(-1)
+			(current_equip as Array).insert(0, item)
+			if item.two_handed:
+				current_equip[0] = item
+				if current_equip[1] is ItemResource:
+					unequip_item(current_equip[1])
+				equipped[slot_key][1] = BLOCKED_SLOT
+			return true
+	
+	func unequip_item(item:ItemResource):
+		var _inventory
+		if is_player:
+			_inventory = GameState.inventory.duplicate()
+		else:
+			_inventory = inventory.duplicate()
+		var slot = locate_equip_slot(item)
+		var current_equip = equipped[slot]
+		if current_equip is Array:
+			if current_equip.has(item):
+				_inventory.append(item)
+				equipped[slot][current_equip.find(item)] = null
+				#return true
+			#else:
+				#return false
+		else:
+			if current_equip == item:
+				_inventory.append(current_equip)
+				equipped[slot] = null
+				#return true
+			#else:
+				#return false
+		if is_player:
+			GameState.inventory = _inventory
+		else:
+			inventory = _inventory
+		
+	
+	func locate_equip_slot(item : ItemResource) -> String:
+		if item.item_type != ItemResource.ItemType.EQUIPMENT:
+			return ""
+		return (ItemResource.EquipSlot.keys()[item.equip_slot] as String).to_lower()
+	
+	_______________
+	_______________
+	(ItemResource.gd):
+	class_name ItemResource
+	extends Resource
+	
+	enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM }
+	enum ConsumableEffect {NONE, HEAL_HP, HEAL_MP, REVIVE, CURE_STATUS, CUSTOM}
+	enum EquipSlot {NONE, HEAD, TORSO, LEGS, HAND, FOOT, RING, TOE_RING}
+	
+	@export_group("Item")
+	@export var item_name: String = ""
+	@export var description: String = ""
+	@export var icon: Texture2D
+	@export var item_type: ItemType = ItemType.CONSUMABLE
+	@export var value: int = 0       # Gold value for shops
+	@export var stackable: bool = true
+	@export var max_stack: int = 99
+	@export var quantity: int = 1
+	@export_group("Consumable Effect")
+	@export var effect_type: ConsumableEffect = ConsumableEffect.NONE
+	@export var effect_value: int
+	@export var custom_effects: Array[int] # Only in use for custom ConsumableEffects. CUSTOM is not allowed here
+	@export var custom_values: Array[int] # Only in use for custom ConsumableEffects, must have same number of entries as Custom Effects, valuless effects use 0
+	@export_group("Equipment")
+	@export var equip_slot: EquipSlot = EquipSlot.NONE
+	@export var two_handed : bool = false
+	@export var stat_modifiers: Dictionary # Must match statblock keys EXACTLY "str", "agi", "vit", "intelligence", "wil"
+	@export_group("Key Item")
+	@export var sets_flag: String = ""
+	func apply_to(stats : CharacterStatBlock) -> bool:
+		match effect_type:
+			ItemResource.ConsumableEffect.HEAL_HP:
+				if stats.current_hp == stats.max_hp():
+					return false
+				stats.current_hp = clampi(stats.current_hp + effect_value, 0, stats.max_hp())
+			ItemResource.ConsumableEffect.HEAL_MP:
+				if stats.current_mp == stats.max_mp():
+					return false
+				stats.current_mp = clampi(stats.current_mp + effect_value, 0, stats.max_mp())
+			ItemResource.ConsumableEffect.REVIVE:
+				if stats.current_hp <= 0:
+					stats.current_hp = 10
+				else:
+					return false
+			ItemResource.ConsumableEffect.CURE_STATUS:
+				pass # handled via combatmanager
+				#if combatant.active_statuses.size() > 0:
+					#combatant.active_statuses = []
+			ItemResource.ConsumableEffect.CUSTOM:
+				var is_true = false
+				for i in custom_effects.size():
+					match custom_effects[i]:
+						ItemResource.ConsumableEffect.HEAL_HP:
+							if stats.current_hp != stats.max_hp():
+								is_true = true
+							stats.current_hp = clampi(stats.current_hp + custom_values[i], 0, stats.max_hp())
+						ItemResource.ConsumableEffect.HEAL_MP:
+							if stats.current_mp != stats.max_mp():
+								is_true = true
+							stats.current_mp = clampi(stats.current_mp + custom_values[i], 0, stats.max_mp())
+						ItemResource.ConsumableEffect.REVIVE:
+							if stats.current_hp <= 0:
+								is_true = true
+								stats.current_hp = 10
+						ItemResource.ConsumableEffect.CURE_STATUS:
+							pass # handled via combatmanager
+							#if combatant.active_statuses.size() > 0:
+								#combatant.active_statuses = []
+				return is_true
+			ItemResource.ConsumableEffect.NONE:
+				pass
+		return true
+	
+	func stats_to_text() -> String:
+		var output = ""
+		for i in stat_modifiers.keys().size():
+			output += "%s: " % stat_modifiers.keys()[i]
+			if stat_modifiers[stat_modifiers.keys()[i]] > 0:
+				output += "+"
+			output += "%s" % stat_modifiers[stat_modifiers.keys()[i]]
+			if i < stat_modifiers.keys().size() -1:
+				output += ", "
+		if !(effect_type == ConsumableEffect.NONE):
+			if output != "":
+				output += " | "
+			if effect_type != ConsumableEffect.CUSTOM:
+				output += "%s " % ItemResource.ConsumableEffect.keys()[effect_type]
+				if effect_value > 0:
+					output += "+"
+				output += "%s" % effect_value
+			else:
+				for i in custom_effects.size():
+					output += "%s " % ItemResource.ConsumableEffect.keys()[custom_effects[i]]
+					if custom_values[i] > 0:
+						output += "+"
+					output += "%s" % custom_values[i]
+					if i < custom_effects.size()-1:
+						output += ", "
+		return output
+	
+	_______________
+	_______________
+	(PartyMemberResource.gd):
+	class_name PartyMemberResource
+	extends EntityResource
+	
+	@export var battle_sprite_frames: SpriteFrames
+	@export var portrait: Texture2D
+	@export var pending_xp : float = 0.0
+	@export var xp_gauge: float = 0.0
+	@export var xp_till_level_up : float = 100.0
+	
+	@export var stat_levels = {
+		"str" : [0.0, 100.0],
+		"agi" : [0.0, 100.0],
+		"vit" : [0.0, 100.0],
+		"intelligence" : [0.0, 100.0],
+		"wil" : [0.0, 100.0],
+	}
+	
+	@export var previous_location = null
+	
+	func accumulate(stat_name : String, amount : float):
+		stat_levels[stat_name][0] += amount
+		pending_xp += amount * 0.5
+	
+	func process_progression():
+		for i in stat_levels.keys():
+			while stat_levels[i][0] >= stat_levels[i][1]:
+				stat_levels[i][0] -= stat_levels[i][1]
+				stat_levels[i][1] = stat_levels[i][1] * 1.2
+				stats.set(i, stats.get(i)+1)
+				EventBus.stat_increased.emit(self, i, stats.get(i))
+				print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
+		xp_gauge += pending_xp
+		pending_xp = 0
+		while xp_gauge >= xp_till_level_up:
+			xp_gauge -= xp_till_level_up
+			xp_till_level_up = xp_till_level_up * 1.2
+			stats.level += 1
+			EventBus.level_increased.emit(self, stats.level)
+			print("%s's level raised to %s" % [stats.character_name, stats.level])
+			for i in stat_levels.keys():
+				stat_levels[i][0] = stat_levels[i][0] * 1.2
+				if stat_levels[i][0] >= stat_levels[i][1]:
+					stat_levels[i][0] -= stat_levels[i][1]
+					stat_levels[i][1] = stat_levels[i][1] * 1.2
+					stats.set(i, stats.get(i)+1)
+					EventBus.stat_increased.emit(self, i, stats.get(i))
+					print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
+		
+	
+	_______________
+	_______________
+	(StatusEffect.gd):
+	class_name StatusEffect
+	extends Resource
+	
+	enum StatusType {POISON, SLEEP, BLIND, STUN, BERSERK}
+	
+	@export var status_name : String = ""
+	@export var status_type : StatusType = StatusType.POISON
+	@export var duration_turns : int = -1
+	@export var damage_per_turn : int = 0
+	@export var blocks_action : bool = false
+	@export var accuracy_modifier : float = 1.0
+	
+	_______________
+	_______________
+	(WarpDefinition.gd):
+	class_name WarpDefinition
+	extends Resource
+	
+	@export var target_scene: String = ""    # res://scenes/... path
+	@export var target_warp_id: String = ""  # ID of the arrival warp in target scene
+	@export var transition: String = "fade"  # matches SceneManager transition names
+	
+	_______________
+	UI:
+	WORLD:

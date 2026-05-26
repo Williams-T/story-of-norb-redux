@@ -17,6 +17,7 @@ func _ready() -> void:
 func start_dialogue(dialogue : DialogueSequence):
 	if _current_sequence != null:
 		return
+	EventBus.player_movement_locked.emit()
 	_current_sequence = dialogue
 	_current_lines = dialogue.lines
 	_current_index = 0
@@ -67,4 +68,5 @@ func end_dialogue():
 	_current_lines = []
 	_current_index = 0
 	_awaiting_choices = false
+	EventBus.player_movement_unlocked.emit()
 	EventBus.dialogue_finished.emit()

@@ -1,0 +1,26 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://drlchlv55b7pt"]
+
+[ext_resource type="Texture2D" uid="uid://dsjme2bmrmfqo" path="res://art/characters/enemies/debug/idle/enemy_idle_01.png" id="1_v161o"]
+[ext_resource type="Texture2D" uid="uid://dytuqu3u02i46" path="res://art/characters/enemies/debug/idle/enemy_idle_02.png" id="2_ugd0u"]
+[ext_resource type="Texture2D" uid="uid://5hh6khqit6c5" path="res://art/characters/enemies/debug/idle/enemy_idle_03.png" id="3_gvt06"]
+[ext_resource type="Texture2D" uid="uid://ytarkarevkin" path="res://art/characters/enemies/debug/idle/enemy_idle_04.png" id="4_mvyjb"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_v161o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_ugd0u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_gvt06")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_mvyjb")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 4.0
+}]

@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="PartyMemberResource" format=3 uid="uid://cef4gyahcju3v"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_t03dm"]
+[ext_resource type="Resource" uid="uid://1jxsq0x8ybtq" path="res://data/actions/basic_attack.tres" id="2_0env2"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="2_il8ho"]
+[ext_resource type="Resource" uid="uid://c8hha40tvgj05" path="res://data/actions/slime_tackle.tres" id="3_ehmon"]
+[ext_resource type="Script" uid="uid://boebfwpkxm8x0" path="res://src/resources/PartyMemberResource.gd" id="3_jr7fc"]
+[ext_resource type="SpriteFrames" uid="uid://cddetx3phgy84" path="res://art/characters/partymembers/debug/debug.tres" id="4_0env2"]
+[ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="4_il8ho"]
+[ext_resource type="Resource" uid="uid://1ux326n4vr5t" path="res://data/items/wizard_hat.tres" id="6_m74ov"]
+[ext_resource type="Resource" uid="uid://bj2r5vxg8x3hm" path="res://data/items/potion.tres" id="7_bgsbk"]
+
+[sub_resource type="Resource" id="Resource_jr7fc"]
+script = ExtResource("4_il8ho")
+character_name = "Dog"
+agi = 15
+metadata/_custom_type_script = "uid://bck3giaak2qgo"
+
+[resource]
+script = ExtResource("3_jr7fc")
+battle_sprite_frames = ExtResource("4_0env2")
+previous_location = null
+stats = SubResource("Resource_jr7fc")
+actions = Array[ExtResource("1_t03dm")]([ExtResource("2_0env2"), ExtResource("3_ehmon")])
+inventory = Array[ExtResource("2_il8ho")]([ExtResource("6_m74ov"), ExtResource("7_bgsbk")])
+metadata/_custom_type_script = "uid://boebfwpkxm8x0"

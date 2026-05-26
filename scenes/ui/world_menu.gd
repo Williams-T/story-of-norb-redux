@@ -157,9 +157,11 @@ func _input(event: InputEvent) -> void:
 			current_party_member = get_active_player()
 			show()
 			EventBus.world_menu_opened.emit()
+			EventBus.player_movement_locked.emit()
 			refresh_item_list()
 		else:
 			hide()
+			EventBus.player_movement_unlocked.emit()
 			EventBus.world_menu_closed.emit()
 
 func refresh_item_list():

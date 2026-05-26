@@ -7,15 +7,14 @@
 [ext_resource type="Script" uid="uid://drag68vt7goeq" path="res://src/resources/WarpDefinition.gd" id="4_3jy7c"]
 [ext_resource type="Script" uid="uid://3jhcfyj08wdl" path="res://scenes/world/map_controller.gd" id="4_r720c"]
 [ext_resource type="PackedScene" uid="uid://dv8dvat866384" path="res://scenes/NPC.tscn" id="5_7vg7e"]
-[ext_resource type="Resource" uid="uid://ce0tqxb746j5v" path="res://data/dialogue/test1.tres" id="6_at1v2"]
 
 [sub_resource type="TileSet" id="TileSet_4jb3m"]
 tile_size = Vector2i(64, 64)
 
 [sub_resource type="Resource" id="Resource_3jy7c"]
 script = ExtResource("4_3jy7c")
-target_scene = "res://scenes/world/Overworld.tscn"
-target_warp_id = "overworld_from_town"
+target_scene = "res://scenes/towns/Hogsforth.tscn"
+target_warp_id = "Building1"
 metadata/_custom_type_script = "uid://drag68vt7goeq"
 
 [node name="TestTown" type="Node2D" unique_id=1952397873]
@@ -50,8 +49,7 @@ y_sort_enabled = true
 [node name="Npc" parent="YSort/NPCs" unique_id=1190844843 instance=ExtResource("5_7vg7e")]
 y_sort_enabled = true
 position = Vector2(1056, 597)
-queued_dialogue = ExtResource("6_at1v2")
-wander_radius = 640.0
+wander_radius = 300.0
 
 [node name="Entities" type="Node2D" parent="YSort" unique_id=561890850]
 

@@ -115,8 +115,8 @@ func set_positions(combatants : Array[BattleCombatant]):
 			else:
 				sprite.stop())
 		#sprite.play("battle_entrance")
-		if sprite.sprite_frames.has_animation("idle_down"):
-			sprite.play("idle_down")
+		if sprite.sprite_frames.has_animation("idle"):
+			sprite.play("idle")
 		var target_pos = positions[i].size
 		var tween = create_tween()
 		tween.tween_property(sprite, "position", target_pos, 0.4)
@@ -136,7 +136,7 @@ func set_positions(combatants : Array[BattleCombatant]):
 		indicator.mp_bar.value = i.stats.current_mp
 		#indicator.text = "v"
 		indicator.offset_transform_enabled = true
-		indicator.offset_transform_position = Vector2(80,20)
+		indicator.offset_transform_position = Vector2(80,-50)
 		##indicator.offset_transform_position_ratio = Vector2(1.8, -0.8)
 		#indicator.offset_transform_position = Vector2(125,60)
 		#indicator.name = "SelectionArrow"
@@ -328,10 +328,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			EventBus.player_targets_selected.emit(targets)
 			selecting_targets = false
 		elif event.is_action_pressed('move_right') or event.is_action_pressed("move_down"):
-			target_index = wrapi(target_index + 1, 0, target_array.size())
+			target_index = wrapi(target_index - 1, 0, target_array.size())
 			update_target_arrow()
 		elif event.is_action_pressed('move_left') or event.is_action_pressed("move_up"):
-			target_index = wrapi(target_index - 1, 0, target_array.size())
+			target_index = wrapi(target_index + 1, 0, target_array.size())
 			update_target_arrow()
 		elif event.is_action_pressed("combat_cancel"):
 			selecting_targets = false

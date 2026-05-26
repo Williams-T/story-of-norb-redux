@@ -12,8 +12,8 @@ tile_size = Vector2i(64, 64)
 
 [sub_resource type="Resource" id="Resource_hiu05"]
 script = ExtResource("4_2esgy")
-target_scene = "res://scenes/world/Overworld.tscn"
-target_warp_id = "overworld_from_dungeon"
+target_scene = "res://scenes/towns/Hogsforth.tscn"
+target_warp_id = "Building2"
 metadata/_custom_type_script = "uid://drag68vt7goeq"
 
 [node name="TestDungeon" type="Node2D" unique_id=1952397873]

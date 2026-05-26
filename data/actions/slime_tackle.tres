@@ -6,4 +6,5 @@
 script = ExtResource("1_sc4oo")
 action_name = "Tackle"
 description = "get bumped HARD"
+power = 30
 metadata/_custom_type_script = "uid://d3fdo4ho75i4u"

@@ -29,17 +29,17 @@ func _ready() -> void:
 	EventBus.interact_pressed.connect(try_interact)
 	EventBus.world_menu_closed.connect(func():set_physics_process(true))
 	EventBus.world_menu_opened.connect(func():set_physics_process(false))
-	_wander_origin = position
+	_wander_origin = global_position
 	orient_facing(Vector2.DOWN)
 	if wander_radius > 0.0:
-		timer.start(randf_range(6.0, 12.0))
+		timer.start(randf_range(1.0, 3.0))
 
 func _on_dialogue_started(_sequence : DialogueSequence):
 	timer.stop()
 	_wandering = false
 func _on_dialogue_finished():
 	if wander_radius > 0.0:
-		timer.start(randf_range(6.0, 12.0))
+		timer.start(randf_range(1.0, 3.0))
 
 func _on_body_entered(body : Node2D):
 	if body is Player:
@@ -83,22 +83,22 @@ func orient_facing(dir : Vector2):
 				sprite.play("walk_left")
 
 func wander():
+	timer.stop()
 	_wandering = true
 	var t = randf() * TAU # Random angle
-	var r = sqrt(randf()) * wander_radius # Uniform radius
+	var r = sqrt(randf_range(0.5, 1.0)) * wander_radius # Uniform radius
 	_target_position = _wander_origin + Vector2(r * cos(t), r * sin(t))
-	orient_facing(_wander_origin.direction_to(_target_position))
+	orient_facing(global_position.direction_to(_target_position))
 	if stats:
-		velocity = _wander_origin.direction_to(_target_position) * stats.base_move_speed 
+		velocity = global_position.direction_to(_target_position) * stats.base_move_speed 
 	else:
-		velocity = _wander_origin.direction_to(_target_position) * 120.0
+		velocity = global_position.direction_to(_target_position) * 120.0
 
 func _physics_process(_delta: float) -> void:
-	if _wandering and (position.distance_to(_target_position) < 8.0 \
-or position.distance_to(_wander_origin) >= wander_radius):
+	if _wandering and (global_position.distance_to(_target_position) < 8.0 or global_position.distance_to(_wander_origin) >= wander_radius):
 		_wandering = false
 		orient_facing(velocity)
 		velocity = Vector2.ZERO
-		timer.start(randf_range(6.0, 12.0))
+		timer.start(randf_range(1.0, 3.0))
 	if wander_radius > 0.0 and _wandering:
 		move_and_slide()

@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="DialogueSequence" format=3 uid="uid://c71t2vhq6xjfn"]
+
+[ext_resource type="Script" uid="uid://dtjevhceewfsc" path="res://src/resources/DialogueLine.gd" id="1_418sn"]
+[ext_resource type="Script" uid="uid://6tgeb37pkkm" path="res://src/resources/DialogueChoice.gd" id="2_vyuwh"]
+[ext_resource type="Script" uid="uid://dff5q2m8wjs4f" path="res://src/resources/DialogueSequence.gd" id="3_l1ljg"]
+
+[sub_resource type="Resource" id="Resource_h18iv"]
+script = ExtResource("2_vyuwh")
+label = "yes"
+required_value = null
+sets_flag = "likes_jokes"
+sets_value = "true"
+
+[sub_resource type="Resource" id="Resource_5mfbt"]
+script = ExtResource("2_vyuwh")
+label = "no"
+required_value = null
+sets_flag = "likes_jokes"
+sets_value = "false"
+
+[sub_resource type="Resource" id="Resource_dfmjw"]
+script = ExtResource("2_vyuwh")
+label = "you know"
+flag_required = "likes_jokes"
+required_value = "true"
+sets_value = ""
+
+[sub_resource type="Resource" id="Resource_ji6i6"]
+script = ExtResource("1_418sn")
+speaker_name = "npc"
+text = "do you like jokes?"
+choices = Array[ExtResource("2_vyuwh")]([SubResource("Resource_h18iv"), SubResource("Resource_5mfbt"), SubResource("Resource_dfmjw")])
+
+[sub_resource type="Resource" id="Resource_418sn"]
+script = ExtResource("1_418sn")
+speaker_name = "npc"
+text = "i like jokes too"
+
+[resource]
+script = ExtResource("3_l1ljg")
+sequence_id = "flag test"
+lines = Array[ExtResource("1_418sn")]([SubResource("Resource_ji6i6"), SubResource("Resource_418sn")])

@@ -41,5 +41,4 @@ choices = Array[ExtResource("2_8opf0")]([SubResource("Resource_kd1kp"), SubResou
 
 [resource]
 script = ExtResource("3_monfo")
-sequence_id = "test1"
 lines = Array[ExtResource("1_ffngp")]([SubResource("Resource_dwem7"), SubResource("Resource_rxijh"), SubResource("Resource_106lg")])

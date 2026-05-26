@@ -16,6 +16,7 @@ var party: Array[PartyMemberResource] = []
 var current_map_path: String = ""
 var save_slot: int = 0
 var pending_warp_id : String = "test_town_entrance"
+var previous_player_location : Vector2 = Vector2(-1, -1)
 
 var pending_enemy_group : EnemyGroupResource = null
 var in_combat := false
@@ -24,6 +25,7 @@ func _ready() -> void:
 	EventBus.combat_started.connect(func(enemy_group):in_combat=true)
 	EventBus.combat_ended.connect(func(result):in_combat=false)
 	party.append(load("res://data/characters/norb_party_member.tres").duplicate(true))
+	party.append(load("res://data/characters/dog_party_member.tres").duplicate(true))
 	inventory.append_array([load("res://data/items/elixer.tres"), load("res://data/items/magicrestore.tres"), load("res://data/items/potion.tres"), load("res://data/items/sword.tres")])
 
 func set_flag(flag_name: String, value: Variant) -> void:
@@ -31,7 +33,7 @@ func set_flag(flag_name: String, value: Variant) -> void:
 	EventBus.flag_changed.emit(flag_name, value)
 
 
-func get_flag(flag_name: String, default: Variant = false) -> Variant:
+func get_flag(flag_name: String, default: Variant = null) -> Variant:
 	return flags.get(flag_name, default)
 
 

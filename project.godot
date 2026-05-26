@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="StoryOfNorbRedux"
-run/main_scene="uid://bmqoe0sya3knp"
+run/main_scene="uid://dk6ijwufw6ny0"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [autoload]
@@ -37,6 +37,7 @@ enabled=PackedStringArray("res://addons/rpg_editors/plugin.cfg")
 [global_group]
 
 player=""
+party=""
 
 [importer_defaults]
 

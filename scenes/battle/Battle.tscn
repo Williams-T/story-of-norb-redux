@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://dvdjeo31b6aw" path="res://scenes/battle/battle_ui.gd" id="2_jnwmo"]
 
 [sub_resource type="Gradient" id="Gradient_qmg44"]
-colors = PackedColorArray(0.26293245, 0.26293245, 0.26293245, 1, 0.47397572, 0.47397572, 0.47397572, 1)
+colors = PackedColorArray(0.654902, 0.2627451, 0.2627451, 1, 0.31832558, 0.11595874, 0.12258426, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_omw3i"]
 gradient = SubResource("Gradient_qmg44")

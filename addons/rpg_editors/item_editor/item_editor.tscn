@@ -7,6 +7,7 @@
 font_size = 14
 
 [node name="ItemEditor" type="PanelContainer" unique_id=968321096]
+custom_maximum_size = Vector2(-1, 400)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -14,130 +15,135 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_cf5fc")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2020964752]
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=650310304]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer" unique_id=443878041]
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=2020964752]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer" unique_id=443878041]
 layout_mode = 2
 text = "Item Editor"
 horizontal_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=950758478]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer" unique_id=950758478]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer" unique_id=1868865191]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/HBoxContainer" unique_id=1868865191]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Item Type:"
 horizontal_alignment = 2
 
-[node name="TabContainer" type="TabContainer" parent="VBoxContainer/HBoxContainer" unique_id=2053859487]
+[node name="TabContainer" type="TabContainer" parent="ScrollContainer/VBoxContainer/HBoxContainer" unique_id=2053859487]
 layout_mode = 2
 size_flags_horizontal = 3
 deselect_enabled = true
 
-[node name="Consumable" type="Control" parent="VBoxContainer/HBoxContainer/TabContainer" unique_id=20032366]
+[node name="Consumable" type="Control" parent="ScrollContainer/VBoxContainer/HBoxContainer/TabContainer" unique_id=20032366]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="Equipment" type="Control" parent="VBoxContainer/HBoxContainer/TabContainer" unique_id=2050008750]
+[node name="Equipment" type="Control" parent="ScrollContainer/VBoxContainer/HBoxContainer/TabContainer" unique_id=2050008750]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Key Item" type="Control" parent="VBoxContainer/HBoxContainer/TabContainer" unique_id=259309734]
+[node name="Key Item" type="Control" parent="ScrollContainer/VBoxContainer/HBoxContainer/TabContainer" unique_id=259309734]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
-[node name="MainPanel" type="HBoxContainer" parent="VBoxContainer" unique_id=38747990]
+[node name="MainPanel" type="HBoxContainer" parent="ScrollContainer/VBoxContainer" unique_id=38747990]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/MainPanel" unique_id=655769271]
+[node name="ScrollContainer" type="ScrollContainer" parent="ScrollContainer/VBoxContainer/MainPanel" unique_id=655769271]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.5
 
-[node name="FileList" type="VBoxContainer" parent="VBoxContainer/MainPanel/ScrollContainer" unique_id=1582413694]
+[node name="FileList" type="VBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/ScrollContainer" unique_id=1582413694]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="FieldsContainer" type="VBoxContainer" parent="VBoxContainer/MainPanel" unique_id=1898622153]
+[node name="FieldsContainer" type="VBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel" unique_id=1898622153]
 layout_mode = 2
 size_flags_horizontal = 3
 alignment = 1
 
-[node name="ItemFields" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer" unique_id=354114218]
+[node name="ItemFields" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer" unique_id=354114218]
 layout_mode = 2
 theme_override_constants/h_separation = 64
 columns = 2
 
-[node name="Control" type="Control" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=911747892]
+[node name="Control" type="Control" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=911747892]
 layout_mode = 2
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1846446529]
+[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1846446529]
 layout_mode = 2
 offset_transform_enabled = true
 offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 
-[node name="NewButton" type="Button" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3" unique_id=1701502673]
+[node name="NewButton" type="Button" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3" unique_id=1701502673]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "NEW"
 
-[node name="SaveButton" type="Button" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3" unique_id=727137414]
+[node name="SaveButton" type="Button" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer3" unique_id=727137414]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SAVE"
 
-[node name="NameLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=584322593]
+[node name="NameLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=584322593]
 layout_mode = 2
 size_flags_vertical = 3
 text = "Name:"
 horizontal_alignment = 2
 
-[node name="NameLine" type="LineEdit" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1852548588]
+[node name="NameLine" type="LineEdit" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1852548588]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
 offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 
-[node name="DescriptionLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1315406291]
+[node name="DescriptionLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1315406291]
 layout_mode = 2
 size_flags_vertical = 3
 text = "Description:"
 horizontal_alignment = 2
 
-[node name="DescriptionLine" type="LineEdit" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1551119526]
+[node name="DescriptionLine" type="LineEdit" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1551119526]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
 offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 
-[node name="IconLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1836587011]
+[node name="IconLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1836587011]
 layout_mode = 2
 size_flags_vertical = 3
 text = "Icon:"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1712759227]
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1712759227]
 layout_mode = 2
 offset_transform_enabled = true
 offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 
-[node name="Control" type="Control" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1963041039]
+[node name="Control" type="Control" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1963041039]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="IconButton" type="TextureButton" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1999136704]
+[node name="IconButton" type="TextureButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1999136704]
 custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -147,17 +153,17 @@ offset_transform_visual_only = false
 texture_normal = ExtResource("1_cqfea")
 stretch_mode = 3
 
-[node name="Control2" type="Control" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1505025570]
+[node name="Control2" type="Control" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer2" unique_id=1505025570]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ValueLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=2075902284]
+[node name="ValueLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=2075902284]
 layout_mode = 2
 size_flags_vertical = 3
 text = "Value:"
 horizontal_alignment = 2
 
-[node name="ValueSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=923621526]
+[node name="ValueSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=923621526]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
@@ -165,29 +171,29 @@ offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 alignment = 1
 
-[node name="StackableLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1875209643]
+[node name="StackableLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1875209643]
 layout_mode = 2
 size_flags_vertical = 3
 text = "Stackable:"
 horizontal_alignment = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=901819836]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=901819836]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
 offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 
-[node name="StackableCheck" type="CheckButton" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer" unique_id=1371194751]
+[node name="StackableCheck" type="CheckButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields/HBoxContainer" unique_id=1371194751]
 layout_mode = 2
 
-[node name="MaxStackLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1619168851]
+[node name="MaxStackLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=1619168851]
 layout_mode = 2
 size_flags_vertical = 3
 text = "       Max Stack:"
 horizontal_alignment = 2
 
-[node name="MaxStackSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=628301293]
+[node name="MaxStackSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ItemFields" unique_id=628301293]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
@@ -195,17 +201,17 @@ offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 alignment = 1
 
-[node name="ConsumableFields" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer" unique_id=577062632]
+[node name="ConsumableFields" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer" unique_id=577062632]
 layout_mode = 2
 theme_override_constants/h_separation = 64
 columns = 2
 
-[node name="EffectTypeLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1746081853]
+[node name="EffectTypeLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1746081853]
 layout_mode = 2
 text = "Effect Type:"
 horizontal_alignment = 2
 
-[node name="EffectTypeOption" type="OptionButton" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1397328697]
+[node name="EffectTypeOption" type="OptionButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1397328697]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
@@ -225,24 +231,24 @@ popup/item_4/id = 4
 popup/item_5/text = "CUSTOM"
 popup/item_5/id = 5
 
-[node name="EffectValueLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=357656630]
+[node name="EffectValueLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=357656630]
 layout_mode = 2
 text = "Effect Value:"
 horizontal_alignment = 2
 
-[node name="EffectValueSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1969146307]
+[node name="EffectValueSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1969146307]
 layout_mode = 2
 offset_transform_enabled = true
 offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 alignment = 1
 
-[node name="CustomTypesLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=99946562]
+[node name="CustomTypesLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=99946562]
 layout_mode = 2
 text = "Custom Type:"
 horizontal_alignment = 2
 
-[node name="CustomTypesOption" type="OptionButton" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=235100381]
+[node name="CustomTypesOption" type="OptionButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=235100381]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
@@ -260,12 +266,12 @@ popup/item_3/id = 3
 popup/item_4/text = "CURE_STATUS"
 popup/item_4/id = 4
 
-[node name="CustomValuesLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=82575447]
+[node name="CustomValuesLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=82575447]
 layout_mode = 2
 text = "Custom Value:"
 horizontal_alignment = 2
 
-[node name="CustomValuesSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1574939042]
+[node name="CustomValuesSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1574939042]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
@@ -273,10 +279,10 @@ offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 alignment = 1
 
-[node name="Control" type="Control" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1125999812]
+[node name="Control" type="Control" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=1125999812]
 layout_mode = 2
 
-[node name="AddCustomButton" type="Button" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=927811990]
+[node name="AddCustomButton" type="Button" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=927811990]
 custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 size_flags_horizontal = 6
@@ -286,42 +292,42 @@ offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 text = "Add Custom Effect"
 
-[node name="Control2" type="Control" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=806535424]
+[node name="Control2" type="Control" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=806535424]
 layout_mode = 2
 
-[node name="CustomContainer" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=2075338660]
+[node name="CustomContainer" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields" unique_id=2075338660]
 layout_mode = 2
 offset_transform_enabled = true
 offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 columns = 2
 
-[node name="EffectsLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer" unique_id=1412782345]
+[node name="EffectsLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer" unique_id=1412782345]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Effects"
 label_settings = SubResource("LabelSettings_cf5fc")
 horizontal_alignment = 1
 
-[node name="ValuesLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer" unique_id=49092922]
+[node name="ValuesLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/ConsumableFields/CustomContainer" unique_id=49092922]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Values"
 label_settings = SubResource("LabelSettings_cf5fc")
 horizontal_alignment = 1
 
-[node name="EquipmentFields" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer" unique_id=1215117289]
+[node name="EquipmentFields" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer" unique_id=1215117289]
 layout_mode = 2
 theme_override_constants/h_separation = 64
 columns = 2
 
-[node name="EquipSlotLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=195987645]
+[node name="EquipSlotLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=195987645]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Equip Slot: "
 horizontal_alignment = 2
 
-[node name="EquipSlotOption" type="OptionButton" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=602271526]
+[node name="EquipSlotOption" type="OptionButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=602271526]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
@@ -345,25 +351,25 @@ popup/item_6/id = 6
 popup/item_7/text = "TOE_RING"
 popup/item_7/id = 7
 
-[node name="TwoHandedLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=1460035571]
+[node name="TwoHandedLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=1460035571]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Two-Handed:"
 horizontal_alignment = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=213683872]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=213683872]
 layout_mode = 2
 
-[node name="TwoHandedCheck" type="CheckButton" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/HBoxContainer" unique_id=2126670851]
+[node name="TwoHandedCheck" type="CheckButton" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/HBoxContainer" unique_id=2126670851]
 layout_mode = 2
 
-[node name="StatModsLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=386620982]
+[node name="StatModsLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=386620982]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Stat Mods:"
 horizontal_alignment = 2
 
-[node name="GridContainer" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=145782220]
+[node name="GridContainer" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields" unique_id=145782220]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
@@ -371,98 +377,98 @@ offset_transform_position = Vector2(-16, 0)
 offset_transform_visual_only = false
 columns = 5
 
-[node name="StrContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1009273991]
+[node name="StrContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1009273991]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="StrLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer" unique_id=315775785]
+[node name="StrLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer" unique_id=315775785]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "STR: "
 horizontal_alignment = 1
 
-[node name="StrSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer" unique_id=2052851584]
+[node name="StrSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/StrContainer" unique_id=2052851584]
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = -100.0
 alignment = 1
 
-[node name="AgiContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1855576656]
+[node name="AgiContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1855576656]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="AgiLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer" unique_id=1155174138]
+[node name="AgiLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer" unique_id=1155174138]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "AGI: "
 horizontal_alignment = 1
 
-[node name="AgiSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer" unique_id=1933453238]
+[node name="AgiSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/AgiContainer" unique_id=1933453238]
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = -100.0
 alignment = 1
 
-[node name="VitContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1672021378]
+[node name="VitContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1672021378]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VitLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer" unique_id=1243533285]
+[node name="VitLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer" unique_id=1243533285]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "VIT: "
 horizontal_alignment = 1
 
-[node name="VitSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer" unique_id=1551310487]
+[node name="VitSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/VitContainer" unique_id=1551310487]
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = -100.0
 alignment = 1
 
-[node name="IntContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=2055888982]
+[node name="IntContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=2055888982]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="IntLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer" unique_id=427257489]
+[node name="IntLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer" unique_id=427257489]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "INT: "
 horizontal_alignment = 1
 
-[node name="IntSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer" unique_id=1019294451]
+[node name="IntSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/IntContainer" unique_id=1019294451]
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = -100.0
 alignment = 1
 
-[node name="WilContainer" type="HBoxContainer" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1652628394]
+[node name="WilContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer" unique_id=1652628394]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="WilLabel" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer" unique_id=579369202]
+[node name="WilLabel" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer" unique_id=579369202]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "WIL: "
 horizontal_alignment = 1
 
-[node name="WilSpin" type="SpinBox" parent="VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer" unique_id=630346490]
+[node name="WilSpin" type="SpinBox" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/EquipmentFields/GridContainer/WilContainer" unique_id=630346490]
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = -100.0
 alignment = 1
 
-[node name="KeyItemFields" type="GridContainer" parent="VBoxContainer/MainPanel/FieldsContainer" unique_id=1738426490]
+[node name="KeyItemFields" type="GridContainer" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer" unique_id=1738426490]
 layout_mode = 2
 theme_override_constants/h_separation = 64
 columns = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/MainPanel/FieldsContainer/KeyItemFields" unique_id=2094853691]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/KeyItemFields" unique_id=2094853691]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "       Sets Flag:"
 horizontal_alignment = 2
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/MainPanel/FieldsContainer/KeyItemFields" unique_id=750681474]
+[node name="LineEdit" type="LineEdit" parent="ScrollContainer/VBoxContainer/MainPanel/FieldsContainer/KeyItemFields" unique_id=750681474]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
