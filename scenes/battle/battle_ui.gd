@@ -218,6 +218,7 @@ func target_select(valid_targets : Array[BattleCombatant]):
 	var arrow = positions[target_array[target_index]].get_child(1)
 	arrow.show()
 	arrow.change_color(Color.RED)
+	update_target_arrow()
 
 func _on_resolve_started():
 	_animations_pending = 0

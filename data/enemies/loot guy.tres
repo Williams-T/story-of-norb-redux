@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://c8gbqcowbkab7"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_q8kkl"]
+[ext_resource type="Resource" uid="uid://1jxsq0x8ybtq" path="res://data/actions/basic_attack.tres" id="2_nkwvt"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="3_of21o"]
+[ext_resource type="Resource" uid="uid://1ux326n4vr5t" path="res://data/items/wizard_hat.tres" id="4_4v24v"]
+[ext_resource type="Resource" uid="uid://dvgrhcifhmdaq" path="res://data/items/toe_ring_of_knowing.tres" id="5_50iuu"]
+[ext_resource type="Resource" uid="uid://vsf8mgmcd1l0" path="res://data/items/chest_armor.tres" id="6_tij3v"]
+[ext_resource type="Resource" uid="uid://ds4p8csu53vc6" path="res://data/items/elixer.tres" id="7_1atk8"]
+[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="8_ho5pw"]
+[ext_resource type="SpriteFrames" uid="uid://drlchlv55b7pt" path="res://art/characters/enemies/debug/debug.tres" id="9_iqsnp"]
+[ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="10_u1k0e"]
+
+[sub_resource type="Resource" id="Resource_fdbun"]
+script = ExtResource("10_u1k0e")
+
+[resource]
+script = ExtResource("8_ho5pw")
+enemy_name = "loot guy"
+sprite_frames = ExtResource("9_iqsnp")
+experience_reward = 20
+gold_reward = 100
+drop_table = Array[ExtResource("3_of21o")]([ExtResource("4_4v24v"), ExtResource("5_50iuu"), ExtResource("6_tij3v"), ExtResource("7_1atk8")])
+stats = SubResource("Resource_fdbun")
+actions = Array[ExtResource("1_q8kkl")]([ExtResource("2_nkwvt")])

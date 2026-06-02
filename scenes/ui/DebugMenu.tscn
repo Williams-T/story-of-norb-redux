@@ -1,0 +1,527 @@
+[gd_scene format=3 uid="uid://bqf6iadrv1hr8"]
+
+[ext_resource type="Script" uid="uid://dcvs0713864w2" path="res://scenes/ui/debug_menu.gd" id="1_3fpnj"]
+[ext_resource type="Script" uid="uid://n86k8xfu0alg" path="res://scenes/ui/debug_start_combat.gd" id="2_hh07i"]
+[ext_resource type="Script" uid="uid://y218dqquhccc" path="res://scenes/ui/debug_edit_combat.gd" id="3_5dagh"]
+[ext_resource type="Script" uid="uid://cljphinjpd8pt" path="res://scenes/ui/debug_items.gd" id="4_2t4v7"]
+[ext_resource type="Script" uid="uid://bypp82bcgftt4" path="res://scenes/ui/debug_flags.gd" id="5_wj7ck"]
+[ext_resource type="Script" uid="uid://bbyfwomqhogyr" path="res://scenes/ui/debug_party.gd" id="6_tclvd"]
+[ext_resource type="Script" uid="uid://b3us5iauqhbop" path="res://scenes/ui/debug_teleport.gd" id="7_b5u4c"]
+[ext_resource type="Script" uid="uid://bbedyee4gausj" path="res://scenes/ui/debug_gold.gd" id="7_ceyro"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hh07i"]
+bg_color = Color(0.27058825, 0.6, 0.6, 0.24705882)
+
+[sub_resource type="LabelSettings" id="LabelSettings_5dagh"]
+font_size = 22
+
+[node name="DebugMenu" type="CanvasLayer" unique_id=1945254526]
+process_mode = 3
+layer = 100
+script = ExtResource("1_3fpnj")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1965602851]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 231.0
+grow_horizontal = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_hh07i")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=547524431]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer" unique_id=502036827]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_hh07i")
+theme_override_styles/focus = SubResource("StyleBoxFlat_hh07i")
+text = "DEBUG MENU"
+label_settings = SubResource("LabelSettings_5dagh")
+horizontal_alignment = 1
+
+[node name="TabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer" unique_id=1254402198]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_hh07i")
+current_tab = 5
+
+[node name="Start Combat" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=240798581]
+visible = false
+layout_mode = 2
+script = ExtResource("2_hh07i")
+metadata/_tab_index = 0
+
+[node name="ItemList" type="ItemList" parent="PanelContainer/VBoxContainer/TabContainer/Start Combat" unique_id=1545165858]
+custom_minimum_size = Vector2(240, 120)
+layout_mode = 2
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Start Combat" unique_id=1696383995]
+layout_mode = 2
+text = "Fight"
+
+[node name="Edit Combat" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1928381547]
+visible = false
+layout_mode = 2
+script = ExtResource("3_5dagh")
+metadata/_tab_index = 1
+
+[node name="Combatants" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat" unique_id=806511203]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Stats" type="GridContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat" unique_id=288583592]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 2
+
+[node name="HP" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=356287093]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+text = "HP:"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="HP_field" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=1892136261]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MP" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=2017798820]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+text = "MP:"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="MP_field" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=1518424110]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Statuses" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=1854193923]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+text = "Statuses:"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Statuses_field" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=1088496778]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Options" type="GridContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat" unique_id=1096157491]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 2
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=271228457]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Set HP"
+
+[node name="Button2" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=3149917]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Set MP"
+
+[node name="Button3" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=2065498533]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Add Status"
+
+[node name="Button4" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=1013585928]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Remove Status"
+
+[node name="Button5" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=154529633]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Force Victory"
+
+[node name="Button6" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=326427183]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Force Defeat"
+
+[node name="HP_MP_Popup" type="Popup" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat" unique_id=608490552]
+oversampling_override = 1.0
+position = Vector2i(856, 62)
+size = Vector2i(424, 169)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup" unique_id=144478850]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup/VBoxContainer" unique_id=2095685396]
+layout_mode = 2
+text = "HP"
+horizontal_alignment = 1
+
+[node name="SpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup/VBoxContainer" unique_id=2139992638]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+custom_arrow_step = 1.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup/VBoxContainer" unique_id=732581036]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup/VBoxContainer/HBoxContainer" unique_id=1907299286]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Confirm"
+
+[node name="Button2" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup/VBoxContainer/HBoxContainer" unique_id=274311382]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cancel"
+
+[node name="Status_Popup" type="Popup" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat" unique_id=120379136]
+oversampling_override = 1.0
+position = Vector2i(856, 62)
+size = Vector2i(424, 212)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup" unique_id=300340520]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup/VBoxContainer" unique_id=1427382534]
+layout_mode = 2
+text = "Status"
+horizontal_alignment = 1
+
+[node name="ItemList" type="ItemList" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup/VBoxContainer" unique_id=745496058]
+custom_minimum_size = Vector2(420, 110)
+custom_maximum_size = Vector2(-1, 110)
+layout_mode = 2
+size_flags_vertical = 3
+max_columns = 2
+same_column_width = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup/VBoxContainer" unique_id=1845898955]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup/VBoxContainer/HBoxContainer" unique_id=642194144]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Confirm"
+
+[node name="Button2" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup/VBoxContainer/HBoxContainer" unique_id=357431539]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Cancel"
+
+[node name="Items" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1939330017]
+visible = false
+layout_mode = 2
+script = ExtResource("4_2t4v7")
+metadata/_tab_index = 2
+
+[node name="Items" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Items" unique_id=152272266]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Items/Items" unique_id=1130720202]
+layout_mode = 2
+text = "Items:"
+horizontal_alignment = 1
+
+[node name="ItemList" type="ItemList" parent="PanelContainer/VBoxContainer/TabContainer/Items/Items" unique_id=333530319]
+custom_minimum_size = Vector2(0, 135)
+layout_mode = 2
+
+[node name="Characters" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Items" unique_id=312683094]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Items/Characters" unique_id=1688130032]
+layout_mode = 2
+text = "Characters:"
+horizontal_alignment = 1
+
+[node name="Inventory" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Items" unique_id=1396203565]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Items/Inventory" unique_id=1916527356]
+layout_mode = 2
+text = "Inventory:"
+horizontal_alignment = 1
+
+[node name="ItemList" type="ItemList" parent="PanelContainer/VBoxContainer/TabContainer/Items/Inventory" unique_id=558009115]
+custom_minimum_size = Vector2(0, 135)
+layout_mode = 2
+
+[node name="Buttons" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Items" unique_id=458733848]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AddItem" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Items/Buttons" unique_id=2137622553]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Add Item"
+
+[node name="RemoveItem" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Items/Buttons" unique_id=1776516029]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Remove Item"
+
+[node name="ClearInventory" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Items/Buttons" unique_id=1254549760]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Clear Inventory"
+
+[node name="RandomLoadout" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Items/Buttons" unique_id=1536908030]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Random Loadout"
+
+[node name="Flags" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=402451428]
+visible = false
+layout_mode = 2
+script = ExtResource("5_wj7ck")
+metadata/_tab_index = 3
+
+[node name="Container" type="ScrollContainer" parent="PanelContainer/VBoxContainer/TabContainer/Flags" unique_id=1010953454]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3
+
+[node name="FlagsContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Flags/Container" unique_id=374652772]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Flags" unique_id=1332161503]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="KeyLine" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Flags/VBoxContainer" unique_id=1222705931]
+layout_mode = 2
+placeholder_text = "KEY"
+alignment = 1
+
+[node name="ValueLine" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Flags/VBoxContainer" unique_id=1231949150]
+layout_mode = 2
+placeholder_text = "VALUE"
+alignment = 1
+
+[node name="AddFlagButton" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Flags/VBoxContainer" unique_id=779860855]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "     add flag     "
+
+[node name="Party" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=609411553]
+visible = false
+layout_mode = 2
+script = ExtResource("6_tclvd")
+metadata/_tab_index = 4
+
+[node name="EntitiesContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party" unique_id=1935467990]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EntitiesLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Party/EntitiesContainer" unique_id=231029063]
+layout_mode = 2
+text = "Entities"
+horizontal_alignment = 1
+
+[node name="ButtonContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party" unique_id=2082506567]
+layout_mode = 2
+alignment = 1
+
+[node name="AddButton" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Party/ButtonContainer" unique_id=1301176079]
+layout_mode = 2
+disabled = true
+text = "Add ->"
+
+[node name="RemoveButton" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Party/ButtonContainer" unique_id=1181877352]
+layout_mode = 2
+disabled = true
+text = "<- Remove"
+
+[node name="PartyContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party" unique_id=500817028]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PartyLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Party/PartyContainer" unique_id=2072673353]
+layout_mode = 2
+text = "Current Party:"
+horizontal_alignment = 1
+
+[node name="StatsContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party" unique_id=496650281]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="StatsLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer" unique_id=90091976]
+layout_mode = 2
+text = "Stats    "
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer" unique_id=688465060]
+layout_mode = 2
+alignment = 2
+
+[node name="NameLineEdit" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/HBoxContainer" unique_id=451635854]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Name"
+alignment = 1
+
+[node name="Control" type="Control" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/HBoxContainer" unique_id=1044836591]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="LevelSpin" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer" unique_id=1377310943]
+layout_mode = 2
+min_value = 1.0
+max_value = 999.0
+value = 1.0
+rounded = true
+alignment = 1
+update_on_text_changed = true
+prefix = "Level "
+
+[node name="GridContainer" type="GridContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer" unique_id=569259122]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 2
+
+[node name="HpSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer" unique_id=970026342]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 1.0
+alignment = 1
+update_on_text_changed = true
+prefix = "HP: "
+
+[node name="MpSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer" unique_id=523762639]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+update_on_text_changed = true
+prefix = "MP: "
+
+[node name="GridContainer2" type="GridContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer" unique_id=275569486]
+layout_mode = 2
+columns = 5
+
+[node name="StrSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer2" unique_id=1296553191]
+layout_mode = 2
+alignment = 1
+update_on_text_changed = true
+prefix = "STR: "
+
+[node name="VitSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer2" unique_id=1381901634]
+layout_mode = 2
+alignment = 1
+update_on_text_changed = true
+prefix = "VIT: "
+
+[node name="AgiSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer2" unique_id=1134903472]
+layout_mode = 2
+alignment = 1
+update_on_text_changed = true
+prefix = "AGI: "
+
+[node name="IntSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer2" unique_id=224597027]
+layout_mode = 2
+alignment = 1
+update_on_text_changed = true
+prefix = "INT: "
+
+[node name="WilSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer2" unique_id=836349835]
+layout_mode = 2
+alignment = 1
+update_on_text_changed = true
+prefix = "WIL: "
+
+[node name="Teleport" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1008854473]
+layout_mode = 2
+script = ExtResource("7_b5u4c")
+metadata/_tab_index = 5
+
+[node name="ScenesContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Teleport" unique_id=1224509960]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScenesLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Teleport/ScenesContainer" unique_id=1678832356]
+layout_mode = 2
+text = "Scenes:"
+horizontal_alignment = 1
+
+[node name="WarpsContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Teleport" unique_id=1337171312]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="WarpsLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Teleport/WarpsContainer" unique_id=2101082631]
+layout_mode = 2
+text = "Warps:"
+horizontal_alignment = 1
+
+[node name="Gold" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1929899731]
+visible = false
+layout_mode = 2
+script = ExtResource("7_ceyro")
+metadata/_tab_index = 6
+
+[node name="Control" type="Control" parent="PanelContainer/VBoxContainer/TabContainer/Gold" unique_id=1984985781]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Gold" unique_id=1727094965]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Gold/VBoxContainer" unique_id=1917304789]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Gold/VBoxContainer/HBoxContainer" unique_id=1434776620]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "Gold:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Gold/VBoxContainer/HBoxContainer" unique_id=2000681223]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 99999.0
+alignment = 1
+
+[node name="Control2" type="Control" parent="PanelContainer/VBoxContainer/TabContainer/Gold" unique_id=667804748]
+layout_mode = 2
+size_flags_horizontal = 3

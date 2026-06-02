@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BattleAction" format=3 uid="uid://dmw45nx4wmsb3"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_krvbq"]
+[ext_resource type="Resource" uid="uid://bqjnghkh1h44m" path="res://data/statuses/asleep.tres" id="2_lei81"]
+
+[resource]
+script = ExtResource("1_krvbq")
+action_name = "boring story"
+category = 1
+target_type = 1
+damage_type = 1
+status_to_apply = ExtResource("2_lei81")
+status_chance = 0.6
+metadata/_custom_type_script = "uid://d3fdo4ho75i4u"

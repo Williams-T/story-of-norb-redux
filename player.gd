@@ -15,8 +15,8 @@ func _ready() -> void:
 	#GameState.previous_player_location = global_position
 	sprite.play("idle_down")
 	print(party_member.stats.current_hp)
-	EventBus.player_movement_unlocked.connect(func():set_physics_process(true))
-	EventBus.player_movement_locked.connect(func():set_physics_process(false))
+	EventBus.player_movement_unlocked.connect(func():GameState.movement_locks -= 1; if GameState.movement_locks <= 0: set_physics_process(true))
+	EventBus.player_movement_locked.connect(func(): set_physics_process(false); GameState.movement_locks += 1)
 	
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BattleAction" format=3 uid="uid://cqo7wtkn3ieyo"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_i4x42"]
+
+[resource]
+script = ExtResource("1_i4x42")
+action_name = "Heal"
+category = 1
+mp_cost = 5
+target_type = 2
+damage_type = 2
+power = 10
+metadata/_custom_type_script = "uid://d3fdo4ho75i4u"

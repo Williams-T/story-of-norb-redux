@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://di203ko22okt0"]
+
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="1_f0ydp"]
+
+[resource]
+script = ExtResource("1_f0ydp")
+item_name = "cosmic ring"
+item_type = 1
+equip_slot = 6
+stat_modifiers = {
+"intelligence": 30,
+"vit": 20
+}
+metadata/_custom_type_script = "uid://c5rosmfabv7fs"

@@ -4,6 +4,7 @@ class_name  WarpPoint
 @export var warp_id := ""
 @export var warp_definition : WarpDefinition
 @export var require_interact := false
+@export var destination_only := false
 
 var just_spawned := false
 
@@ -12,13 +13,13 @@ func _ready() -> void:
 	EventBus.interact_pressed.connect(try_interact)
 
 func _on_body_entered(body: Node2D) -> void:
-	if just_spawned:
+	if just_spawned or destination_only:
 		return
 	if require_interact == false and body.is_in_group('player'):
 		_execute_warp()
 
 func try_interact():
-	if not require_interact:
+	if not require_interact or destination_only:
 		return
 	for body in get_overlapping_bodies():
 		if body.is_in_group('player'):
@@ -30,6 +31,6 @@ func _execute_warp():
 
 
 func _on_body_exited(_body: Node2D) -> void:
-	if just_spawned:
+	if just_spawned and not destination_only:
 		just_spawned = false
 	pass # Replace with function body.

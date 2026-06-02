@@ -40,6 +40,11 @@ position = Vector2(647, 612)
 warp_id = "test_town_entrance"
 warp_definition = SubResource("Resource_3jy7c")
 
+[node name="WarpPoint2" parent="Warps" unique_id=1285650703 instance=ExtResource("3_r720c")]
+position = Vector2(1701, 615)
+warp_id = "recovery_zone"
+destination_only = true
+
 [node name="YSort" type="Node2D" parent="." unique_id=719166860]
 y_sort_enabled = true
 

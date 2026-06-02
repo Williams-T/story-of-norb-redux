@@ -1,4 +1,5 @@
 extends Node
+class_name CombatManager
 
 @warning_ignore_start("integer_division")
 
@@ -46,6 +47,7 @@ func start_battle(enemy_group : EnemyGroupResource):
 			combatant = BattleCombatant.create_party_member(entity)
 			_party_combatants.append(combatant)
 		elif entity is EnemyResource:
+			entity.stats.character_name = entity.enemy_name
 			combatant = BattleCombatant.create_enemy(entity)
 			_enemy_combatants.append(combatant)
 		_turn_queue.append(combatant)
@@ -61,6 +63,10 @@ func start_next_turn():
 		_state = State.DEFEAT
 		#EventBus.combat_ended.emit("defeat")
 		_process_party_progression()
+		var player : PartyMemberResource
+		for i : PartyMemberResource in _party_members:
+			if i.is_player:
+				i.stats.current_hp = i.stats.max_hp()/2
 		SceneManager.end_combat("defeat")
 		return
 	if !any_alive(false): # handle victory
@@ -105,9 +111,11 @@ func _run_enemy_turn():
 		for status in current_combatant.source_resource.active_statuses:
 			if status["effect"].status_type == StatusEffect.StatusType.SLEEP:
 				log_string += "asleep"
+				current_combatant.tick_statuses()
 				break
 			elif status["effect"].status_type == StatusEffect.StatusType.STUN:
 				log_string += "stunned"
+				current_combatant.tick_statuses()
 				break
 		EventBus.combat_log_updated.emit(log_string)
 		start_next_turn()

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="EnemyGroupResource" format=3 uid="uid://8870b28cdd55"]
+
+[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="1_5hy1c"]
+[ext_resource type="Resource" uid="uid://c8gbqcowbkab7" path="res://data/enemies/loot guy.tres" id="2_78iqg"]
+[ext_resource type="Script" uid="uid://bolrxefn8gyhc" path="res://src/resources/EnemyGroupResource.gd" id="3_75ahp"]
+
+[resource]
+script = ExtResource("3_75ahp")
+enemies = Array[ExtResource("1_5hy1c")]([ExtResource("2_78iqg"), ExtResource("2_78iqg")])

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://vsf8mgmcd1l0"]
+
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="1_dfjn6"]
+
+[resource]
+script = ExtResource("1_dfjn6")
+item_name = "Chest Armor"
+item_type = 1
+value = 30
+equip_slot = 2
+stat_modifiers = {
+"vit": 30
+}
+metadata/_custom_type_script = "uid://c5rosmfabv7fs"

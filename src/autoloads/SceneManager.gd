@@ -22,8 +22,9 @@ func _do_scene_change(scene_path: String) -> void:
 
 func start_combat(enemy_group: Resource) -> void:
 	# Store the return scene so we can come back after combat
-	GameState.current_map_path = get_tree().current_scene.scene_file_path
-	print(GameState.current_map_path )
+	if get_tree().current_scene.scene_file_path != "res://scenes/battle/Battle.tscn":
+		GameState.current_map_path = get_tree().current_scene.scene_file_path
+		print(GameState.current_map_path )
 	EventBus.combat_started.emit(enemy_group)
 	GameState.pending_enemy_group = enemy_group
 	travel_to("res://scenes/battle/Battle.tscn", "", "flash")
@@ -34,4 +35,7 @@ func end_combat(result: String) -> void:
 	#for i : PartyMemberResource in GameState.party:
 		#GameState.hp_cache[i.stats.character_name] = i.stats.current_hp
 		#GameState.mp_cache[i.stats.character_name] = i.stats.current_mp
-	travel_to(GameState.current_map_path, "", "fade")
+	if result == "defeat":
+		travel_to(GameState.previous_safe_zone[0], GameState.previous_safe_zone[1], "fade")
+	else:
+		travel_to(GameState.current_map_path, "", "fade")

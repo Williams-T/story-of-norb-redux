@@ -17,7 +17,6 @@ font_size = 24
 bg_color = Color(0.8509804, 0.34117648, 0.3882353, 0.40392157)
 
 [node name="WorldMenu" type="CanvasLayer" unique_id=52257110]
-visible = false
 script = ExtResource("1_dkymr")
 
 [node name="Panel" type="Panel" parent="." unique_id=323095612]
@@ -31,28 +30,55 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 1
 
-[node name="TabContainer" type="TabContainer" parent="Panel" unique_id=1247102261]
-custom_minimum_size = Vector2(1280, 720)
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel" unique_id=1888277018]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="MemberContainer" type="VBoxContainer" parent="Panel/HBoxContainer" unique_id=866723234]
+custom_minimum_size = Vector2(35, 0)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Spacer" type="Control" parent="Panel/HBoxContainer/MemberContainer" unique_id=1576081287]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="Control2" type="Control" parent="Panel/HBoxContainer/MemberContainer" unique_id=1367953572]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+offset_transform_visual_only = false
+
+[node name="Node2D" type="Node2D" parent="Panel/HBoxContainer/MemberContainer/Control2" unique_id=425517402]
+
+[node name="Button" type="Button" parent="Panel/HBoxContainer/MemberContainer/Control2/Node2D" unique_id=1277383507]
+offset_right = 41.0
+offset_bottom = 31.0
+rotation = -1.5707964
+offset_transform_rotation = -1.5707964
+offset_transform_visual_only = false
+text = "Test"
+
+[node name="TabContainer" type="TabContainer" parent="Panel/HBoxContainer" unique_id=1247102261]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/tab_separation = 8
 theme_override_font_sizes/font_size = 32
 tab_alignment = 1
 current_tab = 0
 
-[node name="Items" type="VBoxContainer" parent="Panel/TabContainer" unique_id=1780942216]
+[node name="Items" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer" unique_id=1780942216]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Items" unique_id=1987281301]
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items" unique_id=1987281301]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Items/HBoxContainer" unique_id=1575556477]
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer" unique_id=1575556477]
 layout_mode = 2
 offset_transform_enabled = true
 offset_transform_position_ratio = Vector2(0.032, 0.013)
@@ -61,21 +87,21 @@ texture = ExtResource("2_j56qf")
 expand_mode = 3
 stretch_mode = 5
 
-[node name="Control" type="Control" parent="Panel/TabContainer/Items/HBoxContainer" unique_id=1085671291]
+[node name="Control" type="Control" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer" unique_id=1085671291]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer" unique_id=44913455]
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer" unique_id=44913455]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Stats" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer" unique_id=149432706]
+[node name="Stats" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer" unique_id=149432706]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.5
 alignment = 1
 
-[node name="NameLabel" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/Stats" unique_id=1335124084]
+[node name="NameLabel" type="Label" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/Stats" unique_id=1335124084]
 layout_mode = 2
 size_flags_vertical = 1
 text = "Name"
@@ -83,7 +109,7 @@ label_settings = SubResource("LabelSettings_qx6q8")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StatsLabel" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/Stats" unique_id=982931703]
+[node name="StatsLabel" type="Label" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/Stats" unique_id=982931703]
 layout_mode = 2
 size_flags_vertical = 1
 text = "str: 10
@@ -95,50 +121,50 @@ label_settings = SubResource("LabelSettings_fxsls")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer" unique_id=177076367]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer" unique_id=177076367]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="TabContainer" type="TabContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=492672491]
+[node name="TabContainer" type="Container" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=300183754]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1428038964]
+[node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1428038964]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.5
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MemberPicker" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1740294426]
+[node name="MemberPicker" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1740294426]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker" unique_id=1611888676]
+[node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker" unique_id=1611888676]
 layout_mode = 2
 text = "Use On:"
 horizontal_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker" unique_id=544127366]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker" unique_id=544127366]
 layout_mode = 2
 
-[node name="Equipment" type="HBoxContainer" parent="Panel/TabContainer" unique_id=62404569]
+[node name="Equipment" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer" unique_id=62404569]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="TabContainer" type="TabContainer" parent="Panel/TabContainer/Equipment" unique_id=1495645698]
+[node name="TabContainer" type="TabContainer" parent="Panel/HBoxContainer/TabContainer/Equipment" unique_id=1495645698]
 layout_mode = 2
 size_flags_horizontal = 3
 tab_alignment = 1
 current_tab = 0
 
-[node name="Main" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer" unique_id=362655565]
+[node name="Main" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer" unique_id=362655565]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Main" unique_id=1341457855]
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main" unique_id=1341457855]
 layout_mode = 2
 offset_transform_enabled = true
 offset_transform_position_ratio = Vector2(0.06, -0.01)
@@ -146,7 +172,7 @@ offset_transform_visual_only = false
 texture = ExtResource("2_j56qf")
 expand_mode = 3
 
-[node name="Head" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=769849053]
+[node name="Head" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=769849053]
 custom_minimum_size = Vector2(128, 128)
 layout_mode = 0
 offset_left = 148.0
@@ -157,7 +183,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 5
 
-[node name="Torso" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=533972200]
+[node name="Torso" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=533972200]
 custom_minimum_size = Vector2(128, 128)
 layout_mode = 0
 offset_left = 147.0
@@ -168,7 +194,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="LeftHand" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=985257638]
+[node name="LeftHand" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=985257638]
 custom_minimum_size = Vector2(128, 128)
 layout_mode = 0
 offset_left = -14.0
@@ -179,7 +205,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 5
 
-[node name="LeftFoot" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1707866478]
+[node name="LeftFoot" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1707866478]
 custom_minimum_size = Vector2(128, 96)
 layout_mode = 0
 offset_left = 15.0
@@ -190,7 +216,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="RightFoot" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=2126232846]
+[node name="RightFoot" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=2126232846]
 custom_minimum_size = Vector2(128, 96)
 layout_mode = 0
 offset_left = 281.0
@@ -201,7 +227,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="RightHand" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1358434361]
+[node name="RightHand" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1358434361]
 custom_minimum_size = Vector2(128, 128)
 layout_mode = 0
 offset_left = 321.0
@@ -212,7 +238,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 5
 
-[node name="Legs" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1787289124]
+[node name="Legs" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1787289124]
 custom_minimum_size = Vector2(256, 128)
 layout_mode = 0
 offset_left = 89.0
@@ -223,58 +249,62 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="Control" type="Control" parent="Panel/TabContainer/Equipment/TabContainer/Main" unique_id=1131276057]
+[node name="Control" type="Control" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main" unique_id=1131276057]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main" unique_id=1049919716]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main" unique_id=1049919716]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=1802776583]
+[node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=1802776583]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 text = "Equipment Description"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PanelContainer" type="PanelContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=799941413]
+[node name="PanelContainer" type="PanelContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=799941413]
 custom_minimum_size = Vector2(0, 128)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_fxsls")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer" unique_id=1162206763]
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer" unique_id=1162206763]
 custom_minimum_size = Vector2(0, 128)
 layout_mode = 2
 
-[node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=1454529915]
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=1454529915]
 custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
 stretch_mode = 3
 
-[node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=911638214]
+[node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=911638214]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ScrollContainer" type="ScrollContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=595743977]
+[node name="Button" type="Button" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=67406971]
+layout_mode = 2
+text = " unequip "
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=595743977]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/ScrollContainer" unique_id=1100217020]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/ScrollContainer" unique_id=1100217020]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Rings" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer" unique_id=488615251]
+[node name="Rings" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer" unique_id=488615251]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Rings" unique_id=1499612075]
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings" unique_id=1499612075]
 layout_mode = 2
 offset_transform_enabled = true
 offset_transform_position_ratio = Vector2(0.06, 0.03)
@@ -282,7 +312,7 @@ offset_transform_visual_only = false
 texture = ExtResource("4_rsh6u")
 expand_mode = 3
 
-[node name="Ring1" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1369508756]
+[node name="Ring1" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1369508756]
 layout_mode = 0
 offset_left = 101.0
 offset_top = 41.0
@@ -292,7 +322,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="Ring2" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1658408369]
+[node name="Ring2" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1658408369]
 layout_mode = 0
 offset_left = 67.0
 offset_top = 34.0
@@ -302,7 +332,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="Ring3" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=766426095]
+[node name="Ring3" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=766426095]
 layout_mode = 0
 offset_left = 33.0
 offset_top = 46.0
@@ -312,7 +342,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="Ring4" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=321491465]
+[node name="Ring4" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=321491465]
 layout_mode = 0
 offset_left = 4.0
 offset_top = 73.0
@@ -322,7 +352,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="Ring5" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=704468204]
+[node name="Ring5" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=704468204]
 layout_mode = 0
 offset_left = 137.0
 offset_top = 98.0
@@ -332,7 +362,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="Ring6" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=818269102]
+[node name="Ring6" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=818269102]
 layout_mode = 0
 offset_left = 291.0
 offset_top = 39.0
@@ -342,7 +372,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="Ring7" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=321008637]
+[node name="Ring7" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=321008637]
 layout_mode = 0
 offset_left = 328.0
 offset_top = 27.0
@@ -352,7 +382,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="Ring8" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1868735230]
+[node name="Ring8" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1868735230]
 layout_mode = 0
 offset_left = 363.0
 offset_top = 41.0
@@ -362,7 +392,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="Ring9" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1971723219]
+[node name="Ring9" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1971723219]
 layout_mode = 0
 offset_left = 390.0
 offset_top = 70.0
@@ -372,7 +402,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="Ring10" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1600788340]
+[node name="Ring10" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1600788340]
 layout_mode = 0
 offset_left = 257.0
 offset_top = 100.0
@@ -382,7 +412,7 @@ texture_normal = ExtResource("2_jm442")
 texture_hover = ExtResource("4_qx6q8")
 stretch_mode = 0
 
-[node name="ToeRing1" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1903545875]
+[node name="ToeRing1" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1903545875]
 layout_mode = 0
 offset_left = 32.0
 offset_top = 479.0
@@ -393,7 +423,7 @@ texture_hover = ExtResource("4_qx6q8")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="ToeRing10" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=678114879]
+[node name="ToeRing10" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=678114879]
 layout_mode = 0
 offset_left = 376.0
 offset_top = 476.0
@@ -404,7 +434,7 @@ texture_hover = ExtResource("4_qx6q8")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="ToeRing2" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=594800743]
+[node name="ToeRing2" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=594800743]
 layout_mode = 0
 offset_left = 44.0
 offset_top = 491.0
@@ -415,7 +445,7 @@ texture_hover = ExtResource("4_qx6q8")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="ToeRing9" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=20007664]
+[node name="ToeRing9" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=20007664]
 layout_mode = 0
 offset_left = 357.0
 offset_top = 491.0
@@ -426,7 +456,7 @@ texture_hover = ExtResource("4_qx6q8")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="ToeRing3" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1259201031]
+[node name="ToeRing3" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1259201031]
 layout_mode = 0
 offset_left = 67.0
 offset_top = 505.0
@@ -437,7 +467,7 @@ texture_hover = ExtResource("4_qx6q8")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="ToeRing8" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=741926572]
+[node name="ToeRing8" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=741926572]
 layout_mode = 0
 offset_left = 332.0
 offset_top = 505.0
@@ -448,7 +478,7 @@ texture_hover = ExtResource("4_qx6q8")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="ToeRing4" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=447472050]
+[node name="ToeRing4" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=447472050]
 layout_mode = 0
 offset_left = 93.0
 offset_top = 516.0
@@ -459,7 +489,7 @@ texture_hover = ExtResource("4_qx6q8")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="ToeRing7" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1727065511]
+[node name="ToeRing7" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1727065511]
 layout_mode = 0
 offset_left = 308.0
 offset_top = 516.0
@@ -470,7 +500,7 @@ texture_hover = ExtResource("4_qx6q8")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="ToeRing5" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=206830182]
+[node name="ToeRing5" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=206830182]
 layout_mode = 0
 offset_left = 125.0
 offset_top = 513.0
@@ -481,7 +511,7 @@ texture_hover = ExtResource("4_qx6q8")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="ToeRing6" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=835823255]
+[node name="ToeRing6" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=835823255]
 layout_mode = 0
 offset_left = 269.0
 offset_top = 513.0
@@ -492,37 +522,37 @@ texture_hover = ExtResource("4_qx6q8")
 ignore_texture_size = true
 stretch_mode = 0
 
-[node name="Control" type="Control" parent="Panel/TabContainer/Equipment/TabContainer/Rings" unique_id=111083745]
+[node name="Control" type="Control" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings" unique_id=111083745]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings" unique_id=1890172302]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings" unique_id=1890172302]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=755918697]
+[node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=755918697]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 text = "Equipment Description"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PanelContainer" type="PanelContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=1131624095]
+[node name="PanelContainer" type="PanelContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=1131624095]
 custom_minimum_size = Vector2(0, 128)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_fxsls")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer" unique_id=321706391]
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer" unique_id=321706391]
 custom_minimum_size = Vector2(0, 128)
 layout_mode = 2
 
-[node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=2140168971]
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=2140168971]
 custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
 texture = ExtResource("5_qx6q8")
 stretch_mode = 3
 
-[node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=1667781844]
+[node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=1667781844]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
@@ -530,12 +560,16 @@ text = "Item Description"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ScrollContainer" type="ScrollContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=1702338643]
+[node name="Button" type="Button" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=198337024]
+layout_mode = 2
+text = " unequip "
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=1702338643]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/ScrollContainer" unique_id=1642958929]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/ScrollContainer" unique_id=1642958929]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3

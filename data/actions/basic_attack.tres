@@ -5,5 +5,6 @@
 [resource]
 script = ExtResource("1_7c2ps")
 action_name = "Attack"
-power = 60
+description = "Basic physical attack"
+power = 20
 metadata/_custom_type_script = "uid://d3fdo4ho75i4u"

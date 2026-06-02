@@ -1,5 +1,8 @@
 extends Node
 
+@export var zone_name := ""
+@export var safe_zone_scene := ""
+@export var safe_zone_warp_id := ""
 @export var camera_bounds = Rect2(Vector2.ZERO, Vector2(640,480))
 
 var player : Player
@@ -7,8 +10,11 @@ var player : Player
 var pending_warp : WarpPoint
 
 func _ready() -> void:
-	print("pending_warp_id: ", GameState.pending_warp_id)
-	print("previous_player_location: ", GameState.previous_player_location)
+	#print("pending_warp_id: ", GameState.pending_warp_id)
+	#print("previous_player_location: ", GameState.previous_player_location)
+	if safe_zone_scene != "" and safe_zone_warp_id != "":
+		GameState.previous_safe_zone = [safe_zone_scene, safe_zone_warp_id]
+	#print(GameState.previous_safe_zone)
 	player = get_tree().get_nodes_in_group('player')[0]
 	for warp in warps.get_children():
 		if warp is WarpPoint and (warp as WarpPoint).warp_id == GameState.pending_warp_id:

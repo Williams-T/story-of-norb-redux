@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://c27yu5bxcrwh2"]
-
-[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_sfsr6"]
-[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="2_s3gov"]
-[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="3_rar55"]
-
-[resource]
-script = ExtResource("3_rar55")
-metadata/_custom_type_script = "uid://und7th2eghly"

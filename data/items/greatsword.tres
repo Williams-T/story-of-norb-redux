@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://re7a3c664djr"]
+
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="1_1yyf0"]
+
+[resource]
+script = ExtResource("1_1yyf0")
+item_name = "Greatsword"
+item_type = 1
+value = 100
+equip_slot = 4
+two_handed = true
+stat_modifiers = {
+"str": 30
+}
+metadata/_custom_type_script = "uid://c5rosmfabv7fs"

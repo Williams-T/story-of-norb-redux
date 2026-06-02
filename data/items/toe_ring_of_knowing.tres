@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://dvgrhcifhmdaq"]
+
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="1_14s5w"]
+
+[resource]
+script = ExtResource("1_14s5w")
+item_name = "Toe Ring of Knowing"
+item_type = 1
+value = 20
+equip_slot = 7
+stat_modifiers = {
+"intellligence": 30
+}
+metadata/_custom_type_script = "uid://c5rosmfabv7fs"

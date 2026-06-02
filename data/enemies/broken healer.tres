@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://bv0wt73k67txm"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_yjcws"]
+[ext_resource type="Resource" uid="uid://1jxsq0x8ybtq" path="res://data/actions/basic_attack.tres" id="2_c6hyk"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="3_cmdaq"]
+[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="4_k0db5"]
+[ext_resource type="SpriteFrames" uid="uid://drlchlv55b7pt" path="res://art/characters/enemies/debug/debug.tres" id="5_7c4jm"]
+[ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="6_017r5"]
+
+[sub_resource type="Resource" id="Resource_sjnaw"]
+script = ExtResource("6_017r5")
+
+[resource]
+script = ExtResource("4_k0db5")
+enemy_name = "broken healer"
+sprite_frames = ExtResource("5_7c4jm")
+experience_reward = 10
+gold_reward = 100
+behavior = 3
+stats = SubResource("Resource_sjnaw")
+actions = Array[ExtResource("1_yjcws")]([ExtResource("2_c6hyk")])

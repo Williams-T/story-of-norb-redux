@@ -21,14 +21,15 @@ func _init(char_stats : CharacterStatBlock) -> void:
 static func create_enemy(character : EnemyResource) -> BattleCombatant:
 	var combatant = BattleCombatant.new(character.stats.duplicate(true))
 	combatant.is_player_controlled = false
-	combatant.source_resource = character
+	combatant.source_resource = character.duplicate_deep()
+	character.stats.character_name = character.enemy_name
 	combatant.create_action_arrays(character.actions)
 	return combatant
 
 static func create_party_member(character : PartyMemberResource) -> BattleCombatant:
 	var combatant = BattleCombatant.new(character.stats)
 	combatant.is_player_controlled = true
-	combatant.source_resource = character
+	combatant.source_resource = character.duplicate_deep()
 	combatant.create_action_arrays(character.actions)
 	return combatant
 
@@ -95,6 +96,7 @@ func tick_statuses() -> void: #decrements duration_turns on each status, removes
 		take_damage(status["effect"].damage_per_turn)
 		if status["turns_remaining"] <= 0:
 			source_resource.active_statuses.erase(status)
+		print("%s is %s with %s turns left." % [stats.character_name, status["effect"].status_name, status["turns_remaining"]])
 func effective_stat(stat : String) -> float:
 	var base_stat = source_resource.stats.get(stat)
 	var stat_mod = source_resource.stat_mods.get(stat, 0.0)

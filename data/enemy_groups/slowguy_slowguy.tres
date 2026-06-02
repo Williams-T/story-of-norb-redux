@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="EnemyGroupResource" format=3 uid="uid://cqjnf0wvq64aa"]
+
+[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="1_n77dm"]
+[ext_resource type="Resource" uid="uid://bf0ddyxa51477" path="res://data/enemies/slow guy.tres" id="2_uelws"]
+[ext_resource type="Script" uid="uid://bolrxefn8gyhc" path="res://src/resources/EnemyGroupResource.gd" id="3_lfj7e"]
+
+[resource]
+script = ExtResource("3_lfj7e")
+enemies = Array[ExtResource("1_n77dm")]([ExtResource("2_uelws"), ExtResource("2_uelws")])

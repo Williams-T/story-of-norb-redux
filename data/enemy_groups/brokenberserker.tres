@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="EnemyGroupResource" format=3 uid="uid://wtrhtstaknae"]
+
+[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="1_are5b"]
+[ext_resource type="Resource" uid="uid://dkt05t0osu37a" path="res://data/enemies/broken berserker.tres" id="2_cstcm"]
+[ext_resource type="Script" uid="uid://bolrxefn8gyhc" path="res://src/resources/EnemyGroupResource.gd" id="3_4xcf1"]
+
+[resource]
+script = ExtResource("3_4xcf1")
+enemies = Array[ExtResource("1_are5b")]([ExtResource("2_cstcm")])

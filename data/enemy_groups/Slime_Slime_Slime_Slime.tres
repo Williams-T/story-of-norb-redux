@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="EnemyGroupResource" format=3 uid="uid://daas7ob1kgnsg"]
-
-[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="1_dp4i1"]
-[ext_resource type="Resource" uid="uid://5fces0bktoye" path="res://data/enemies/slime.tres" id="2_tyagc"]
-[ext_resource type="Script" uid="uid://bolrxefn8gyhc" path="res://src/resources/EnemyGroupResource.gd" id="3_ciqax"]
-
-[resource]
-script = ExtResource("3_ciqax")
-enemies = Array[ExtResource("1_dp4i1")]([ExtResource("2_tyagc"), ExtResource("2_tyagc"), ExtResource("2_tyagc"), ExtResource("2_tyagc")])

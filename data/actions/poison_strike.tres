@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BattleAction" format=3 uid="uid://bujgj1mrvlk3w"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_r37cm"]
+[ext_resource type="Resource" uid="uid://dwabx76nwmvo7" path="res://data/statuses/posioned.tres" id="2_36kad"]
+
+[resource]
+script = ExtResource("1_r37cm")
+action_name = "poison strike"
+power = 8
+status_to_apply = ExtResource("2_36kad")
+metadata/_custom_type_script = "uid://d3fdo4ho75i4u"

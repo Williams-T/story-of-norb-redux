@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BattleAction" format=3 uid="uid://bp5n7fupfleq"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_232jj"]
+[ext_resource type="Resource" uid="uid://bqlmxm32bhfp4" path="res://data/statuses/blind.tres" id="2_8mtlb"]
+
+[resource]
+script = ExtResource("1_232jj")
+action_name = "blinding flash"
+category = 1
+mp_cost = 10
+damage_type = 3
+power = 0
+status_to_apply = ExtResource("2_8mtlb")
+status_chance = 1.0
+metadata/_custom_type_script = "uid://d3fdo4ho75i4u"

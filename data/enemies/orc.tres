@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://bnnt68v7nh3vi"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_ty5vs"]
+[ext_resource type="Resource" uid="uid://1jxsq0x8ybtq" path="res://data/actions/basic_attack.tres" id="2_yw7fl"]
+[ext_resource type="Resource" uid="uid://bujgj1mrvlk3w" path="res://data/actions/poison_strike.tres" id="3_7phvt"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="4_n4wgk"]
+[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="5_wb45d"]
+[ext_resource type="SpriteFrames" uid="uid://drlchlv55b7pt" path="res://art/characters/enemies/debug/debug.tres" id="6_nn777"]
+[ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="7_qduwf"]
+
+[sub_resource type="Resource" id="Resource_xraxc"]
+script = ExtResource("7_qduwf")
+str = 14
+
+[resource]
+script = ExtResource("5_wb45d")
+enemy_name = "orc"
+sprite_frames = ExtResource("6_nn777")
+experience_reward = 10
+gold_reward = 100
+behavior = 4
+stats = SubResource("Resource_xraxc")
+actions = Array[ExtResource("1_ty5vs")]([ExtResource("2_yw7fl"), ExtResource("3_7phvt")])

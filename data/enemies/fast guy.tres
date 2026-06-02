@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://b881ey2gpgh72"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_ir7nx"]
+[ext_resource type="Resource" uid="uid://1jxsq0x8ybtq" path="res://data/actions/basic_attack.tres" id="2_bykvg"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="3_ftj1q"]
+[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="4_gyl1m"]
+[ext_resource type="SpriteFrames" uid="uid://drlchlv55b7pt" path="res://art/characters/enemies/debug/debug.tres" id="5_4swcf"]
+[ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="6_wntfn"]
+
+[sub_resource type="Resource" id="Resource_lt57q"]
+script = ExtResource("6_wntfn")
+agi = 20
+
+[resource]
+script = ExtResource("4_gyl1m")
+enemy_name = "fast guy"
+sprite_frames = ExtResource("5_4swcf")
+experience_reward = 10
+gold_reward = 100
+stats = SubResource("Resource_lt57q")
+actions = Array[ExtResource("1_ir7nx")]([ExtResource("2_bykvg")])

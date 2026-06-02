@@ -1,17 +1,17 @@
 StoryOfNorbRedux
 
 ROOT:
-	body.png
-	codebase_export.txt
-	debug_enemy_normal.png
-	debug_partymember_normal.png
-	debug_tileset.tres
-	ground_tiles.tres
-	README.md
-	rings.png
-	test_square.png
-	test_square2.png
-	wall_tiles.tres
+    body.png
+    codebase_export.txt
+    debug_enemy_normal.png
+    debug_partymember_normal.png
+    debug_tileset.tres
+    ground_tiles.tres
+    README.md
+    rings.png
+    test_square.png
+    test_square2.png
+    wall_tiles.tres
 _______________
 (indicator.gd):
 extends Control
@@ -85,8 +85,8 @@ func _ready() -> void:
 	#GameState.previous_player_location = global_position
 	sprite.play("idle_down")
 	print(party_member.stats.current_hp)
-	EventBus.player_movement_unlocked.connect(func():set_physics_process(true))
-	EventBus.player_movement_locked.connect(func():set_physics_process(false))
+	EventBus.player_movement_unlocked.connect(func():GameState.movement_locks -= 1; if GameState.movement_locks <= 0: set_physics_process(true))
+	EventBus.player_movement_locked.connect(func(): set_physics_process(false); GameState.movement_locks += 1)
 	
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -181,6 +181,7 @@ SaveManager="*uid://cojysb0jfm6w5"
 DialogueManager="*uid://drd42r3odtlk5"
 Codebase="*uid://c67q6k2f20o06"
 WorldMenu="*uid://db43riu704qe1"
+DebugMenu="*uid://bqf6iadrv1hr8"
 
 [display]
 
@@ -281,6 +282,12 @@ combat_prev={
 open_menu={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194305,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+debug={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":96,"key_label":0,"unicode":96,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":true,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":96,"key_label":0,"unicode":126,"location":0,"echo":false,"script":null)
 ]
 }
 
@@ -2826,12 +2833,12 @@ _______________
       # Called when the node enters the scene tree for the first time.
       func refresh(scene_root : Node):
       	for i in warp_container.get_children():
-	  		if i.name != 'ErrorLabel':
+      		if i.name != 'ErrorLabel':
       			warp_container.remove_child(i)
       			i.queue_free()
-	  	if scene_root.has_node('Warps') and scene_root.get_node('Warps').get_child_count() > 0:
+      	if scene_root.has_node('Warps') and scene_root.get_node('Warps').get_child_count() > 0:
       		error_label.hide()
-	  		for warp in scene_root.get_node('Warps').get_children():
+      		for warp in scene_root.get_node('Warps').get_children():
       			if warp is WarpPoint:
       				var new_row = row.instantiate()
       				warp_container.add_child(new_row)
@@ -2897,19 +2904,19 @@ _______________
       
       func _on_warp_id_edit_text_set() -> void:
       	if warp_point:
-	  		#field_changed.emit(warp_point, 'warp_id', warp_id_field.text)
+      		#field_changed.emit(warp_point, 'warp_id', warp_id_field.text)
       		warp_point.warp_id = warp_id_field.text
       
       
       func _on_target_scene_edit_text_set() -> void:
       	if warp_point:
-	  		#field_changed.emit(warp_point, 'target_scene', target_scene_field.text)
+      		#field_changed.emit(warp_point, 'target_scene', target_scene_field.text)
       		warp_point.warp_definition.target_scene = target_scene_field.text
       
       
       func _on_target_warp_id_edit_text_set() -> void:
       	if warp_point:
-	  		#field_changed.emit(warp_point, 'target_warp_id', target_warp_id_field.text)
+      		#field_changed.emit(warp_point, 'target_warp_id', target_warp_id_field.text)
       		warp_point.warp_definition.target_warp_id = target_warp_id_field.text
       
       
@@ -3055,8 +3062,17 @@ _______________
     SFX:
   DATA:
     ACTIONS:
+        AOE_spell.tres
         basic_attack.tres
+        blinding_flash.tres
+        boring_story.tres
+        enemy_heal.tres
+        group_heal.tres
+        healing_spell.tres
+        offensive_spell.tres
+        poison_strike.tres
         slime_tackle.tres
+        stun_bash.tres
     CHARACTERS:
         dog_party_member.tres
         norb_party_member.tres
@@ -3067,26 +3083,49 @@ _______________
         test1.tres
         test_dialogue.tres
     ENEMIES:
-        debug.tres
+        broken berserker.tres
+        broken healer.tres
+        fast guy.tres
+        loot guy.tres
+        orc.tres
         Punky.tres
         slime.tres
         slime_group.tres
         slime_stats.tres
+        slow guy.tres
+        sprite.tres
+        turtle.tres
+        wolf.tres
     ENEMY_GROUPS:
-        Punky_Slime.tres
+        brokenberserker.tres
+        brokenhealer.tres
+        fastguy_fastguy.tres
+        lootguy_lootguy.tres
+        orc_orc.tres
         Slime_Slime_Slime.tres
-        Slime_Slime_Slime_Slime.tres
+        slowguy_slowguy.tres
+        sprite_Slime.tres
+        turtle_turtle.tres
+        wolf_wolf.tres
     ITEMS:
+        chest_armor.tres
+        cosmic_ring.tres
         elixer.tres
         golden_trinket.tres
+        greatsword.tres
         ibuprofin.tres
         magicrestore.tres
         potion.tres
         sword.tres
+        toe_ring_of_knowing.tres
         wizard_hat.tres
     MAPS:
     SHOPS:
     STATUSES:
+        asleep.tres
+        blind.tres
+        posioned.tres
+        stunned.tres
   SCENES:
   _______________
   (boot.tscn):
@@ -3355,9 +3394,11 @@ _______________
     anchor_bottom = 1.0
     grow_horizontal = 2
     grow_vertical = 2
+    mouse_filter = 1
     
     [node name="BattleLog" type="RichTextLabel" parent="BattleUI/TopBar/PanelContainer" unique_id=1142135405]
     layout_mode = 2
+    mouse_filter = 1
     theme_override_font_sizes/normal_font_size = 24
     theme_override_font_sizes/bold_font_size = 24
     theme_override_font_sizes/bold_italics_font_size = 24
@@ -3863,10 +3904,10 @@ _______________
     	EventBus.combatant_status_expired.connect(func(combatant : BattleCombatant, status : StatusEffect): (positions[combatant].get_child(1) as Indicator).change_text(""))
     	EventBus.combat_action_resolving.connect(_on_resolve_started)
     	action_menu.get_child(0).grab_focus()
-		attack_button.pressed.connect(_on_action_menu_pressed.bind('attack'))
-		spell_button.pressed.connect(_on_action_menu_pressed.bind('spell'))
-		item_button.pressed.connect(_on_action_menu_pressed.bind('item'))
-		escape_button.pressed.connect(_on_action_menu_pressed.bind('escape'))
+    	attack_button.pressed.connect(_on_action_menu_pressed.bind('attack'))
+    	spell_button.pressed.connect(_on_action_menu_pressed.bind('spell'))
+    	item_button.pressed.connect(_on_action_menu_pressed.bind('item'))
+    	escape_button.pressed.connect(_on_action_menu_pressed.bind('escape'))
     	slots["enemy"]=[
     		enemy_position_1,
     		enemy_position_2,
@@ -3963,13 +4004,13 @@ _______________
     
     func _on_action_menu_pressed(choice : String):
     	match choice:
-			'attack':
+    		'attack':
     			populate_attack_menu()
-			'spell':
+    		'spell':
     			populate_spell_menu()
-			'item':
+    		'item':
     			populate_item_menu()
-			'escape':
+    		'escape':
     			EventBus.player_flee_attempted.emit()
     
     func paginate(action_array : Array, base_node : GridContainer, page : int = 0):
@@ -4031,6 +4072,7 @@ _______________
     	var arrow = positions[target_array[target_index]].get_child(1)
     	arrow.show()
     	arrow.change_color(Color.RED)
+    	update_target_arrow()
     
     func _on_resolve_started():
     	_animations_pending = 0
@@ -4140,10 +4182,10 @@ _______________
     			targets.append(target_array[target_index])
     			EventBus.player_targets_selected.emit(targets)
     			selecting_targets = false
-			elif event.is_action_pressed('move_right') or event.is_action_pressed("move_down"):
+    		elif event.is_action_pressed('move_right') or event.is_action_pressed("move_down"):
     			target_index = wrapi(target_index - 1, 0, target_array.size())
     			update_target_arrow()
-			elif event.is_action_pressed('move_left') or event.is_action_pressed("move_up"):
+    		elif event.is_action_pressed('move_left') or event.is_action_pressed("move_up"):
     			target_index = wrapi(target_index + 1, 0, target_array.size())
     			update_target_arrow()
     		elif event.is_action_pressed("combat_cancel"):
@@ -4259,6 +4301,7 @@ _______________
     @export var warp_id := ""
     @export var warp_definition : WarpDefinition
     @export var require_interact := false
+    @export var destination_only := false
     
     var just_spawned := false
     
@@ -4267,16 +4310,16 @@ _______________
     	EventBus.interact_pressed.connect(try_interact)
     
     func _on_body_entered(body: Node2D) -> void:
-    	if just_spawned:
+    	if just_spawned or destination_only:
     		return
-		if require_interact == false and body.is_in_group('player'):
+    	if require_interact == false and body.is_in_group('player'):
     		_execute_warp()
     
     func try_interact():
-    	if not require_interact:
+    	if not require_interact or destination_only:
     		return
     	for body in get_overlapping_bodies():
-			if body.is_in_group('player'):
+    		if body.is_in_group('player'):
     			_execute_warp()
     			return
     
@@ -4285,7 +4328,7 @@ _______________
     
     
     func _on_body_exited(_body: Node2D) -> void:
-    	if just_spawned:
+    	if just_spawned and not destination_only:
     		just_spawned = false
     	pass # Replace with function body.
     
@@ -5024,7 +5067,7 @@ _______________
     target_warp_id = "overworld_from_town"
     metadata/_custom_type_script = "uid://drag68vt7goeq"
     
-    [node name="Hosforth" type="Node2D" unique_id=1952397873]
+    [node name="Hogsforth" type="Node2D" unique_id=1952397873]
     texture_filter = 1
     
     [node name="TileMapLayers" type="Node2D" parent="." unique_id=103524705]
@@ -5050,7 +5093,7 @@ _______________
     [node name="BlockingLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=1290911956]
     visible = false
     modulate = Color(1, 1, 1, 0.40392157)
-    tile_map_data = PackedByteArray("AAAyAA0AAAAwAAAAAAAzAA0AAAAwAAAAAAA0AA0AAAAwAAAAAAA0AAwAAAAwAAAAAAAzAAwAAAAwAAAAAAAyAAwAAAAwAAAAAAAyAAsAAAAwAAAAAAAzAAsAAAAwAAAAAAA0AAsAAAAwAAAAAAA0AAoAAAAwAAAAAAAzAAoAAAAwAAAAAAAyAAoAAAAwAAAAAAAxAAoAAAAwAAAAAAAwAAoAAAAwAAAAAAAvAAoAAAAwAAAAAAAvAAsAAAAwAAAAAAAvAAwAAAAwAAAAAAAvAA0AAAAwAAAAAAAuAA0AAAAwAAAAAAAuAAwAAAAwAAAAAAAuAAsAAAAwAAAAAAAuAAoAAAAwAAAAAAAtAAoAAAAwAAAAAAAtAAsAAAAwAAAAAAAtAAwAAAAwAAAAAAAtAA0AAAAwAAAAAAA0AAkAAAAwAAAAAAAzAAkAAAAwAAAAAAAyAAkAAAAwAAAAAAAxAAkAAAAwAAAAAAAwAAkAAAAwAAAAAAAvAAkAAAAwAAAAAAAuAAkAAAAwAAAAAAAtAAkAAAAwAAAAAAAtAAgAAAAwAAAAAAAuAAgAAAAwAAAAAAAvAAgAAAAwAAAAAAAwAAgAAAAwAAAAAAAxAAgAAAAwAAAAAAAyAAgAAAAwAAAAAAAzAAgAAAAwAAAAAAA0AAgAAAAwAAAAAAA0AAcAAAAwAAAAAAAzAAcAAAAwAAAAAAAyAAcAAAAwAAAAAAAxAAcAAAAwAAAAAAAwAAcAAAAwAAAAAAAvAAcAAAAwAAAAAAAuAAcAAAAwAAAAAAAtAAcAAAAwAAAAAAAtAAYAAAAwAAAAAAAuAAYAAAAwAAAAAAAvAAYAAAAwAAAAAAAwAAYAAAAwAAAAAAAxAAYAAAAwAAAAAAAyAAYAAAAwAAAAAAAzAAYAAAAwAAAAAAA0AAYAAAAwAAAAAAA+AAYAAAAwAAAAAAA+AAcAAAAwAAAAAAA+AAgAAAAwAAAAAAA+AAkAAAAwAAAAAAA+AAoAAAAwAAAAAAA+AAsAAAAwAAAAAAA+AAwAAAAwAAAAAAA/AAYAAAAwAAAAAAA/AAcAAAAwAAAAAAA/AAgAAAAwAAAAAAA/AAkAAAAwAAAAAAA/AAoAAAAwAAAAAAA/AAsAAAAwAAAAAAA/AAwAAAAwAAAAAABAAAYAAAAwAAAAAABAAAcAAAAwAAAAAABAAAgAAAAwAAAAAABAAAkAAAAwAAAAAABBAAYAAAAwAAAAAABBAAcAAAAwAAAAAABBAAgAAAAwAAAAAABBAAkAAAAwAAAAAABCAAYAAAAwAAAAAABCAAcAAAAwAAAAAABCAAgAAAAwAAAAAABCAAkAAAAwAAAAAABCAAoAAAAwAAAAAABCAAsAAAAwAAAAAABCAAwAAAAwAAAAAABDAAYAAAAwAAAAAABDAAcAAAAwAAAAAABDAAgAAAAwAAAAAABDAAkAAAAwAAAAAABDAAoAAAAwAAAAAABDAAsAAAAwAAAAAABDAAwAAAAwAAAAAAA=")
+    tile_map_data = PackedByteArray("AAAyAA0AAAAwAAAAAAAzAA0AAAAwAAAAAAA0AA0AAAAwAAAAAAA0AAwAAAAwAAAAAAAzAAwAAAAwAAAAAAAyAAwAAAAwAAAAAAAyAAsAAAAwAAAAAAAzAAsAAAAwAAAAAAA0AAsAAAAwAAAAAAA0AAoAAAAwAAAAAAAzAAoAAAAwAAAAAAAyAAoAAAAwAAAAAAAxAAoAAAAwAAAAAAAwAAoAAAAwAAAAAAAvAAoAAAAwAAAAAAAvAAsAAAAwAAAAAAAvAAwAAAAwAAAAAAAvAA0AAAAwAAAAAAAuAA0AAAAwAAAAAAAuAAwAAAAwAAAAAAAuAAsAAAAwAAAAAAAuAAoAAAAwAAAAAAAtAAoAAAAwAAAAAAAtAAsAAAAwAAAAAAAtAAwAAAAwAAAAAAAtAA0AAAAwAAAAAAA0AAkAAAAwAAAAAAAzAAkAAAAwAAAAAAAyAAkAAAAwAAAAAAAxAAkAAAAwAAAAAAAwAAkAAAAwAAAAAAAvAAkAAAAwAAAAAAAuAAkAAAAwAAAAAAAtAAkAAAAwAAAAAAAtAAgAAAAwAAAAAAAuAAgAAAAwAAAAAAAvAAgAAAAwAAAAAAAwAAgAAAAwAAAAAAAxAAgAAAAwAAAAAAAyAAgAAAAwAAAAAAAzAAgAAAAwAAAAAAA0AAgAAAAwAAAAAAA0AAcAAAAwAAAAAAAzAAcAAAAwAAAAAAAyAAcAAAAwAAAAAAAxAAcAAAAwAAAAAAAwAAcAAAAwAAAAAAAvAAcAAAAwAAAAAAAuAAcAAAAwAAAAAAAtAAcAAAAwAAAAAAAtAAYAAAAwAAAAAAAuAAYAAAAwAAAAAAAvAAYAAAAwAAAAAAAwAAYAAAAwAAAAAAAxAAYAAAAwAAAAAAAyAAYAAAAwAAAAAAAzAAYAAAAwAAAAAAA0AAYAAAAwAAAAAAA+AAYAAAAwAAAAAAA+AAcAAAAwAAAAAAA+AAgAAAAwAAAAAAA+AAkAAAAwAAAAAAA+AAoAAAAwAAAAAAA+AAsAAAAwAAAAAAA+AAwAAAAwAAAAAAA/AAYAAAAwAAAAAAA/AAcAAAAwAAAAAAA/AAgAAAAwAAAAAAA/AAkAAAAwAAAAAAA/AAoAAAAwAAAAAAA/AAsAAAAwAAAAAAA/AAwAAAAwAAAAAABAAAYAAAAwAAAAAABAAAcAAAAwAAAAAABAAAgAAAAwAAAAAABAAAkAAAAwAAAAAABBAAYAAAAwAAAAAABBAAcAAAAwAAAAAABBAAgAAAAwAAAAAABBAAkAAAAwAAAAAABCAAYAAAAwAAAAAABCAAcAAAAwAAAAAABCAAgAAAAwAAAAAABCAAkAAAAwAAAAAABCAAoAAAAwAAAAAABCAAsAAAAwAAAAAABCAAwAAAAwAAAAAABDAAYAAAAwAAAAAABDAAcAAAAwAAAAAABDAAgAAAAwAAAAAABDAAkAAAAwAAAAAABDAAoAAAAwAAAAAABDAAsAAAAwAAAAAABDAAwAAAAwAAAAAAAwAAsAAAAwAAAAAAAxAAsAAAAwAAAAAAAwAAwAAAAwAAAAAAAxAAwAAAAwAAAAAABAAAoAAAAwAAAAAABBAAoAAAAwAAAAAABAAAsAAAAwAAAAAABBAAsAAAAwAAAAAAA=")
     tile_set = SubResource("TileSet_lxxjp")
     
     [node name="Warps" type="Node2D" parent="." unique_id=1008206038]
@@ -5088,6 +5131,9 @@ _______________
     
     [node name="MapController" type="Node" parent="." unique_id=690899599]
     script = ExtResource("4_3o1rd")
+    zone_name = "Hogsforth"
+    safe_zone_scene = "res://scenes/towns/TestTown.tscn"
+    safe_zone_warp_id = "recovery_zone"
     camera_bounds = Rect2(0, 0, 2688, 2048)
     
     _______________
@@ -5135,6 +5181,11 @@ _______________
     warp_id = "test_town_entrance"
     warp_definition = SubResource("Resource_3jy7c")
     
+    [node name="WarpPoint2" parent="Warps" unique_id=1285650703 instance=ExtResource("3_r720c")]
+    position = Vector2(1701, 615)
+    warp_id = "recovery_zone"
+    destination_only = true
+    
     [node name="YSort" type="Node2D" parent="." unique_id=719166860]
     y_sort_enabled = true
     
@@ -5157,6 +5208,1105 @@ _______________
     
     _______________
     UI:
+    _______________
+    (DebugMenu.tscn):
+    [gd_scene format=3 uid="uid://bqf6iadrv1hr8"]
+    
+    [ext_resource type="Script" uid="uid://dcvs0713864w2" path="res://scenes/ui/debug_menu.gd" id="1_3fpnj"]
+    [ext_resource type="Script" uid="uid://n86k8xfu0alg" path="res://scenes/ui/debug_start_combat.gd" id="2_hh07i"]
+    [ext_resource type="Script" uid="uid://y218dqquhccc" path="res://scenes/ui/debug_edit_combat.gd" id="3_5dagh"]
+    [ext_resource type="Script" uid="uid://cljphinjpd8pt" path="res://scenes/ui/debug_items.gd" id="4_2t4v7"]
+    [ext_resource type="Script" uid="uid://bypp82bcgftt4" path="res://scenes/ui/debug_flags.gd" id="5_wj7ck"]
+    [ext_resource type="Script" uid="uid://bbyfwomqhogyr" path="res://scenes/ui/debug_party.gd" id="6_tclvd"]
+    [ext_resource type="Script" uid="uid://b3us5iauqhbop" path="res://scenes/ui/debug_teleport.gd" id="7_b5u4c"]
+    [ext_resource type="Script" uid="uid://bbedyee4gausj" path="res://scenes/ui/debug_gold.gd" id="7_ceyro"]
+    
+    [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hh07i"]
+    bg_color = Color(0.27058825, 0.6, 0.6, 0.24705882)
+    
+    [sub_resource type="LabelSettings" id="LabelSettings_5dagh"]
+    font_size = 22
+    
+    [node name="DebugMenu" type="CanvasLayer" unique_id=1945254526]
+    process_mode = 3
+    layer = 100
+    script = ExtResource("1_3fpnj")
+    
+    [node name="PanelContainer" type="PanelContainer" parent="." unique_id=1965602851]
+    anchors_preset = 10
+    anchor_right = 1.0
+    offset_bottom = 231.0
+    grow_horizontal = 2
+    mouse_filter = 1
+    theme_override_styles/panel = SubResource("StyleBoxFlat_hh07i")
+    
+    [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=547524431]
+    layout_mode = 2
+    theme_override_constants/separation = 0
+    
+    [node name="Label" type="Label" parent="PanelContainer/VBoxContainer" unique_id=502036827]
+    layout_mode = 2
+    theme_override_styles/normal = SubResource("StyleBoxFlat_hh07i")
+    theme_override_styles/focus = SubResource("StyleBoxFlat_hh07i")
+    text = "DEBUG MENU"
+    label_settings = SubResource("LabelSettings_5dagh")
+    horizontal_alignment = 1
+    
+    [node name="TabContainer" type="TabContainer" parent="PanelContainer/VBoxContainer" unique_id=1254402198]
+    custom_minimum_size = Vector2(0, 200)
+    layout_mode = 2
+    size_flags_vertical = 3
+    theme_override_styles/panel = SubResource("StyleBoxFlat_hh07i")
+    current_tab = 5
+    
+    [node name="Start Combat" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=240798581]
+    visible = false
+    layout_mode = 2
+    script = ExtResource("2_hh07i")
+    metadata/_tab_index = 0
+    
+    [node name="ItemList" type="ItemList" parent="PanelContainer/VBoxContainer/TabContainer/Start Combat" unique_id=1545165858]
+    custom_minimum_size = Vector2(240, 120)
+    layout_mode = 2
+    
+    [node name="Button" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Start Combat" unique_id=1696383995]
+    layout_mode = 2
+    text = "Fight"
+    
+    [node name="Edit Combat" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1928381547]
+    visible = false
+    layout_mode = 2
+    script = ExtResource("3_5dagh")
+    metadata/_tab_index = 1
+    
+    [node name="Combatants" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat" unique_id=806511203]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="Stats" type="GridContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat" unique_id=288583592]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    columns = 2
+    
+    [node name="HP" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=356287093]
+    layout_mode = 2
+    size_flags_vertical = 3
+    size_flags_stretch_ratio = 0.5
+    text = "HP:"
+    horizontal_alignment = 2
+    vertical_alignment = 1
+    
+    [node name="HP_field" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=1892136261]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    horizontal_alignment = 1
+    vertical_alignment = 1
+    
+    [node name="MP" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=2017798820]
+    layout_mode = 2
+    size_flags_vertical = 3
+    size_flags_stretch_ratio = 0.5
+    text = "MP:"
+    horizontal_alignment = 2
+    vertical_alignment = 1
+    
+    [node name="MP_field" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=1518424110]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    horizontal_alignment = 1
+    vertical_alignment = 1
+    
+    [node name="Statuses" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=1854193923]
+    layout_mode = 2
+    size_flags_vertical = 3
+    size_flags_stretch_ratio = 0.5
+    text = "Statuses:"
+    horizontal_alignment = 2
+    vertical_alignment = 1
+    
+    [node name="Statuses_field" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Stats" unique_id=1088496778]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    horizontal_alignment = 1
+    vertical_alignment = 1
+    
+    [node name="Options" type="GridContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat" unique_id=1096157491]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    columns = 2
+    
+    [node name="Button" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=271228457]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    text = "Set HP"
+    
+    [node name="Button2" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=3149917]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    text = "Set MP"
+    
+    [node name="Button3" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=2065498533]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    text = "Add Status"
+    
+    [node name="Button4" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=1013585928]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    text = "Remove Status"
+    
+    [node name="Button5" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=154529633]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    text = "Force Victory"
+    
+    [node name="Button6" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Options" unique_id=326427183]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    text = "Force Defeat"
+    
+    [node name="HP_MP_Popup" type="Popup" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat" unique_id=608490552]
+    oversampling_override = 1.0
+    position = Vector2i(856, 62)
+    size = Vector2i(424, 169)
+    
+    [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup" unique_id=144478850]
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    
+    [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup/VBoxContainer" unique_id=2095685396]
+    layout_mode = 2
+    text = "HP"
+    horizontal_alignment = 1
+    
+    [node name="SpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup/VBoxContainer" unique_id=2139992638]
+    layout_mode = 2
+    size_flags_vertical = 3
+    alignment = 1
+    custom_arrow_step = 1.0
+    
+    [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup/VBoxContainer" unique_id=732581036]
+    layout_mode = 2
+    
+    [node name="Button" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup/VBoxContainer/HBoxContainer" unique_id=1907299286]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    text = "Confirm"
+    
+    [node name="Button2" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/HP_MP_Popup/VBoxContainer/HBoxContainer" unique_id=274311382]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    text = "Cancel"
+    
+    [node name="Status_Popup" type="Popup" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat" unique_id=120379136]
+    oversampling_override = 1.0
+    position = Vector2i(856, 62)
+    size = Vector2i(424, 212)
+    
+    [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup" unique_id=300340520]
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    
+    [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup/VBoxContainer" unique_id=1427382534]
+    layout_mode = 2
+    text = "Status"
+    horizontal_alignment = 1
+    
+    [node name="ItemList" type="ItemList" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup/VBoxContainer" unique_id=745496058]
+    custom_minimum_size = Vector2(420, 110)
+    custom_maximum_size = Vector2(-1, 110)
+    layout_mode = 2
+    size_flags_vertical = 3
+    max_columns = 2
+    same_column_width = true
+    
+    [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup/VBoxContainer" unique_id=1845898955]
+    layout_mode = 2
+    
+    [node name="Button" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup/VBoxContainer/HBoxContainer" unique_id=642194144]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    text = "Confirm"
+    
+    [node name="Button2" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Edit Combat/Status_Popup/VBoxContainer/HBoxContainer" unique_id=357431539]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    text = "Cancel"
+    
+    [node name="Items" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1939330017]
+    visible = false
+    layout_mode = 2
+    script = ExtResource("4_2t4v7")
+    metadata/_tab_index = 2
+    
+    [node name="Items" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Items" unique_id=152272266]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Items/Items" unique_id=1130720202]
+    layout_mode = 2
+    text = "Items:"
+    horizontal_alignment = 1
+    
+    [node name="ItemList" type="ItemList" parent="PanelContainer/VBoxContainer/TabContainer/Items/Items" unique_id=333530319]
+    custom_minimum_size = Vector2(0, 135)
+    layout_mode = 2
+    
+    [node name="Characters" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Items" unique_id=312683094]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Items/Characters" unique_id=1688130032]
+    layout_mode = 2
+    text = "Characters:"
+    horizontal_alignment = 1
+    
+    [node name="Inventory" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Items" unique_id=1396203565]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Items/Inventory" unique_id=1916527356]
+    layout_mode = 2
+    text = "Inventory:"
+    horizontal_alignment = 1
+    
+    [node name="ItemList" type="ItemList" parent="PanelContainer/VBoxContainer/TabContainer/Items/Inventory" unique_id=558009115]
+    custom_minimum_size = Vector2(0, 135)
+    layout_mode = 2
+    
+    [node name="Buttons" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Items" unique_id=458733848]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="AddItem" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Items/Buttons" unique_id=2137622553]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    text = "Add Item"
+    
+    [node name="RemoveItem" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Items/Buttons" unique_id=1776516029]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    text = "Remove Item"
+    
+    [node name="ClearInventory" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Items/Buttons" unique_id=1254549760]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    text = "Clear Inventory"
+    
+    [node name="RandomLoadout" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Items/Buttons" unique_id=1536908030]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    text = "Random Loadout"
+    
+    [node name="Flags" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=402451428]
+    visible = false
+    layout_mode = 2
+    script = ExtResource("5_wj7ck")
+    metadata/_tab_index = 3
+    
+    [node name="Container" type="ScrollContainer" parent="PanelContainer/VBoxContainer/TabContainer/Flags" unique_id=1010953454]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_stretch_ratio = 0.3
+    
+    [node name="FlagsContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Flags/Container" unique_id=374652772]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    
+    [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Flags" unique_id=1332161503]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    alignment = 1
+    
+    [node name="KeyLine" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Flags/VBoxContainer" unique_id=1222705931]
+    layout_mode = 2
+    placeholder_text = "KEY"
+    alignment = 1
+    
+    [node name="ValueLine" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Flags/VBoxContainer" unique_id=1231949150]
+    layout_mode = 2
+    placeholder_text = "VALUE"
+    alignment = 1
+    
+    [node name="AddFlagButton" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Flags/VBoxContainer" unique_id=779860855]
+    layout_mode = 2
+    size_flags_horizontal = 4
+    text = "     add flag     "
+    
+    [node name="Party" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=609411553]
+    visible = false
+    layout_mode = 2
+    script = ExtResource("6_tclvd")
+    metadata/_tab_index = 4
+    
+    [node name="EntitiesContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party" unique_id=1935467990]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="EntitiesLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Party/EntitiesContainer" unique_id=231029063]
+    layout_mode = 2
+    text = "Entities"
+    horizontal_alignment = 1
+    
+    [node name="ButtonContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party" unique_id=2082506567]
+    layout_mode = 2
+    alignment = 1
+    
+    [node name="AddButton" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Party/ButtonContainer" unique_id=1301176079]
+    layout_mode = 2
+    disabled = true
+    text = "Add ->"
+    
+    [node name="RemoveButton" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Party/ButtonContainer" unique_id=1181877352]
+    layout_mode = 2
+    disabled = true
+    text = "<- Remove"
+    
+    [node name="PartyContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party" unique_id=500817028]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="PartyLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Party/PartyContainer" unique_id=2072673353]
+    layout_mode = 2
+    text = "Current Party:"
+    horizontal_alignment = 1
+    
+    [node name="StatsContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party" unique_id=496650281]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    alignment = 2
+    
+    [node name="StatsLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer" unique_id=90091976]
+    layout_mode = 2
+    text = "Stats    "
+    horizontal_alignment = 1
+    
+    [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer" unique_id=688465060]
+    layout_mode = 2
+    alignment = 2
+    
+    [node name="NameLineEdit" type="LineEdit" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/HBoxContainer" unique_id=451635854]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    placeholder_text = "Name"
+    alignment = 1
+    
+    [node name="Control" type="Control" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/HBoxContainer" unique_id=1044836591]
+    custom_minimum_size = Vector2(14, 0)
+    layout_mode = 2
+    
+    [node name="LevelSpin" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer" unique_id=1377310943]
+    layout_mode = 2
+    min_value = 1.0
+    max_value = 999.0
+    value = 1.0
+    rounded = true
+    alignment = 1
+    update_on_text_changed = true
+    prefix = "Level "
+    
+    [node name="GridContainer" type="GridContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer" unique_id=569259122]
+    layout_mode = 2
+    size_flags_vertical = 3
+    columns = 2
+    
+    [node name="HpSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer" unique_id=970026342]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    value = 1.0
+    alignment = 1
+    update_on_text_changed = true
+    prefix = "HP: "
+    
+    [node name="MpSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer" unique_id=523762639]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    alignment = 1
+    update_on_text_changed = true
+    prefix = "MP: "
+    
+    [node name="GridContainer2" type="GridContainer" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer" unique_id=275569486]
+    layout_mode = 2
+    columns = 5
+    
+    [node name="StrSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer2" unique_id=1296553191]
+    layout_mode = 2
+    alignment = 1
+    update_on_text_changed = true
+    prefix = "STR: "
+    
+    [node name="VitSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer2" unique_id=1381901634]
+    layout_mode = 2
+    alignment = 1
+    update_on_text_changed = true
+    prefix = "VIT: "
+    
+    [node name="AgiSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer2" unique_id=1134903472]
+    layout_mode = 2
+    alignment = 1
+    update_on_text_changed = true
+    prefix = "AGI: "
+    
+    [node name="IntSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer2" unique_id=224597027]
+    layout_mode = 2
+    alignment = 1
+    update_on_text_changed = true
+    prefix = "INT: "
+    
+    [node name="WilSpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Party/StatsContainer/GridContainer2" unique_id=836349835]
+    layout_mode = 2
+    alignment = 1
+    update_on_text_changed = true
+    prefix = "WIL: "
+    
+    [node name="Teleport" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1008854473]
+    layout_mode = 2
+    script = ExtResource("7_b5u4c")
+    metadata/_tab_index = 5
+    
+    [node name="ScenesContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Teleport" unique_id=1224509960]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="ScenesLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Teleport/ScenesContainer" unique_id=1678832356]
+    layout_mode = 2
+    text = "Scenes:"
+    horizontal_alignment = 1
+    
+    [node name="WarpsContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Teleport" unique_id=1337171312]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="WarpsLabel" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Teleport/WarpsContainer" unique_id=2101082631]
+    layout_mode = 2
+    text = "Warps:"
+    horizontal_alignment = 1
+    
+    [node name="Gold" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1929899731]
+    visible = false
+    layout_mode = 2
+    script = ExtResource("7_ceyro")
+    metadata/_tab_index = 6
+    
+    [node name="Control" type="Control" parent="PanelContainer/VBoxContainer/TabContainer/Gold" unique_id=1984985781]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Gold" unique_id=1727094965]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    alignment = 1
+    
+    [node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Gold/VBoxContainer" unique_id=1917304789]
+    layout_mode = 2
+    
+    [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Gold/VBoxContainer/HBoxContainer" unique_id=1434776620]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 1
+    text = "Gold:"
+    horizontal_alignment = 1
+    vertical_alignment = 1
+    
+    [node name="SpinBox" type="SpinBox" parent="PanelContainer/VBoxContainer/TabContainer/Gold/VBoxContainer/HBoxContainer" unique_id=2000681223]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    max_value = 99999.0
+    alignment = 1
+    
+    [node name="Control2" type="Control" parent="PanelContainer/VBoxContainer/TabContainer/Gold" unique_id=667804748]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    _______________
+    _______________
+    (debug_edit_combat.gd):
+    extends HBoxContainer
+    class_name DebugEditCombat
+    
+    var current_combatant : BattleCombatant
+    
+    @onready var combatants_container : VBoxContainer = $Combatants
+    @onready var stats : GridContainer = $Stats
+    @onready var buttons : GridContainer = $Options
+    @onready var hp_field : Label = $Stats/HP_field
+    @onready var mp_field : Label = $Stats/MP_field
+    @onready var status_field : Label = $Stats/Statuses_field
+    @onready var hp_button : Button = $Options/Button
+    @onready var mp_button : Button = $Options/Button2
+    @onready var add_status_button : Button = $Options/Button3
+    @onready var remove_status_button : Button = $Options/Button4
+    @onready var force_victory_button : Button = $Options/Button5
+    @onready var force_defeat_button : Button = $Options/Button6
+    @onready var hp_mp_popup : Popup = $HP_MP_Popup
+    @onready var hp_mp_label : Label = $HP_MP_Popup/VBoxContainer/Label
+    @onready var hp_mp_spinbox : SpinBox = $HP_MP_Popup/VBoxContainer/SpinBox
+    @onready var hp_mp_confirm_button : Button = $HP_MP_Popup/VBoxContainer/HBoxContainer/Button
+    @onready var hp_mp_cancel_button : Button = $HP_MP_Popup/VBoxContainer/HBoxContainer/Button2
+    @onready var status_popup : Popup = $Status_Popup
+    @onready var status_label : Label = $Status_Popup/VBoxContainer/Label
+    @onready var status_list : ItemList = $Status_Popup/VBoxContainer/ItemList
+    @onready var status_confirm_button : Button = $Status_Popup/VBoxContainer/HBoxContainer/Button
+    @onready var status_cancel_button : Button = $Status_Popup/VBoxContainer/HBoxContainer/Button2
+    
+    var combatants : Array[BattleCombatant] = []
+    
+    # Called when the node enters the scene tree for the first time.
+    func _ready() -> void:
+    	hp_button.pressed.connect(popup_hp_mp.bind("hp"))
+    	mp_button.pressed.connect(popup_hp_mp.bind("mp"))
+    	hp_mp_cancel_button.pressed.connect(func():hp_mp_popup.hide())
+    	add_status_button.pressed.connect(popup_status.bind("add"))
+    	remove_status_button.pressed.connect(popup_status.bind("remove"))
+    	status_cancel_button.pressed.connect(func():status_popup.hide())
+    
+    func refresh_combatants(root : CombatManager):
+    	var combat_manager = root
+    	for node in combatants_container.get_children():
+    		node.queue_free()
+    	for i : BattleCombatant in combat_manager._turn_queue:
+    		#combatants.append(i)
+    		var button : Button = Button.new()
+    		button.text = i.source_resource.stats.character_name
+    		button.pressed.connect(func(): refresh_stats(i))
+    		combatants_container.add_child(button)
+    		print(i.source_resource.stats.character_name)
+    
+    func refresh_stats(bc : BattleCombatant):
+    	current_combatant = bc
+    	hp_field.text = "%s / %s" % [bc.stats.current_hp, bc.stats.max_hp()]
+    	mp_field.text = "%s / %s" % [bc.stats.current_mp, bc.stats.max_mp()]
+    	var status_output = ""
+    	for i in bc.source_resource.active_statuses:
+    		status_output += "%s, " % i["effect"].status_name
+    	status_field.text = status_output
+    
+    func popup_hp_mp(mode : String):
+    	if hp_mp_confirm_button.pressed.is_connected(send_hp_mp):
+    		hp_mp_confirm_button.pressed.disconnect(send_hp_mp)
+    	if mode == "hp":
+    		hp_mp_label.text = "Set HP"
+    		hp_mp_confirm_button.pressed.connect(send_hp_mp.bind("hp"))
+    	elif mode == "mp":
+    		hp_mp_label.text = "Set MP"
+    		hp_mp_confirm_button.pressed.connect(send_hp_mp.bind("mp"))
+    	hp_mp_popup.show()
+    
+    func send_hp_mp(mode : String):
+    	if mode == "hp":
+    		current_combatant.stats.current_hp = min(hp_mp_spinbox.value, current_combatant.stats.max_hp())
+    	elif mode == "mp":
+    		current_combatant.stats.current_mp = min(hp_mp_spinbox.value, current_combatant.stats.max_mp())
+    	refresh_stats(current_combatant)
+    	hp_mp_popup.hide()
+    
+    func popup_status(mode : String):
+    	if status_confirm_button.pressed.is_connected(send_status):
+    		status_confirm_button.pressed.disconnect(send_status)
+    	status_list.clear()
+    	if mode == "add":
+    		status_label.text = "Add status"
+    		var files = DirAccess.get_files_at("res://data/statuses/")
+    		for file : String in files:
+    			var current_status : StatusEffect = load("res://data/statuses/%s" % file)
+    			status_list.add_item(current_status.status_name)
+    			status_list.set_item_metadata(status_list.item_count-1, current_status)
+    		status_confirm_button.pressed.connect(send_status.bind("add"))
+    	elif mode == "remove":
+    		status_label.text = "Remove status"
+    		for i in current_combatant.source_resource.active_statuses:
+    			status_list.add_item(i["effect"].status_name)
+    			status_list.set_item_metadata(status_list.item_count -1, i["effect"])
+    		status_confirm_button.pressed.connect(send_status.bind("remove"))
+    	status_popup.show()
+    
+    func send_status(mode : String):
+    	if mode == "add":
+    		current_combatant.apply_status(status_list.get_item_metadata(status_list.get_selected_items()[0]))
+    	elif mode == "remove":
+    		for i in current_combatant.source_resource.active_statuses:
+    			if i["effect"] == status_list.get_item_metadata(status_list.get_selected_items()[0]):
+    				current_combatant.source_resource.active_statuses.erase(i)
+    	refresh_stats(current_combatant)
+    	status_popup.hide()
+    
+    # Called every frame. 'delta' is the elapsed time since the previous frame.
+    func _process(delta: float) -> void:
+    	pass
+    
+    _______________
+    _______________
+    (debug_flags.gd):
+    extends HBoxContainer
+    
+    @onready var flag_container : VBoxContainer = $Container/FlagsContainer
+    @onready var key_field : LineEdit = $VBoxContainer/KeyLine
+    @onready var value_field : LineEdit = $VBoxContainer/ValueLine
+    @onready var add_flag_button : Button = $VBoxContainer/AddFlagButton
+    # Called when the node enters the scene tree for the first time.
+    func _ready() -> void:
+    	refresh_flags()
+    	add_flag_button.pressed.connect(new_flag)
+    
+    func refresh_flags() -> void:
+    	for child in flag_container.get_children():
+    		child.queue_free()
+    	for flag in GameState.flags.keys():
+    		load_flag(flag, GameState.flags[flag])
+    
+    func load_flag(key : String, value : Variant):
+    	var hbox := HBoxContainer.new()
+    	hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    	#hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    	var label := Label.new()
+    	label.text = key
+    	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    	#label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+    	hbox.set_meta("key", key)
+    	hbox.set_meta("value", value)
+    	flag_container.add_child(hbox)
+    	hbox.add_child(label)
+    	match typeof(value):
+    		TYPE_STRING:
+    			var line_edit := LineEdit.new()
+    			line_edit.text = "%s" % value
+    			line_edit.text_changed.connect(func(text): GameState.flags[key] = text)
+    			line_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    			#line_edit.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    			hbox.add_child(line_edit)
+    		TYPE_BOOL:
+    			var check_box := CheckButton.new()
+    			check_box.button_pressed = value
+    			check_box.toggled.connect(func(val): GameState.flags[key] = val)
+    			check_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    			#check_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    			hbox.add_child(check_box)
+    		TYPE_INT:
+    			var spin_box := SpinBox.new()
+    			spin_box.max_value = 999999
+    			spin_box.min_value = -999999
+    			spin_box.value = value
+    			spin_box.changed.connect(func(val): GameState.flags[key] = val)
+    			spin_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    			#spin_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    			hbox.add_child(spin_box)
+    	#hbox.add_spacer(false)
+    	var delete_button := Button.new()
+    	delete_button.text = " x "
+    	delete_button.pressed.connect(func(): GameState.flags.erase(key); refresh_flags())
+    	delete_button.add_theme_color_override("font_color", Color.RED)
+    	hbox.add_child(delete_button)
+    
+    func new_flag():
+    	if key_field.text == "":
+    		return
+    	var val
+    	if value_field.text == "true": 
+    		val = true
+    	elif value_field.text == "false":
+    		val = false
+    	elif value_field.text.is_valid_int():
+    		val = (value_field.text as int)
+    	else:
+    		val = value_field.text
+    	GameState.flags[key_field.text] = val
+    	key_field.clear()
+    	value_field.clear()
+    	refresh_flags()
+    
+    _______________
+    _______________
+    (debug_gold.gd):
+    extends HBoxContainer
+    
+    @onready var gold_spin : SpinBox = $VBoxContainer/HBoxContainer/SpinBox
+    
+    # Called when the node enters the scene tree for the first time.
+    func _ready() -> void:
+    	gold_spin.value = GameState.gold
+    	gold_spin.changed.connect(func(value):GameState.gold = value)
+    
+    _______________
+    _______________
+    (debug_items.gd):
+    extends HBoxContainer
+    class_name DebugItems
+    
+    @onready var item_list : ItemList = $Items/ItemList
+    @onready var character_container : VBoxContainer = $Characters
+    @onready var inventory : ItemList = $Inventory/ItemList
+    @onready var add_item_button : Button = $Buttons/AddItem
+    @onready var remove_item_button : Button = $Buttons/RemoveItem
+    @onready var clear_inventory_button : Button = $Buttons/ClearInventory
+    @onready var random_loadout_button : Button = $Buttons/RandomLoadout
+    
+    var current_entity : EntityResource
+    
+    # Called when the node enters the scene tree for the first time.
+    func _ready() -> void:
+    	item_list.item_selected.connect(func(idx : int): inventory.deselect_all(); remove_item_button.disabled = true; add_item_button.disabled = false)
+    	inventory.item_selected.connect(func(idx : int): item_list.deselect_all(); remove_item_button.disabled = false; add_item_button.disabled = true)
+    	add_item_button.pressed.connect(add_item)
+    	remove_item_button.pressed.connect(remove_item)
+    	clear_inventory_button.pressed.connect(clear_inventory)
+    	random_loadout_button.pressed.connect(random_loadout)
+    
+    func refresh_fields(root : CombatManager = null) -> void:
+    	item_list.clear()
+    	var files = DirAccess.get_files_at("res://data/items/")
+    	for file : String in files:
+    		var loaded : ItemResource = load("res://data/items/%s" % file)
+    		item_list.add_item(loaded.item_name)
+    		item_list.set_item_metadata(item_list.item_count -1, loaded)
+    	for child in character_container.get_children():
+    		if child.name != "Label":
+    			child.queue_free()
+    	for entity : EntityResource in GameState.party:
+    		var button = Button.new()
+    		button.text = entity.stats.character_name
+    		button.pressed.connect(func(): current_entity = entity; refresh_inventory(entity))
+    		character_container.add_child(button)
+    	if root != null:
+    		for entity : EntityResource in root._enemy_group.enemies:
+    			var button = Button.new()
+    			button.text = entity.stats.character_name
+    			button.pressed.connect(func(): current_entity = entity; refresh_inventory(entity))
+    			character_container.add_child(button)
+    
+    func refresh_inventory(entity : EntityResource):
+    	inventory.clear()
+    	var current_inv
+    	if current_entity.is_player:
+    		current_inv = GameState.inventory
+    	else:
+    		current_inv = current_entity.inventory
+    	for item : ItemResource in current_inv:
+    		if item == null:
+    			continue
+    		inventory.add_item(item.item_name)
+    		inventory.set_item_metadata(inventory.item_count - 1, item)
+    
+    func add_item():
+    	var item : ItemResource = item_list.get_item_metadata(item_list.get_selected_items()[0])
+    	if current_entity.is_player:
+    		GameState.inventory.append(item)
+    	else:
+    		current_entity.inventory.append(item)
+    	refresh_inventory(current_entity)
+    
+    func remove_item():
+    	if current_entity.is_player:
+    		GameState.inventory.erase(inventory.get_item_metadata(inventory.get_selected_items()[0]))
+    	else:
+    		current_entity.inventory.erase(inventory.get_item_metadata(inventory.get_selected_items()[0]))
+    	refresh_inventory(current_entity)
+    
+    func clear_inventory():
+    	if current_entity.is_player:
+    		GameState.inventory.clear()
+    	else:
+    		current_entity.inventory.clear()
+    
+    func random_loadout():
+    	clear_inventory()
+    	var current_inv
+    	if current_entity.is_player:
+    		current_inv = GameState.inventory
+    	else:
+    		current_inv = current_entity.inventory
+    	var items := DirAccess.get_files_at("res://data/items/")
+    	var consumables = []
+    	var equipment = []
+    	var key_items = []
+    	for i in items:
+    		var loaded : ItemResource = load("res://data/items/%s" % i)
+    		match loaded.item_type:
+    			ItemResource.ItemType.CONSUMABLE:
+    				consumables.append(loaded)
+    			ItemResource.ItemType.EQUIPMENT:
+    				equipment.append(loaded)
+    			ItemResource.ItemType.KEY_ITEM:
+    				key_items.append(loaded)
+    	current_inv.append(consumables.pop_at(randi_range(0, consumables.size()-1)))
+    	current_inv.append(consumables.pop_at(randi_range(0, consumables.size()-1)))
+    	current_inv.append(consumables.pop_at(randi_range(0, consumables.size()-1)))
+    	current_inv.append(consumables.pop_at(randi_range(0, consumables.size()-1)))
+    	current_inv.append(equipment.pop_at(randi_range(0, equipment.size()-1)))
+    	current_inv.append(equipment.pop_at(randi_range(0, equipment.size()-1)))
+    	current_inv.append(equipment.pop_at(randi_range(0, equipment.size()-1)))
+    	current_inv.append(key_items.pop_at(randi_range(0, key_items.size()-1)))
+    	refresh_inventory(current_entity)
+    
+    _______________
+    _______________
+    (debug_menu.gd):
+    extends CanvasLayer
+    
+    @onready var tab_container : TabContainer = $PanelContainer/VBoxContainer/TabContainer
+    @onready var start_combat : DebugStartCombat = $"PanelContainer/VBoxContainer/TabContainer/Start Combat"
+    @onready var edit_combat : DebugEditCombat = $"PanelContainer/VBoxContainer/TabContainer/Edit Combat"
+    @onready var edit_items : DebugItems = $PanelContainer/VBoxContainer/TabContainer/Items
+    func _ready() -> void:
+    	hide()
+    
+    func _unhandled_input(event: InputEvent) -> void:
+    	if event.is_action_pressed("debug"):
+    		if visible:
+    			EventBus.player_movement_unlocked.emit()
+    			hide()
+    		else:
+    			EventBus.player_movement_locked.emit()
+    			if GameState.in_combat:
+    				tab_container.set_tab_disabled(1, false)
+    				tab_container.current_tab = 1
+    				edit_combat.refresh_combatants(get_parent().get_node("/root/Battle"))
+    				edit_items.refresh_fields(get_parent().get_node("/root/Battle"))
+    			else:
+    				tab_container.current_tab = 0
+    				tab_container.set_tab_disabled(1, true)
+    				edit_items.refresh_fields()
+    			show()
+    	else:
+    		if visible:
+    			get_viewport().set_input_as_handled()
+    
+    _______________
+    _______________
+    (debug_party.gd):
+    extends HBoxContainer
+    
+    @onready var entities_container : VBoxContainer = $EntitiesContainer
+    @onready var add_button : Button = $ButtonContainer/AddButton
+    @onready var remove_button : Button = $ButtonContainer/RemoveButton
+    @onready var party_container : VBoxContainer = $PartyContainer
+    @onready var name_edit : LineEdit = $StatsContainer/HBoxContainer/NameLineEdit
+    @onready var level_spin : SpinBox = $StatsContainer/LevelSpin
+    @onready var hp_spin : SpinBox = $StatsContainer/GridContainer/HpSpinBox
+    @onready var mp_spin : SpinBox = $StatsContainer/GridContainer/MpSpinBox
+    @onready var str_spin : SpinBox = $StatsContainer/GridContainer2/StrSpinBox
+    @onready var vit_spin : SpinBox = $StatsContainer/GridContainer2/VitSpinBox
+    @onready var agi_spin : SpinBox = $StatsContainer/GridContainer2/AgiSpinBox
+    @onready var int_spin : SpinBox = $StatsContainer/GridContainer2/IntSpinBox
+    @onready var wil_spin : SpinBox = $StatsContainer/GridContainer2/WilSpinBox
+    
+    var current_party_member : EntityResource
+    var populating = false
+    # Called when the node enters the scene tree for the first time.
+    func _ready() -> void:
+    	refresh_entities()
+    	refresh_party()
+    	add_button.pressed.connect(func(): GameState.party.append(current_party_member) ; refresh_party())
+    	remove_button.pressed.connect(func(): GameState.party.erase(current_party_member); refresh_party())
+    	name_edit.text_changed.connect(save_fields)
+    	level_spin.value_changed.connect(save_fields)
+    	hp_spin.value_changed.connect(save_fields)
+    	mp_spin.value_changed.connect(save_fields)
+    	str_spin.value_changed.connect(save_fields)
+    	vit_spin.value_changed.connect(save_fields)
+    	agi_spin.value_changed.connect(save_fields)
+    	int_spin.value_changed.connect(save_fields)
+    	wil_spin.value_changed.connect(save_fields)
+    
+    func refresh_entities():
+    	for node in entities_container.get_children():
+    		if node.name != "EntitiesLabel":
+    			node.queue_free()
+    	var entities = []
+    	entities.append_array(DirAccess.get_files_at("res://data/characters/"))
+    	#entities.append_array(DirAccess.get_files_at("res://data/enemies/"))
+    	for i : String in entities:
+    		var loaded
+    		if i in DirAccess.get_files_at("res://data/characters/"):
+    			loaded = load("res://data/characters/%s" % i)
+    		else:
+    			loaded = load("res://data/enemies/%s" % i)
+    		if loaded is PartyMemberResource or loaded is EnemyResource:
+    			var button := Button.new()
+    			button.text = i.trim_suffix(".tres")
+    			button.pressed.connect(select_entity.bind(loaded, button))
+    			entities_container.add_child(button)
+    
+    func refresh_party():
+    	for node in party_container.get_children():
+    		if node.name != "PartyLabel":
+    			node.queue_free()
+    	for i : EntityResource in GameState.party:
+    		var button := Button.new()
+    		button.text = i.stats.character_name
+    		button.pressed.connect(select_party_member.bind(i, button))
+    		party_container.add_child(button)
+    func select_entity(entity : EntityResource, button):
+    	if entity is EnemyResource:
+    		var new_party_member := PartyMemberResource.new()
+    		new_party_member.stats = entity.stats.duplicate(true)
+    		new_party_member.stats.character_name = entity.enemy_name
+    		new_party_member.inventory = entity.drop_table
+    		new_party_member.actions = entity.actions
+    		current_party_member = new_party_member
+    	else:
+    		current_party_member = entity
+    	for child in entities_container.get_children() + party_container.get_children():
+    		if !(child is Button):
+    			continue
+    		if child != button:
+    			child.add_theme_color_override("font_color", Color.WHITE)
+    		else:
+    			child.add_theme_color_override("font_color", Color.GOLD)
+    	add_button.disabled = false
+    	remove_button.disabled = true
+    
+    func select_party_member(entity : EntityResource, button : Button):
+    	for child in entities_container.get_children() + party_container.get_children():
+    		if !(child is Button):
+    			continue
+    		if child != button:
+    			child.add_theme_color_override("font_color", Color.WHITE)
+    		else:
+    			child.add_theme_color_override("font_color", Color.GOLD)
+    	current_party_member = entity
+    	populate_fields()
+    	add_button.disabled = true
+    	remove_button.disabled = false
+    
+    func populate_fields():
+    	populating = true
+    	name_edit.text = current_party_member.stats.character_name
+    	level_spin.value = current_party_member.stats.level
+    	if current_party_member.stats.current_hp == -1:
+    		current_party_member.stats.current_hp = current_party_member.stats.max_hp()
+    	hp_spin.value = current_party_member.stats.current_hp
+    	if current_party_member.stats.current_mp == -1:
+    		current_party_member.stats.current_mp = current_party_member.stats.max_mp()
+    	mp_spin.value = current_party_member.stats.current_mp
+    	str_spin.value = current_party_member.stats.str
+    	vit_spin.value = current_party_member.stats.vit
+    	agi_spin.value = current_party_member.stats.agi
+    	int_spin.value = current_party_member.stats.intelligence
+    	wil_spin.value = current_party_member.stats.wil
+    	populating = false
+    
+    func save_fields(val):
+    	if current_party_member and populating == false:
+    		current_party_member.stats.character_name = name_edit.text
+    		current_party_member.stats.level = level_spin.value
+    		current_party_member.stats.current_hp = hp_spin.value
+    		current_party_member.stats.current_mp = mp_spin.value
+    		current_party_member.stats.str = str_spin.value
+    		current_party_member.stats.vit = vit_spin.value
+    		current_party_member.stats.agi = agi_spin.value
+    		current_party_member.stats.intelligence = int_spin.value
+    		current_party_member.stats.wil = wil_spin.value
+    
+    _______________
+    _______________
+    (debug_start_combat.gd):
+    extends VBoxContainer
+    class_name DebugStartCombat
+    
+    
+    var current_enemy_group : EnemyGroupResource = null
+    var enemy_groups := {}
+    
+    @onready var combat_list : ItemList = $ItemList
+    @onready var combat_button : Button = $Button
+    
+    # Called when the node enters the scene tree for the first time.
+    func _ready() -> void:
+    	combat_button.pressed.connect(start_combat)
+    	scan_enemy_groups()
+    	pass # Replace with function body.
+    
+    func scan_enemy_groups():
+    	enemy_groups.clear()
+    	var files = DirAccess.get_files_at("res://data/enemy_groups/")
+    	for file : String in files:
+    		var loaded = load("res://data/enemy_groups/%s" % file)
+    		if loaded is EnemyGroupResource:
+    			combat_list.add_item(file)
+    			combat_list.set_item_metadata(combat_list.item_count - 1, loaded)
+    
+    func start_combat():
+    	if GameState.in_combat:
+    		SceneManager.end_combat('')
+    	if combat_list.is_anything_selected():
+    		DebugMenu.hide()
+    		SceneManager.start_combat(combat_list.get_item_metadata(combat_list.get_selected_items()[0]))
+    
+    _______________
+    _______________
+    (debug_teleport.gd):
+    extends HBoxContainer
+    
+    @onready var scenes_container : VBoxContainer = $ScenesContainer
+    @onready var warps_container : VBoxContainer = $WarpsContainer
+    
+    func _ready() -> void:
+    	refresh_scenes()
+    
+    func refresh_scenes():
+    	for child in scenes_container.get_children():
+    		if child.name != "ScenesLabel":
+    			child.queue_free()
+    	var dungeons := DirAccess.get_files_at("res://scenes/dungeons/")
+    	var towns := DirAccess.get_files_at("res://scenes/towns/")
+    	var world := DirAccess.get_files_at("res://scenes/world/")
+    	var scenes = []
+    	for scene in dungeons:
+    		if scene.contains(".tscn"):
+    			var path = "res://scenes/dungeons/%s" % scene
+    			scenes.append(path)
+    	for scene in towns:
+    		if scene.contains(".tscn"):
+    			var path = "res://scenes/towns/%s" % scene
+    			scenes.append(path)
+    	for scene in world:
+    		if scene.contains(".tscn") and !scene.contains("MapScene"):
+    			var path = "res://scenes/world/%s" % scene
+    			scenes.append(path)
+    	for path : String in scenes:
+    		var button := Button.new()
+    		button.text = path.split("/")[-1].trim_suffix(".tscn")
+    		button.pressed.connect(refresh_warps.bind(path))
+    		scenes_container.add_child(button)
+    
+    func refresh_warps(path : String):
+    	for child in warps_container.get_children():
+    		if child.name != "WarpsLabel":
+    			child.queue_free()
+    	var file = FileAccess.open(path,FileAccess.READ)
+    	if file:
+    		while not file.eof_reached():
+    			var line = file.get_line()
+    			if line.begins_with("warp_id"):
+    				var warp_id = line.trim_prefix("warp_id = ")
+    				warp_id = warp_id.get_slice("\"", 1)
+    				var button := Button.new()
+    				button.text = warp_id
+    				button.pressed.connect(func():SceneManager.travel_to(path, warp_id, "fade"); print(path, " ", warp_id))
+    				warps_container.add_child(button)
+    
+    _______________
     _______________
     (DialogueUI.tscn):
     [gd_scene format=3 uid="uid://bhvjql71xc4d4"]
@@ -5429,7 +6579,6 @@ _______________
     bg_color = Color(0.8509804, 0.34117648, 0.3882353, 0.40392157)
     
     [node name="WorldMenu" type="CanvasLayer" unique_id=52257110]
-    visible = false
     script = ExtResource("1_dkymr")
     
     [node name="Panel" type="Panel" parent="." unique_id=323095612]
@@ -5443,28 +6592,55 @@ _______________
     size_flags_vertical = 3
     mouse_filter = 1
     
-    [node name="TabContainer" type="TabContainer" parent="Panel" unique_id=1247102261]
-    custom_minimum_size = Vector2(1280, 720)
+    [node name="HBoxContainer" type="HBoxContainer" parent="Panel" unique_id=1888277018]
     layout_mode = 1
-    anchors_preset = 15
+    anchors_preset = -1
     anchor_right = 1.0
     anchor_bottom = 1.0
     grow_horizontal = 2
     grow_vertical = 2
+    
+    [node name="MemberContainer" type="VBoxContainer" parent="Panel/HBoxContainer" unique_id=866723234]
+    custom_minimum_size = Vector2(35, 0)
+    layout_mode = 2
+    theme_override_constants/separation = 10
+    
+    [node name="Spacer" type="Control" parent="Panel/HBoxContainer/MemberContainer" unique_id=1576081287]
+    custom_minimum_size = Vector2(0, 50)
+    layout_mode = 2
+    
+    [node name="Control2" type="Control" parent="Panel/HBoxContainer/MemberContainer" unique_id=1367953572]
+    custom_minimum_size = Vector2(0, 50)
+    layout_mode = 2
+    offset_transform_visual_only = false
+    
+    [node name="Node2D" type="Node2D" parent="Panel/HBoxContainer/MemberContainer/Control2" unique_id=425517402]
+    
+    [node name="Button" type="Button" parent="Panel/HBoxContainer/MemberContainer/Control2/Node2D" unique_id=1277383507]
+    offset_right = 41.0
+    offset_bottom = 31.0
+    rotation = -1.5707964
+    offset_transform_rotation = -1.5707964
+    offset_transform_visual_only = false
+    text = "Test"
+    
+    [node name="TabContainer" type="TabContainer" parent="Panel/HBoxContainer" unique_id=1247102261]
+    layout_mode = 2
+    size_flags_horizontal = 3
     theme_override_constants/tab_separation = 8
     theme_override_font_sizes/font_size = 32
     tab_alignment = 1
     current_tab = 0
     
-    [node name="Items" type="VBoxContainer" parent="Panel/TabContainer" unique_id=1780942216]
+    [node name="Items" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer" unique_id=1780942216]
     layout_mode = 2
     metadata/_tab_index = 0
     
-    [node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Items" unique_id=1987281301]
+    [node name="HBoxContainer" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items" unique_id=1987281301]
     layout_mode = 2
     size_flags_vertical = 3
     
-    [node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Items/HBoxContainer" unique_id=1575556477]
+    [node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer" unique_id=1575556477]
     layout_mode = 2
     offset_transform_enabled = true
     offset_transform_position_ratio = Vector2(0.032, 0.013)
@@ -5473,21 +6649,21 @@ _______________
     expand_mode = 3
     stretch_mode = 5
     
-    [node name="Control" type="Control" parent="Panel/TabContainer/Items/HBoxContainer" unique_id=1085671291]
+    [node name="Control" type="Control" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer" unique_id=1085671291]
     custom_minimum_size = Vector2(50, 0)
     layout_mode = 2
     
-    [node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer" unique_id=44913455]
+    [node name="HBoxContainer" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer" unique_id=44913455]
     layout_mode = 2
     size_flags_horizontal = 3
     
-    [node name="Stats" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer" unique_id=149432706]
+    [node name="Stats" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer" unique_id=149432706]
     layout_mode = 2
     size_flags_horizontal = 3
     size_flags_stretch_ratio = 0.5
     alignment = 1
     
-    [node name="NameLabel" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/Stats" unique_id=1335124084]
+    [node name="NameLabel" type="Label" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/Stats" unique_id=1335124084]
     layout_mode = 2
     size_flags_vertical = 1
     text = "Name"
@@ -5495,7 +6671,7 @@ _______________
     horizontal_alignment = 1
     vertical_alignment = 1
     
-    [node name="StatsLabel" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/Stats" unique_id=982931703]
+    [node name="StatsLabel" type="Label" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/Stats" unique_id=982931703]
     layout_mode = 2
     size_flags_vertical = 1
     text = "str: 10
@@ -5507,50 +6683,50 @@ _______________
     horizontal_alignment = 1
     vertical_alignment = 1
     
-    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer" unique_id=177076367]
+    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer" unique_id=177076367]
     layout_mode = 2
     size_flags_horizontal = 3
     
-    [node name="TabContainer" type="TabContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=492672491]
+    [node name="TabContainer" type="Container" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=300183754]
     layout_mode = 2
     size_flags_horizontal = 3
     size_flags_vertical = 3
     
-    [node name="Label" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1428038964]
+    [node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1428038964]
     layout_mode = 2
     size_flags_vertical = 3
     size_flags_stretch_ratio = 0.5
     horizontal_alignment = 1
     vertical_alignment = 1
     
-    [node name="MemberPicker" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1740294426]
+    [node name="MemberPicker" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1740294426]
     layout_mode = 2
     size_flags_vertical = 3
     
-    [node name="Label" type="Label" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker" unique_id=1611888676]
+    [node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker" unique_id=1611888676]
     layout_mode = 2
     text = "Use On:"
     horizontal_alignment = 1
     
-    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker" unique_id=544127366]
+    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker" unique_id=544127366]
     layout_mode = 2
     
-    [node name="Equipment" type="HBoxContainer" parent="Panel/TabContainer" unique_id=62404569]
+    [node name="Equipment" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer" unique_id=62404569]
     visible = false
     layout_mode = 2
     metadata/_tab_index = 1
     
-    [node name="TabContainer" type="TabContainer" parent="Panel/TabContainer/Equipment" unique_id=1495645698]
+    [node name="TabContainer" type="TabContainer" parent="Panel/HBoxContainer/TabContainer/Equipment" unique_id=1495645698]
     layout_mode = 2
     size_flags_horizontal = 3
     tab_alignment = 1
     current_tab = 0
     
-    [node name="Main" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer" unique_id=362655565]
+    [node name="Main" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer" unique_id=362655565]
     layout_mode = 2
     metadata/_tab_index = 0
     
-    [node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Main" unique_id=1341457855]
+    [node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main" unique_id=1341457855]
     layout_mode = 2
     offset_transform_enabled = true
     offset_transform_position_ratio = Vector2(0.06, -0.01)
@@ -5558,7 +6734,7 @@ _______________
     texture = ExtResource("2_j56qf")
     expand_mode = 3
     
-    [node name="Head" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=769849053]
+    [node name="Head" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=769849053]
     custom_minimum_size = Vector2(128, 128)
     layout_mode = 0
     offset_left = 148.0
@@ -5569,7 +6745,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 5
     
-    [node name="Torso" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=533972200]
+    [node name="Torso" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=533972200]
     custom_minimum_size = Vector2(128, 128)
     layout_mode = 0
     offset_left = 147.0
@@ -5580,7 +6756,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="LeftHand" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=985257638]
+    [node name="LeftHand" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=985257638]
     custom_minimum_size = Vector2(128, 128)
     layout_mode = 0
     offset_left = -14.0
@@ -5591,7 +6767,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 5
     
-    [node name="LeftFoot" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1707866478]
+    [node name="LeftFoot" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1707866478]
     custom_minimum_size = Vector2(128, 96)
     layout_mode = 0
     offset_left = 15.0
@@ -5602,7 +6778,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="RightFoot" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=2126232846]
+    [node name="RightFoot" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=2126232846]
     custom_minimum_size = Vector2(128, 96)
     layout_mode = 0
     offset_left = 281.0
@@ -5613,7 +6789,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="RightHand" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1358434361]
+    [node name="RightHand" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1358434361]
     custom_minimum_size = Vector2(128, 128)
     layout_mode = 0
     offset_left = 321.0
@@ -5624,7 +6800,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 5
     
-    [node name="Legs" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1787289124]
+    [node name="Legs" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect" unique_id=1787289124]
     custom_minimum_size = Vector2(256, 128)
     layout_mode = 0
     offset_left = 89.0
@@ -5635,58 +6811,62 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="Control" type="Control" parent="Panel/TabContainer/Equipment/TabContainer/Main" unique_id=1131276057]
+    [node name="Control" type="Control" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main" unique_id=1131276057]
     custom_minimum_size = Vector2(64, 0)
     layout_mode = 2
     
-    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main" unique_id=1049919716]
+    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main" unique_id=1049919716]
     layout_mode = 2
     size_flags_horizontal = 3
     
-    [node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=1802776583]
+    [node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=1802776583]
     custom_minimum_size = Vector2(0, 64)
     layout_mode = 2
     text = "Equipment Description"
     horizontal_alignment = 1
     vertical_alignment = 1
     
-    [node name="PanelContainer" type="PanelContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=799941413]
+    [node name="PanelContainer" type="PanelContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=799941413]
     custom_minimum_size = Vector2(0, 128)
     layout_mode = 2
     theme_override_styles/panel = SubResource("StyleBoxFlat_fxsls")
     
-    [node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer" unique_id=1162206763]
+    [node name="HBoxContainer" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer" unique_id=1162206763]
     custom_minimum_size = Vector2(0, 128)
     layout_mode = 2
     
-    [node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=1454529915]
+    [node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=1454529915]
     custom_minimum_size = Vector2(256, 0)
     layout_mode = 2
     stretch_mode = 3
     
-    [node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=911638214]
+    [node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=911638214]
     layout_mode = 2
     size_flags_horizontal = 3
     size_flags_vertical = 1
     horizontal_alignment = 1
     vertical_alignment = 1
     
-    [node name="ScrollContainer" type="ScrollContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=595743977]
+    [node name="Button" type="Button" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer" unique_id=67406971]
+    layout_mode = 2
+    text = " unequip "
+    
+    [node name="ScrollContainer" type="ScrollContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer" unique_id=595743977]
     layout_mode = 2
     size_flags_horizontal = 3
     size_flags_vertical = 3
     
-    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/ScrollContainer" unique_id=1100217020]
+    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/ScrollContainer" unique_id=1100217020]
     layout_mode = 2
     size_flags_horizontal = 3
     size_flags_vertical = 3
     
-    [node name="Rings" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer" unique_id=488615251]
+    [node name="Rings" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer" unique_id=488615251]
     visible = false
     layout_mode = 2
     metadata/_tab_index = 1
     
-    [node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Rings" unique_id=1499612075]
+    [node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings" unique_id=1499612075]
     layout_mode = 2
     offset_transform_enabled = true
     offset_transform_position_ratio = Vector2(0.06, 0.03)
@@ -5694,7 +6874,7 @@ _______________
     texture = ExtResource("4_rsh6u")
     expand_mode = 3
     
-    [node name="Ring1" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1369508756]
+    [node name="Ring1" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1369508756]
     layout_mode = 0
     offset_left = 101.0
     offset_top = 41.0
@@ -5704,7 +6884,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="Ring2" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1658408369]
+    [node name="Ring2" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1658408369]
     layout_mode = 0
     offset_left = 67.0
     offset_top = 34.0
@@ -5714,7 +6894,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="Ring3" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=766426095]
+    [node name="Ring3" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=766426095]
     layout_mode = 0
     offset_left = 33.0
     offset_top = 46.0
@@ -5724,7 +6904,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="Ring4" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=321491465]
+    [node name="Ring4" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=321491465]
     layout_mode = 0
     offset_left = 4.0
     offset_top = 73.0
@@ -5734,7 +6914,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="Ring5" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=704468204]
+    [node name="Ring5" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=704468204]
     layout_mode = 0
     offset_left = 137.0
     offset_top = 98.0
@@ -5744,7 +6924,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="Ring6" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=818269102]
+    [node name="Ring6" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=818269102]
     layout_mode = 0
     offset_left = 291.0
     offset_top = 39.0
@@ -5754,7 +6934,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="Ring7" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=321008637]
+    [node name="Ring7" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=321008637]
     layout_mode = 0
     offset_left = 328.0
     offset_top = 27.0
@@ -5764,7 +6944,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="Ring8" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1868735230]
+    [node name="Ring8" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1868735230]
     layout_mode = 0
     offset_left = 363.0
     offset_top = 41.0
@@ -5774,7 +6954,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="Ring9" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1971723219]
+    [node name="Ring9" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1971723219]
     layout_mode = 0
     offset_left = 390.0
     offset_top = 70.0
@@ -5784,7 +6964,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="Ring10" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1600788340]
+    [node name="Ring10" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1600788340]
     layout_mode = 0
     offset_left = 257.0
     offset_top = 100.0
@@ -5794,7 +6974,7 @@ _______________
     texture_hover = ExtResource("4_qx6q8")
     stretch_mode = 0
     
-    [node name="ToeRing1" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1903545875]
+    [node name="ToeRing1" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1903545875]
     layout_mode = 0
     offset_left = 32.0
     offset_top = 479.0
@@ -5805,7 +6985,7 @@ _______________
     ignore_texture_size = true
     stretch_mode = 0
     
-    [node name="ToeRing10" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=678114879]
+    [node name="ToeRing10" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=678114879]
     layout_mode = 0
     offset_left = 376.0
     offset_top = 476.0
@@ -5816,7 +6996,7 @@ _______________
     ignore_texture_size = true
     stretch_mode = 0
     
-    [node name="ToeRing2" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=594800743]
+    [node name="ToeRing2" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=594800743]
     layout_mode = 0
     offset_left = 44.0
     offset_top = 491.0
@@ -5827,7 +7007,7 @@ _______________
     ignore_texture_size = true
     stretch_mode = 0
     
-    [node name="ToeRing9" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=20007664]
+    [node name="ToeRing9" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=20007664]
     layout_mode = 0
     offset_left = 357.0
     offset_top = 491.0
@@ -5838,7 +7018,7 @@ _______________
     ignore_texture_size = true
     stretch_mode = 0
     
-    [node name="ToeRing3" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1259201031]
+    [node name="ToeRing3" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1259201031]
     layout_mode = 0
     offset_left = 67.0
     offset_top = 505.0
@@ -5849,7 +7029,7 @@ _______________
     ignore_texture_size = true
     stretch_mode = 0
     
-    [node name="ToeRing8" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=741926572]
+    [node name="ToeRing8" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=741926572]
     layout_mode = 0
     offset_left = 332.0
     offset_top = 505.0
@@ -5860,7 +7040,7 @@ _______________
     ignore_texture_size = true
     stretch_mode = 0
     
-    [node name="ToeRing4" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=447472050]
+    [node name="ToeRing4" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=447472050]
     layout_mode = 0
     offset_left = 93.0
     offset_top = 516.0
@@ -5871,7 +7051,7 @@ _______________
     ignore_texture_size = true
     stretch_mode = 0
     
-    [node name="ToeRing7" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1727065511]
+    [node name="ToeRing7" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=1727065511]
     layout_mode = 0
     offset_left = 308.0
     offset_top = 516.0
@@ -5882,7 +7062,7 @@ _______________
     ignore_texture_size = true
     stretch_mode = 0
     
-    [node name="ToeRing5" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=206830182]
+    [node name="ToeRing5" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=206830182]
     layout_mode = 0
     offset_left = 125.0
     offset_top = 513.0
@@ -5893,7 +7073,7 @@ _______________
     ignore_texture_size = true
     stretch_mode = 0
     
-    [node name="ToeRing6" type="TextureButton" parent="Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=835823255]
+    [node name="ToeRing6" type="TextureButton" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect" unique_id=835823255]
     layout_mode = 0
     offset_left = 269.0
     offset_top = 513.0
@@ -5904,37 +7084,37 @@ _______________
     ignore_texture_size = true
     stretch_mode = 0
     
-    [node name="Control" type="Control" parent="Panel/TabContainer/Equipment/TabContainer/Rings" unique_id=111083745]
+    [node name="Control" type="Control" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings" unique_id=111083745]
     custom_minimum_size = Vector2(64, 0)
     layout_mode = 2
     
-    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings" unique_id=1890172302]
+    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings" unique_id=1890172302]
     layout_mode = 2
     size_flags_horizontal = 3
     
-    [node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=755918697]
+    [node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=755918697]
     custom_minimum_size = Vector2(0, 64)
     layout_mode = 2
     text = "Equipment Description"
     horizontal_alignment = 1
     vertical_alignment = 1
     
-    [node name="PanelContainer" type="PanelContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=1131624095]
+    [node name="PanelContainer" type="PanelContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=1131624095]
     custom_minimum_size = Vector2(0, 128)
     layout_mode = 2
     theme_override_styles/panel = SubResource("StyleBoxFlat_fxsls")
     
-    [node name="HBoxContainer" type="HBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer" unique_id=321706391]
+    [node name="HBoxContainer" type="HBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer" unique_id=321706391]
     custom_minimum_size = Vector2(0, 128)
     layout_mode = 2
     
-    [node name="TextureRect" type="TextureRect" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=2140168971]
+    [node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=2140168971]
     custom_minimum_size = Vector2(256, 0)
     layout_mode = 2
     texture = ExtResource("5_qx6q8")
     stretch_mode = 3
     
-    [node name="Label" type="Label" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=1667781844]
+    [node name="Label" type="Label" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=1667781844]
     layout_mode = 2
     size_flags_horizontal = 3
     size_flags_vertical = 1
@@ -5942,12 +7122,16 @@ _______________
     horizontal_alignment = 1
     vertical_alignment = 1
     
-    [node name="ScrollContainer" type="ScrollContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=1702338643]
+    [node name="Button" type="Button" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer" unique_id=198337024]
+    layout_mode = 2
+    text = " unequip "
+    
+    [node name="ScrollContainer" type="ScrollContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer" unique_id=1702338643]
     layout_mode = 2
     size_flags_horizontal = 3
     size_flags_vertical = 3
     
-    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/ScrollContainer" unique_id=1642958929]
+    [node name="VBoxContainer" type="VBoxContainer" parent="Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/ScrollContainer" unique_id=1642958929]
     layout_mode = 2
     size_flags_horizontal = 3
     size_flags_vertical = 3
@@ -5959,60 +7143,67 @@ _______________
     
     
     var current_party_member : PartyMemberResource = null
+    var current_slot
+    
+    # Member Buttons
+    @onready var member_container : VBoxContainer = $Panel/HBoxContainer/MemberContainer
     
     # Items Nodes
-    @onready var name_label : Label = $Panel/TabContainer/Items/HBoxContainer/HBoxContainer/Stats/NameLabel
-    @onready var stats_label : Label = $Panel/TabContainer/Items/HBoxContainer/HBoxContainer/Stats/StatsLabel
-    @onready var inventory_container := $Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/TabContainer
-    @onready var item_label : Label = $Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/Label
-    @onready var member_picker = $Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker
-    @onready var member_buttons = $Panel/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker/VBoxContainer
+    @onready var name_label : Label = $Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/Stats/NameLabel
+    @onready var stats_label : Label = $Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/Stats/StatsLabel
+    @onready var inventory_container := $Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/TabContainer
+    @onready var item_label : Label = $Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/Label
+    @onready var member_picker = $Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker
+    @onready var member_buttons = $Panel/HBoxContainer/TabContainer/Items/HBoxContainer/HBoxContainer/VBoxContainer/MemberPicker/VBoxContainer
     
     # Equipment Nodes
     
-    @onready var equip_panel : VBoxContainer = $Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer
-    @onready var main_equipped_icon : TextureRect = $Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer/TextureRect
-    @onready var main_equipped_label : Label = $Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer/Label
-    @onready var main_equipment_list : VBoxContainer = $Panel/TabContainer/Equipment/TabContainer/Main/VBoxContainer/ScrollContainer/VBoxContainer
-    @onready var ring_equipped_icon : TextureRect = $Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer/TextureRect
-    @onready var ring_equipped_label : Label = $Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer/Label
-    @onready var ring_equipment_list : VBoxContainer = $Panel/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/ScrollContainer/VBoxContainer
+    @onready var equip_panel : VBoxContainer = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer
+    @onready var main_equipped_icon : TextureRect = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer/TextureRect
+    @onready var main_equipped_label : Label = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer/Label
+    @onready var main_equipment_unequip : Button = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/PanelContainer/HBoxContainer/Button
+    @onready var main_equipment_list : VBoxContainer = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/VBoxContainer/ScrollContainer/VBoxContainer
+    @onready var ring_equipped_icon : TextureRect = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer/TextureRect
+    @onready var ring_equipped_label : Label = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer/Label
+    @onready var ring_equipment_unequip : Button = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/PanelContainer/HBoxContainer/Button
+    @onready var ring_equipment_list : VBoxContainer = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/VBoxContainer/ScrollContainer/VBoxContainer
     
     # Buttons
     
-    @onready var Head : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Main/TextureRect/Head
-    @onready var Torso : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Main/TextureRect/Torso
-    @onready var LeftHand : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Main/TextureRect/LeftHand
-    @onready var RightHand : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Main/TextureRect/RightHand
-    @onready var Legs : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Main/TextureRect/Legs
-    @onready var LeftFoot : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Main/TextureRect/LeftFoot
-    @onready var RightFoot : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Main/TextureRect/RightFoot
-    @onready var Ring1 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring1
-    @onready var Ring2 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring2
-    @onready var Ring3 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring3
-    @onready var Ring4 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring4
-    @onready var Ring5 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring5
-    @onready var Ring6 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring6
-    @onready var Ring7 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring7
-    @onready var Ring8 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring8
-    @onready var Ring9 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring9
-    @onready var Ring10 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring10
-    @onready var ToeRing1 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing1
-    @onready var ToeRing2 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing2
-    @onready var ToeRing3 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing3
-    @onready var ToeRing4 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing4
-    @onready var ToeRing5 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing5
-    @onready var ToeRing6 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing6
-    @onready var ToeRing7 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing7
-    @onready var ToeRing8 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing8
-    @onready var ToeRing9 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing9
-    @onready var ToeRing10 : TextureButton = $Panel/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing10
+    @onready var Head : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect/Head
+    @onready var Torso : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect/Torso
+    @onready var LeftHand : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect/LeftHand
+    @onready var RightHand : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect/RightHand
+    @onready var Legs : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect/Legs
+    @onready var LeftFoot : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect/LeftFoot
+    @onready var RightFoot : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Main/TextureRect/RightFoot
+    @onready var Ring1 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring1
+    @onready var Ring2 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring2
+    @onready var Ring3 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring3
+    @onready var Ring4 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring4
+    @onready var Ring5 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring5
+    @onready var Ring6 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring6
+    @onready var Ring7 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring7
+    @onready var Ring8 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring8
+    @onready var Ring9 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring9
+    @onready var Ring10 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/Ring10
+    @onready var ToeRing1 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing1
+    @onready var ToeRing2 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing2
+    @onready var ToeRing3 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing3
+    @onready var ToeRing4 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing4
+    @onready var ToeRing5 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing5
+    @onready var ToeRing6 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing6
+    @onready var ToeRing7 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing7
+    @onready var ToeRing8 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing8
+    @onready var ToeRing9 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing9
+    @onready var ToeRing10 : TextureButton = $Panel/HBoxContainer/TabContainer/Equipment/TabContainer/Rings/TextureRect/ToeRing10
     
     var button_dict = {}
     
     # Called when the node enters the scene tree for the first time.
     func _ready() -> void:
     	current_party_member = get_active_player()
+    	refresh_member_list()
     	refresh_item_list()
     	button_dict = {
     		Head : ["head", -1],
@@ -6047,14 +7238,19 @@ _______________
     	for button : TextureButton in button_dict.keys():
     		var values : Array = button_dict[button]
     		button.pressed.connect(_on_slot_pressed.bind(values[0], values[1]))
+    	main_equipment_unequip.pressed.connect(_on_unequip_pressed)
+    	ring_equipment_unequip.pressed.connect(_on_unequip_pressed)
+    	hide()
     
     func _on_slot_pressed(slot_key : String, index : int):
     	_update_equipped_display(slot_key, index)
+    	current_slot = [slot_key, index]
     	var main = ["head", "torso", "hand", "legs", "foot"]
+    	var rings = ["ring", "toe_ring"]
     	var _list
-    	if slot_key in main:
+    	if slot_key in main or slot_key == "main":
     		_list = main_equipment_list
-    	else:
+    	elif slot_key in rings or slot_key == "rings":
     		_list = ring_equipment_list
     	for node in _list.get_children():
     		node.queue_free()
@@ -6065,7 +7261,7 @@ _______________
     	else:
     		current_inventory = GameState.inventory.duplicate()
     	for item : ItemResource in current_inventory:
-    		if current_party_member.locate_equip_slot(item) == slot_key:
+    		if current_party_member.locate_equip_slot(item) == slot_key or slot_key in ["rings", "main"]:
     			var item_button := Button.new()
     			item_button.text = "%s  |  %s" % [item.item_name, item.stats_to_text()]
     			item_button.icon = item.icon
@@ -6100,6 +7296,18 @@ _______________
     		_icon.texture = null
     		_label.text = "Empty"
     
+    func _on_unequip_pressed():
+    	if current_slot != null:
+    		pass
+    	var item
+    	if current_slot[1] == -1:
+    		item = current_party_member.equipped[current_slot[0]]
+    	else:
+    		item = current_party_member.equipped[current_slot[0]][current_slot[1]]
+    	if item is ItemResource:
+    		current_party_member.unequip_item(item)
+    		_on_slot_pressed(current_slot[0], current_slot[1])
+    
     func get_active_player():
     	for entity : EntityResource in GameState.party:
     		if entity.is_player:
@@ -6120,6 +7328,30 @@ _______________
     			hide()
     			EventBus.player_movement_unlocked.emit()
     			EventBus.world_menu_closed.emit()
+    
+    func refresh_member_list():
+    	for child in member_container.get_children():
+    		if child.name != "Spacer":
+    			child.queue_free()
+    	for i in GameState.party:
+    		var spacer_control := Control.new()
+    		var anchor_control := Control.new()
+    		var anchor_node := Node2D.new()
+    		var button := Button.new()
+    		button.text = "   %s   " % i.stats.character_name
+    		button.add_to_group('member_buttons')
+    		button.pressed.connect(func(): current_party_member = i; refresh_item_list(); set_button_color(button))
+    		button.rotation_degrees = -90
+    		member_container.add_child(spacer_control)
+    		member_container.add_child(anchor_control)
+    		anchor_control.add_child(anchor_node)
+    		anchor_node.position.x += 5
+    		anchor_node.add_child(button)
+    		spacer_control.custom_minimum_size = Vector2(0, button.size.x)
+    		spacer_control.custom_maximum_size = Vector2(0, button.size.x)
+    	var button : Button = get_tree().get_nodes_in_group('member_buttons')[0]
+    	button.emit_signal('pressed')
+    	
     
     func refresh_item_list():
     	if current_party_member.stats.current_hp == -1:
@@ -6148,29 +7380,35 @@ _______________
     	for node in inventory_container.get_children(false):
     		node.queue_free()
     	await get_tree().process_frame
-    	for entity : EntityResource in GameState.party:
-    		var item_container := HBoxContainer.new()
-    		item_container.size_flags_horizontal = Control.SIZE_EXPAND
-    		item_container.size_flags_vertical = Control.SIZE_EXPAND
-    		item_container.name = entity.stats.character_name
-    		inventory_container.add_child(item_container)
-    		var item_list := ItemList.new()
-    		item_list.custom_minimum_size = Vector2(400, 400)
-    		item_list.size_flags_horizontal = Control.SIZE_EXPAND
-    		item_list.size_flags_vertical = Control.SIZE_EXPAND
-    		item_container.add_child(item_list)
-    		if entity.is_player:
-    			for item : ItemResource in GameState.inventory:
-    				if item.item_type != ItemResource.ItemType.EQUIPMENT:
-    					item_list.add_item(item.item_name + " | " + item.stats_to_text())
-    					item_list.set_item_metadata(item_list.item_count - 1, item)
-    		else:
-    			for item : ItemResource in entity.inventory:
-    				if item.item_type != ItemResource.ItemType.EQUIPMENT:
-    					item_list.add_item(item.item_name)
-    					item_list.set_item_metadata(item_list.item_count - 1, item)
-    		item_list.item_selected.connect(_on_item_selected.bind(item_list))
-    		
+    	#for entity : EntityResource in GameState.party:
+    	for i in inventory_container.get_children():
+    		i.queue_free()
+    	var item_container := HBoxContainer.new()
+    	item_container.size_flags_horizontal = Control.SIZE_EXPAND
+    	item_container.size_flags_vertical = Control.SIZE_EXPAND
+    	item_container.name = current_party_member.stats.character_name
+    	inventory_container.add_child(item_container)
+    	var item_list := ItemList.new()
+    	item_list.custom_minimum_size = Vector2(400, 400)
+    	item_list.size_flags_horizontal = Control.SIZE_EXPAND
+    	item_list.size_flags_vertical = Control.SIZE_EXPAND
+    	item_container.add_child(item_list)
+    	if current_party_member.is_player:
+    		for item : ItemResource in GameState.inventory:
+    			if item.item_type != ItemResource.ItemType.EQUIPMENT:
+    				item_list.add_item(item.item_name + " | " + item.stats_to_text())
+    				item_list.set_item_metadata(item_list.item_count - 1, item)
+    	else:
+    		for item : ItemResource in current_party_member.inventory:
+    			if item.item_type != ItemResource.ItemType.EQUIPMENT:
+    				item_list.add_item(item.item_name)
+    				item_list.set_item_metadata(item_list.item_count - 1, item)
+    	item_list.item_selected.connect(_on_item_selected.bind(item_list))
+    
+    func set_button_color(button : Button):
+    	for child in get_tree().get_nodes_in_group('member_buttons'):
+    		child.add_theme_color_override('font_color', Color.WHITE)
+    	button.add_theme_color_override('font_color', Color.GOLD)
     
     func _on_item_selected(index : int, item_list : ItemList):
     	var item : ItemResource = item_list.get_item_metadata(index)
@@ -6253,6 +7491,9 @@ _______________
     (map_controller.gd):
     extends Node
     
+    @export var zone_name := ""
+    @export var safe_zone_scene := ""
+    @export var safe_zone_warp_id := ""
     @export var camera_bounds = Rect2(Vector2.ZERO, Vector2(640,480))
     
     var player : Player
@@ -6260,9 +7501,12 @@ _______________
     var pending_warp : WarpPoint
     
     func _ready() -> void:
-    	print("pending_warp_id: ", GameState.pending_warp_id)
-    	print("previous_player_location: ", GameState.previous_player_location)
-		player = get_tree().get_nodes_in_group('player')[0]
+    	#print("pending_warp_id: ", GameState.pending_warp_id)
+    	#print("previous_player_location: ", GameState.previous_player_location)
+    	if safe_zone_scene != "" and safe_zone_warp_id != "":
+    		GameState.previous_safe_zone = [safe_zone_scene, safe_zone_warp_id]
+    	#print(GameState.previous_safe_zone)
+    	player = get_tree().get_nodes_in_group('player')[0]
     	for warp in warps.get_children():
     		if warp is WarpPoint and (warp as WarpPoint).warp_id == GameState.pending_warp_id:
     			pending_warp = warp
@@ -6281,6 +7525,26 @@ _______________
     		var group = load("res://data/enemy_groups/Slime_Slime_Slime.tres")
     		GameState.previous_player_location = player.global_position
     		SceneManager.start_combat(group)
+    
+    _______________
+    _______________
+    (map_scene.gd):
+    extends Node2D
+    class_name MapScene
+    
+    
+    
+    
+    
+    
+    # Called when the node enters the scene tree for the first time.
+    func _ready() -> void:
+    	pass # Replace with function body.
+    
+    
+    # Called every frame. 'delta' is the elapsed time since the previous frame.
+    func _process(delta: float) -> void:
+    	pass
     
     _______________
     _______________
@@ -6489,1036 +7753,1054 @@ _______________
     signal combat_animations_finished()
     signal combat_action_resolving()
     signal combat_log_updated(text: String) # anything that happens in battle gets narrated here: "Norb attacks!", "Slime is poisoned!", "Norb takes 14 damage!"
-	signal turn_started(combatant: BattleCombatant) # fired when a new combatant's turn begins, UI uses this to highlight whose turn it is
-	signal combatant_damaged(combatant: BattleCombatant, amount: int) # fired after damage is applied, HP bar animates in response
-	signal combatant_healed(combatant: BattleCombatant, amount: int) # same pattern for healing
-	signal combatant_status_applied(combatant: BattleCombatant, status: StatusEffect) # UI shows the status icon
-	signal combatant_status_expired(combatant: BattleCombatant, status: StatusEffect) # UI removes the status icon
-	signal combatant_died(combatant: BattleCombatant) # UI plays death state, CombatManager checks victory/defeat condition
-	signal player_turn_started()
-	signal player_action_selected(action: BattleAction)
-	signal player_targets_selected(targets: Array[BattleCombatant])
-	signal player_item_selected(item : ItemResource)
-	signal player_flee_attempted()
-	signal target_select_requested(targets: Array[BattleCombatant])
-	signal all_targets()
-	
-	
-	# Dialogue signals
-	signal dialogue_started(sequence: DialogueSequence)
-	signal advance_dialogue_requested()
-	signal dialogue_line_advanced(line : DialogueLine)
-	signal dialogue_choices_available(choices: Array[DialogueChoice])
-	signal dialogue_choice_selected(choice : DialogueChoice)
-	signal dialogue_finished()
-	
-	# Inventory signals
-	signal item_acquired(item: Resource)
-	signal item_used(item: Resource)
-	signal item_dropped(item: Resource)
-	
-	# Game state signals
-	signal flag_changed(flag_name: String, value: Variant)
-	signal gold_changed(new_amount: int)
-	
-	# Progression signals
-	signal level_increased(character : PartyMemberResource, new_value : int)
-	signal stat_increased(character : PartyMemberResource, stat : String, new_value : int)
-	
-	# Audio signals
-	signal music_change_requested(track_path: String, transition: String)
-	signal sfx_requested(sfx_path: String)
-	
-	# Manipulation signals
-	signal interact_pressed
-	signal world_menu_opened
-	signal world_menu_closed
-	
-	_______________
-	_______________
-	(GameState.gd):
-	extends Node
-	
-	# World flags — anything that "happened": doors opened, quests advanced,
-	# NPCs talked to. Key is a string, value is bool/int/String.
-	var flags: Dictionary = {}
-	
-	# Economy
-	var gold: int = 0
-	var pending_inventory: Array[ItemResource] = []
-	var inventory: Array[ItemResource] = []
-	
-	# Party
-	var party: Array[PartyMemberResource] = []
-	
-	# Tracking
-	var current_map_path: String = ""
-	var save_slot: int = 0
-	var pending_warp_id : String = "test_town_entrance"
-	var previous_player_location : Vector2 = Vector2(-1, -1)
-	
-	var pending_enemy_group : EnemyGroupResource = null
-	var in_combat := false
-	
-	func _ready() -> void:
-		EventBus.combat_started.connect(func(enemy_group):in_combat=true)
-		EventBus.combat_ended.connect(func(result):in_combat=false)
-		party.append(load("res://data/characters/norb_party_member.tres").duplicate(true))
-		party.append(load("res://data/characters/dog_party_member.tres").duplicate(true))
-		inventory.append_array([load("res://data/items/elixer.tres"), load("res://data/items/magicrestore.tres"), load("res://data/items/potion.tres"), load("res://data/items/sword.tres")])
-	
-	func set_flag(flag_name: String, value: Variant) -> void:
-		flags[flag_name] = value
-		EventBus.flag_changed.emit(flag_name, value)
-	
-	
-	func get_flag(flag_name: String, default: Variant = null) -> Variant:
-		return flags.get(flag_name, default)
-	
-	
-	func add_gold(amount: int) -> void:
-		gold += amount
-		EventBus.gold_changed.emit(gold)
-	
-	func spend_gold(amount: int) -> bool:
-		if gold < amount:
-			return false
-		gold -= amount
-		EventBus.gold_changed.emit(gold)
-		return true
-	
-	func inventory_drop(drop_table : Array[ItemResource]):
-		if drop_table.is_empty():
-			return
-		var dropped_items = randi_range(0, drop_table.size()-1)
-		for i in dropped_items:
-			give_item(drop_table[i])
-	
-	func give_item(item : ItemResource):
-		pending_inventory.append(item)
-		EventBus.item_dropped.emit(item)
-	
-	func inventory_transfer():
-		for i in pending_inventory:
-			inventory.append(i)
-			EventBus.item_acquired.emit(i)
-		pending_inventory = []
-	
-	_______________
-	_______________
-	(SaveManager.gd):
-	extends Node
-	@warning_ignore_start("unused_parameter")
-	func save(slot: int) -> void:
-		pass  # Phase 9
-	
-	
-	func load_save(slot: int) -> void:
-		pass  # Phase 9
-	
-	
-	func save_exists(slot: int) -> bool:
-		return false  # Phase 9
-	
-	_______________
-	_______________
-	(SceneManager.gd):
-	extends Node
-	
-	var _is_transitioning: bool = false
-	
-	
-	func travel_to(scene_path: String, warp_id : String = "", transition: String = "fade") -> void:
-		if _is_transitioning:
-			return
-		_is_transitioning = true
-		EventBus.scene_transition_requested.emit(scene_path, transition)
-		# Transition animation plays, then calls _do_scene_change()
-		# For now, skip the animation and swap directly
-		GameState.pending_warp_id = warp_id
-		_do_scene_change(scene_path)
-	
-	
-	func _do_scene_change(scene_path: String) -> void:
-		get_tree().call_deferred('change_scene_to_file',scene_path)
-		_is_transitioning = false
-		EventBus.scene_transition_finished.emit()
-	
-	
-	func start_combat(enemy_group: Resource) -> void:
-		# Store the return scene so we can come back after combat
-		GameState.current_map_path = get_tree().current_scene.scene_file_path
-		print(GameState.current_map_path )
-		EventBus.combat_started.emit(enemy_group)
-		GameState.pending_enemy_group = enemy_group
-		travel_to("res://scenes/battle/Battle.tscn", "", "flash")
-	
-	
-	func end_combat(result: String) -> void:
-		EventBus.combat_ended.emit(result)
-		#for i : PartyMemberResource in GameState.party:
-			#GameState.hp_cache[i.stats.character_name] = i.stats.current_hp
-			#GameState.mp_cache[i.stats.character_name] = i.stats.current_mp
-		travel_to(GameState.current_map_path, "", "fade")
-	
-	_______________
-	COMBAT:
-	_______________
-	(BattleCombatant.gd):
-	class_name BattleCombatant
-	extends RefCounted
-	
-	var stats: CharacterStatBlock 
-	var is_player_controlled: bool
-	#var active_statuses: Array[Dictionary] = []
-	var source_resource : EntityResource
-	var physical_actions: Array[BattleAction] = []
-	var magic_actions: Array[BattleAction] = []
-	var healing_actions: Array[BattleAction] = []
-	var other_actions: Array[BattleAction] = []
-	#var inventory : Array[ItemResource] = []
-	
-	func _init(char_stats : CharacterStatBlock) -> void:
-		stats = char_stats
-		if stats.current_hp == -1:
-			stats.current_hp = stats.max_hp()
-		if stats.current_mp == -1:
-			stats.current_mp = stats.max_mp()
-	
-	static func create_enemy(character : EnemyResource) -> BattleCombatant:
-		var combatant = BattleCombatant.new(character.stats.duplicate(true))
-		combatant.is_player_controlled = false
-		combatant.source_resource = character
-		combatant.create_action_arrays(character.actions)
-		return combatant
-	
-	static func create_party_member(character : PartyMemberResource) -> BattleCombatant:
-		var combatant = BattleCombatant.new(character.stats)
-		combatant.is_player_controlled = true
-		combatant.source_resource = character
-		combatant.create_action_arrays(character.actions)
-		return combatant
-	
-	func create_action_arrays(actions : Array[BattleAction]):
-		for action : BattleAction in actions:
-			match action.damage_type:
-				action.DamageType.PHYSICAL:
-					physical_actions.append(action)
-				action.DamageType.MAGICAL:
-					magic_actions.append(action)
-				action.DamageType.HEALING:
-					healing_actions.append(action)
-				action.DamageType.NONE:
-					other_actions.append(action)
-	
-	func return_available_magic_actions() -> Array[BattleAction]:
-		var array : Array[BattleAction] = []
-		for action : BattleAction in magic_actions:
-			if action.mp_cost <= stats.current_mp:
-				array.append(action)
-		return array
-	
-	func return_available_healing_actions() -> Array[BattleAction]:
-		var array : Array[BattleAction] = []
-		for action : BattleAction in healing_actions:
-			if action.mp_cost <= stats.current_mp:
-				array.append(action)
-		return array
-	
-	#func max_hp() -> int:
-		#return 20 + (stats.vit * 8) + (stats.level * 5)
-	#func max_mp() -> int:
-		#return 10 + (stats.wil * 5) + (stats.level * 3)
-	func is_alive() -> bool: # reads stats.current_hp
-		return stats.current_hp > 0
-	func can_act() -> bool: # checks is_alive() and whether any active status blocks_action
-		if is_alive():
-			if source_resource.active_statuses.is_empty():
-				return true
-			else:
-				for i in source_resource.active_statuses:
-					if i["effect"].blocks_action == true:
-						return false
-				return true
-		else:
-			return false
-	func take_damage(amount: int) -> void: # subtracts from stats.current_hp, clamps to zero
-		stats.current_hp = clampi(stats.current_hp - amount, 0, stats.max_hp())
-		print("%s HP: %s" % [stats.character_name, stats.current_hp])
-	func heal(amount: int) -> void: # adds to stats.current_hp, clamps to max_hp()
-		stats.current_hp = clampi(stats.current_hp + amount, 0, stats.max_hp())
-	func apply_status(status: StatusEffect) -> bool: # appends to active_statuses, but only if not already present
-		var new = true
-		for i in source_resource.active_statuses:
-			if i["effect"] == status:
-				new = false
-		if new == true:
-			source_resource.active_statuses.append({"effect" = status, "turns_remaining" = status.duration_turns})
-		return new
-	func tick_statuses() -> void: #decrements duration_turns on each status, removes expired ones, applies damage_per_turn for POISON
-		var statuses = source_resource.active_statuses.duplicate()
-		for status in statuses:
-			status["turns_remaining"] -= 1
-			take_damage(status["effect"].damage_per_turn)
-			if status["turns_remaining"] <= 0:
-				source_resource.active_statuses.erase(status)
-	func effective_stat(stat : String) -> float:
-		var base_stat = source_resource.stats.get(stat)
-		var stat_mod = source_resource.stat_mods.get(stat, 0.0)
-		var stat_bonus = source_resource.get_bonus(stat)
-		if base_stat != null:
-			return base_stat + stat_mod + stat_bonus
-		else:
-			push_error("effective stat typo: %s" % stat)
-			return stat_mod + stat_bonus
-	
-	_______________
-	_______________
-	(combat_manager.gd):
-	extends Node
-	
-	@warning_ignore_start("integer_division")
-	
-	enum State {
-		IDLE          , # waiting for something to happen (brief, between states)
-		PLAYER_INPUT  , # player is choosing an action
-		TARGET_SELECT , # player is choosing a target
-		RESOLVING     , # an action is executing (damage applied, log updated)
-		# STATUS_TICK   , # status effects proc at start/end of turn
-		ENEMY_TURN    , # AI is selecting and executing an action
-		VICTORY       , # all enemies dead, award EXP/gold
-		DEFEAT        , # all party members dead
-		FLED          , # ran successfully
-	}
-	
-	var _turn_queue: Array[BattleCombatant] = []
-	var _current_turn_index: int = -1
-	var current_combatant : BattleCombatant = null
-	var _state: State = State.IDLE
-	var _pending_action: BattleAction = null
-	var _pending_targets: Array[BattleCombatant] = []
-	var _pending_item: ItemResource = null
-	var _enemy_group: EnemyGroupResource = null
-	var _party_members: Array[PartyMemberResource] = []
-	var _enemy_combatants : Array[BattleCombatant] = []
-	var _party_combatants: Array[BattleCombatant] = []
-	
-	func _ready() -> void:
-		#EventBus.combat_started.connect(start_battle)
-		EventBus.player_action_selected.connect(_on_player_action_selected)
-		EventBus.player_item_selected.connect(_on_player_item_selected)
-		EventBus.player_targets_selected.connect(_on_player_targets_selected)
-		EventBus.player_flee_attempted.connect(_on_player_flee_attempted)
-		EventBus.combat_visuals_ready.connect(start_next_turn)
-		if GameState.pending_enemy_group != null:
-			start_battle(GameState.pending_enemy_group)
-			GameState.pending_enemy_group = null
-	
-	func start_battle(enemy_group : EnemyGroupResource):
-		_enemy_group = enemy_group
-		_party_members = GameState.party
-		for entity in _party_members + _enemy_group.enemies:
-			var combatant : BattleCombatant
-			if entity is PartyMemberResource:
-				combatant = BattleCombatant.create_party_member(entity)
-				_party_combatants.append(combatant)
-			elif entity is EnemyResource:
-				combatant = BattleCombatant.create_enemy(entity)
-				_enemy_combatants.append(combatant)
-			_turn_queue.append(combatant)
-		_turn_queue.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.effective_stat("agi") > b.effective_stat("agi"))
-		EventBus.combat_queued.emit(_turn_queue)
-		#start_next_turn()
-	
-	func start_next_turn():
-		await get_tree().create_timer(0.3).timeout
-		_state = State.IDLE
-		advance_index()
-		if !any_alive(true): # handle failure
-			_state = State.DEFEAT
-			#EventBus.combat_ended.emit("defeat")
-			_process_party_progression()
-			SceneManager.end_combat("defeat")
-			return
-		if !any_alive(false): # handle victory
-			_state = State.VICTORY
-			for i in _enemy_group.enemies:
-				GameState.add_gold(i.gold_reward)
-				for ii : PartyMemberResource in _party_members:
-					ii.pending_xp += i.experience_reward 
-				GameState.inventory_drop(i.drop_table)
-				for equipment in i.equipped.keys():
-					if !(i.equipped[equipment] is Array):
-						if i.equipped[equipment] != null:
-							var item : ItemResource = i.equipped[equipment]
-							if randf() < i.equip_drop_chance:
-								GameState.give_item(item)
-					else:
-						for item in i.equipped[equipment]:
-							if item is ItemResource:
-								if randf() < i.equip_drop_chance:
-									GameState.give_item(item)
-			GameState.inventory_transfer()
-			#EventBus.combat_ended.emit("victory")
-			_process_party_progression()
-			
-			SceneManager.end_combat("victory")
-			return
-		current_combatant = _turn_queue[_current_turn_index]
-		while not current_combatant.is_alive():
-			advance_index()
-			current_combatant = _turn_queue[_current_turn_index]
-		EventBus.turn_started.emit(current_combatant)
-		if current_combatant.is_player_controlled:
-			_state = State.PLAYER_INPUT
-			EventBus.player_turn_started.emit()
-		else:
-			_state = State.ENEMY_TURN
-			_run_enemy_turn()
-	
-	func _run_enemy_turn():
-		if !current_combatant.can_act():
-			var log_string = "%s is " % current_combatant.stats.character_name
-			for status in current_combatant.source_resource.active_statuses:
-				if status["effect"].status_type == StatusEffect.StatusType.SLEEP:
-					log_string += "asleep"
-					break
-				elif status["effect"].status_type == StatusEffect.StatusType.STUN:
-					log_string += "stunned"
-					break
-			EventBus.combat_log_updated.emit(log_string)
-			start_next_turn()
-		else:
-			var enemy_data = current_combatant.source_resource as EnemyResource
-			var party = living_entities(_party_combatants)
-			party.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
-			var enemies = living_entities(_enemy_combatants)
-			enemies.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
-			var targets : Array[BattleCombatant] = []
-			var action : BattleAction
-			match enemy_data.behavior:
-				EnemyResource.AIBehavior.RANDOM: 
-					targets.append(party.pick_random())
-					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-				EnemyResource.AIBehavior.AGGRESSIVE:
-					targets.append(party[0])
-					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-				EnemyResource.AIBehavior.DEFENSIVE:
-					targets.append(party[-1])
-					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-				EnemyResource.AIBehavior.HEALER:
-					targets.append(enemies[-1])
-					action = current_combatant.return_available_healing_actions().pick_random()
-				EnemyResource.AIBehavior.BERSERKER:
-					targets.append(party[0])
-					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-			if action == null:
-				EventBus.combat_log_updated.emit("%s does nothing" % current_combatant.stats.character_name)
-				start_next_turn()
-				return
-			_resolve_action(current_combatant, targets, action)
-	
-	func living_entities(array : Array[BattleCombatant]) -> Array[BattleCombatant]:
-		var new_array = array.duplicate()
-		for i in array:
-			if !i.is_alive():
-				new_array.erase(i)
-		return new_array
-	
-	func _resolve_action(attacker : BattleCombatant, targets : Array[BattleCombatant], action : BattleAction):
-		EventBus.combat_action_resolving.emit()
-		_state = State.RESOLVING
-		var healing = action.damage_type == BattleAction.DamageType.HEALING
-		if action.category == BattleAction.ActionCategory.MAGIC:
-			attacker.stats.current_mp -= action.mp_cost
-		for target in targets:
-			if action.category == BattleAction.ActionCategory.ATTACK:
-				EventBus.combat_log_updated.emit("%s attacks %s" % [attacker.stats.character_name, target.stats.character_name])
-				var damage = (attacker.effective_stat("str") * action.power) / maxf(1.0, target.effective_stat("vit"))
-				if accuracy_check(attacker):
-					if attacker.is_player_controlled:
-						(attacker.source_resource as PartyMemberResource).accumulate("str", target.effective_stat("vit"))
-						(attacker.source_resource as PartyMemberResource).accumulate("agi", target.effective_stat("agi"))
-					elif target.is_player_controlled:
-						(target.source_resource as PartyMemberResource).accumulate("vit", damage)
-						(target.source_resource as PartyMemberResource).accumulate("agi", attacker.effective_stat("agi"))
-					target.take_damage(roundi(damage))
-					EventBus.combatant_damaged.emit(target, roundi(damage))
-				else:
-					EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
-			elif action.category == BattleAction.ActionCategory.MAGIC:
-				if !healing:
-					var damage = (attacker.effective_stat("intelligence") * action.power) / maxf(1.0, target.effective_stat("wil"))
-					EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
-					if accuracy_check(attacker):
-						if attacker.is_player_controlled:
-							(attacker.source_resource as PartyMemberResource).accumulate("intelligence", target.effective_stat("wil"))
-						target.take_damage(roundi(damage))
-						EventBus.combatant_damaged.emit(target, roundi(damage))
-					else:
-						EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
-				else:
-					var amount = (attacker.effective_stat("intelligence") * action.power)
-					EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
-					if attacker.is_player_controlled:
-						(attacker.source_resource as PartyMemberResource).accumulate("wil", amount)
-						(attacker.source_resource as PartyMemberResource).accumulate("intelligence", amount * 0.5)
-					target.heal(roundi(amount))
-					EventBus.combatant_healed.emit(target, roundi(amount))
-			elif action.category == BattleAction.ActionCategory.SKILL:
-				EventBus.combat_log_updated.emit("%s uses %s" % [attacker.stats.character_name, action.action_name])
-			if action.status_to_apply != null:
-				if randf()<action.status_chance:
-					if target.apply_status(action.status_to_apply):
-						EventBus.combatant_status_applied.emit(target, action.status_to_apply)
-			if !target.is_alive():
-				EventBus.combatant_died.emit(target)
-				
-		attacker.tick_statuses()
-		#start_next_turn.call_deferred()
-		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
-		_pending_action = null
-	
-	func _resolve_item(attacker : BattleCombatant, targets : Array[BattleCombatant], item : ItemResource):
-		EventBus.combat_action_resolving.emit()
-		_state = State.RESOLVING
-		var item_used : bool = false
-		for combatant : BattleCombatant in targets:
-			var hp_before = combatant.stats.current_hp
-			item_used = item.apply_to(combatant.stats)
-			if item_used:
-				if combatant.stats.current_hp > hp_before:
-					EventBus.combatant_healed.emit(combatant, combatant.stats.current_hp - hp_before)
-				if item.effect_type == ItemResource.ConsumableEffect.CURE_STATUS:
-					if combatant.source_resource.active_statuses.size() > 0:
-						combatant.source_resource.active_statuses = []
-				elif item.effect_type == ItemResource.ConsumableEffect.CUSTOM:
-						for i in item.custom_effects.size():
-							if item.custom_effects[i] == ItemResource.ConsumableEffect.CURE_STATUS:
-								if combatant.source_resource.active_statuses.size() > 0:
-									combatant.source_resource.active_statuses = []
-		if item_used:
-			item.quantity -= 1
-			if item.quantity <= 0:
-				if attacker.is_player_controlled:
-					GameState.inventory.erase(item)
-				else:
-					attacker.source_resource.inventory.erase(item)
-			EventBus.item_used.emit(item)
-			attacker.tick_statuses()
-			#start_next_turn.call_deferred()
-			EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
-		else:
-			#EventBus.item_used.emit(ItemResource.new())
-			attacker.tick_statuses()
-			#start_next_turn.call_deferred()
-			EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
-		_pending_item = null
-	
-	func _on_player_action_selected(action: BattleAction):
-		if _state == State.PLAYER_INPUT:
-			_pending_action = action
-			_state = State.TARGET_SELECT
-			if action.target_type == BattleAction.TargetType.ALL_ENEMIES or action.target_type == BattleAction.TargetType.ALL_ALLIES:
-				EventBus.all_targets.emit()
-			var valid_targets = get_targets(action.target_type)
-			EventBus.target_select_requested.emit(valid_targets)
-	
-	func _on_player_item_selected(item: ItemResource):
-		if _state == State.PLAYER_INPUT:
-			_pending_item = item
-			_state = State.TARGET_SELECT
-			var valid_targets = get_targets(BattleAction.TargetType.SINGLE_ALLY)
-			EventBus.target_select_requested.emit(valid_targets)
-	
-	func get_targets(target_type : BattleAction.TargetType):
-		if target_type == BattleAction.TargetType.SINGLE_ENEMY or target_type == BattleAction.TargetType.ALL_ENEMIES:
-			if current_combatant.is_player_controlled:
-				return living_entities(_enemy_combatants)
-			else:
-				return living_entities(_party_combatants)
-		elif target_type == BattleAction.TargetType.SINGLE_ALLY or target_type == BattleAction.TargetType.ALL_ALLIES:
-			if current_combatant.is_player_controlled:
-				return living_entities(_party_combatants)
-			else:
-				return living_entities(_enemy_combatants)
-		elif target_type == BattleAction.TargetType.SELF:
-			return [current_combatant]
-	
-	func _on_player_targets_selected(targets: Array[BattleCombatant]):
-		if _state == State.TARGET_SELECT:
-			_pending_targets = targets
-			if _pending_action != null:
-				_resolve_action(current_combatant, _pending_targets, _pending_action)
-			elif _pending_item != null:
-				_resolve_item(current_combatant, _pending_targets, _pending_item)
-		
-	func _on_player_flee_attempted():
-		if _state == State.PLAYER_INPUT:
-			var player_agi = 0
-			var player_count = 0
-			var enemy_agi = 0
-			var enemy_count = 0
-			for i : BattleCombatant in _turn_queue:
-				if i.is_alive():
-					if i.is_player_controlled:
-						player_agi += i.effective_stat("agi")
-						player_count += 1
-					else:
-						enemy_agi += i.effective_stat("agi")
-						enemy_count += 1
-			for i : BattleCombatant in _turn_queue:
-				if i.is_alive() and i.is_player_controlled:
-					(i.source_resource as PartyMemberResource).accumulate("agi", enemy_agi / enemy_count)
-			EventBus.combat_log_updated.emit("%s attempted to flee" % current_combatant.stats.character_name)
-			if float(player_agi) / float(player_count) > (float(enemy_agi) / float(enemy_count) * 0.8):
-				_state = State.FLED
-				EventBus.combat_log_updated.emit("%s fled" % current_combatant.stats.character_name)
-				#EventBus.combat_ended.emit("fled")
-				_process_party_progression()
-				SceneManager.end_combat("fled")
-			else:
-				EventBus.combat_log_updated.emit("%s failed to escape" % current_combatant.stats.character_name)
-				start_next_turn()
-	
-	func _process_party_progression():
-		for i : BattleCombatant in _turn_queue:
-			if i.is_player_controlled:
-				(i.source_resource as PartyMemberResource).process_progression()
-	
-	func accuracy_check(attacker : BattleCombatant) -> bool:
-		var hit_roll = randf()
-		var accuracy = 1.0
-		# apply accuracy modifier from any BLIND status on attacker
-		for status in attacker.source_resource.active_statuses:
-			accuracy *= status["effect"].accuracy_modifier
-		if hit_roll > accuracy:
-			return false
-		return true
-	
-	func advance_index() -> void:
-		_current_turn_index = (_current_turn_index + 1) % _turn_queue.size()
-	
-	func any_alive(player_controlled : bool) -> bool:
-		for i : BattleCombatant in _turn_queue:
-			if i.is_player_controlled == player_controlled and i.is_alive():
-				return true
-		return false
-	
-	_______________
-	ENTITIES:
-	RESOURCES:
-	_______________
-	(BattleAction.gd):
-	class_name BattleAction
-	extends Resource
-	
-	enum ActionCategory {ATTACK, MAGIC, SKILL}
-	enum TargetType {SINGLE_ENEMY, ALL_ENEMIES, SINGLE_ALLY, ALL_ALLIES, SELF}
-	enum DamageType {PHYSICAL, MAGICAL, HEALING, NONE}
-	
-	@export var action_name: String = ""
-	@export var description: String = ""
-	@export var category: ActionCategory = ActionCategory.ATTACK
-	@export var mp_cost: int = 0 # zero for physical attacks
-	@export var target_type: TargetType = TargetType.SINGLE_ENEMY
-	@export var damage_type: DamageType = DamageType.PHYSICAL
-	@export var power: int = 1 #the base value the damage formula will scale from
-	@export var status_to_apply: StatusEffect = null # null means no status, so no default needed
-	@export_range(0.0, 1.0, 0.1) var status_chance: float = 0.5 # probability the status applies, 0.0 to 1.0
-	@export var animation_key: String = ""
-	
-	_______________
-	_______________
-	(CharacterStatBlock.gd):
-	class_name CharacterStatBlock
-	extends Resource
-	
-	@warning_ignore_start("shadowed_global_identifier")
-	
-	@export var character_name: String = ""
-	@export var level: int = 1
-	@export var base_move_speed: float = 150.0
-	
-	@export_group("Primary Stats")
-	@export var str: int = 10   # Physical attack, carry weight
-	@export var agi: int = 10   # Turn order, evasion, accuracy
-	@export var vit: int = 10   # Max HP, physical defense
-	@export var intelligence: int = 10  # Magic attack, item effectiveness
-	@export var wil: int = 10   # Max MP, magic resist, status resist
-	
-	@export_group("Runtime State")
-	@export var current_hp : int = -1
-	@export var current_mp : int = -1
-	
-	func max_hp() -> int:
-		return 20 + (vit * 8) + (level * 5)
-	func max_mp() -> int:
-		return 10 + (wil * 5) + (level * 3)
-	
-	_______________
-	_______________
-	(DialogueChoice.gd):
-	class_name DialogueChoice
-	extends Resource
-	
-	@export var label: String = ""  # What the player sees in the menu
-	
-	# Condition — leave flag_required empty for always-available choices
-	@export var flag_required: String = ""
-	@export var required_value: Variant = null
-	
-	# Consequence
-	@export var sets_flag: String = ""
-	@export var sets_value: Variant = null
-	
-	# Where this choice leads
-	@export var next_lines: Array[DialogueLine] = []
-	@export var next_sequence_id : String = ""
-	
-	_______________
-	_______________
-	(DialogueLine.gd):
-	class_name DialogueLine
-	extends Resource
-	
-	@export var speaker_name: String = ""
-	@export var portrait: Texture2D  # null = no portrait shown
-	@export var text: String = ""
-	
-	# Empty array = linear advance. Populated = show choice menu.
-	@export var choices: Array[DialogueChoice] = []
-	
-	_______________
-	_______________
-	(DialogueSequence.gd):
-	class_name DialogueSequence
-	extends Resource
-	
-	@export var sequence_id: String = ""
-	@export var lines: Array[DialogueLine] = []
-	
-	_______________
-	_______________
-	(EnemyGroupResource.gd):
-	class_name EnemyGroupResource
-	extends Resource
-	
-	@export var enemies: Array[EnemyResource] = []
-	@export var encounter_music: String = ""  # res://audio/music/... path
-	
-	_______________
-	_______________
-	(EnemyResource.gd):
-	class_name EnemyResource
-	extends EntityResource
-	
-	enum AIBehavior { RANDOM, AGGRESSIVE, DEFENSIVE, HEALER, BERSERKER }
-	
-	@export var enemy_name: String = ""
-	@export var sprite_frames: SpriteFrames
-	
-	@export_group("Rewards")
-	@export var experience_reward: int = 0
-	@export var gold_reward: int = 0
-	@export var drop_table: Array[ItemResource] = []
-	@export var equip_drop_chance : float = 0.5
-	
-	@export_group("Battle")
-	@export var behavior: AIBehavior = AIBehavior.RANDOM
-	
-	_______________
-	_______________
-	(EntityResource.gd):
-	class_name EntityResource
-	extends Resource
-	
-	@export var stats: CharacterStatBlock
-	@export var actions: Array[BattleAction]
-	@export var inventory: Array[ItemResource]
-	@export var is_player := false
-	var active_statuses: Array[Dictionary] = []
-	var equipped: Dictionary
-	var stat_mods = {
-		"str": 0.0,
-		"agi": 0.0,
-		"vit": 0.0,
-		"intelligence": 0.0,
-		"wil": 0.0,
-	}
-	
-	const BLOCKED_SLOT = "blocked"
-	
-	func _init() -> void:
-		equipped = {
-			"head": null,
-			"torso": null,
-			"legs": null,
-			"hand": [null, null],
-			"foot": [null, null],
-			"ring": [null, null, null, null, null, null, null, null, null, null],
-			"toe_ring": [null, null, null, null, null, null, null, null, null, null],
-		}
-	
-	func get_bonus(stat_name: String) -> int:
-		var amount = 0
-		for key in equipped.keys():
-			if equipped[key] is Array:
-				for value in equipped[key]:
-					if value is ItemResource:
-						var item : ItemResource = value
-						amount += item.stat_modifiers.get(stat_name, 0)
-			else:
-				if equipped[key] is ItemResource:
-					var item : ItemResource = equipped[key]
-					amount += item.stat_modifiers.get(stat_name, 0)
-		return amount
-	
-	func equip_item(item:ItemResource) -> bool:
-		if item.item_type != ItemResource.ItemType.EQUIPMENT:
-			return false
-		var slot_key : String = locate_equip_slot(item)
-		if slot_key == "":
-			return false
-		if slot_key not in equipped.keys():
-			return false
-		var current_equip = equipped[slot_key]
-		if !(current_equip is Array):
-			if current_equip == null:
-				equipped[slot_key] = item
-				return true
-			else:
-				unequip_item(current_equip)
-				equipped[slot_key] = item
-				return true
-		else:
-			var index = 0
-			for i : int in current_equip.size():
-				index = i
-				if current_equip[index] == null:
-					equipped[slot_key][index] = item
-					return true
-			unequip_item(current_equip[-1])
-			(current_equip as Array).remove_at(-1)
-			(current_equip as Array).insert(0, item)
-			if item.two_handed:
-				current_equip[0] = item
-				if current_equip[1] is ItemResource:
-					unequip_item(current_equip[1])
-				equipped[slot_key][1] = BLOCKED_SLOT
-			return true
-	
-	func unequip_item(item:ItemResource):
-		var _inventory
-		if is_player:
-			_inventory = GameState.inventory.duplicate()
-		else:
-			_inventory = inventory.duplicate()
-		var slot = locate_equip_slot(item)
-		var current_equip = equipped[slot]
-		if current_equip is Array:
-			if current_equip.has(item):
-				_inventory.append(item)
-				equipped[slot][current_equip.find(item)] = null
-				#return true
-			#else:
-				#return false
-		else:
-			if current_equip == item:
-				_inventory.append(current_equip)
-				equipped[slot] = null
-				#return true
-			#else:
-				#return false
-		if is_player:
-			GameState.inventory = _inventory
-		else:
-			inventory = _inventory
-		
-	
-	func locate_equip_slot(item : ItemResource) -> String:
-		if item.item_type != ItemResource.ItemType.EQUIPMENT:
-			return ""
-		return (ItemResource.EquipSlot.keys()[item.equip_slot] as String).to_lower()
-	
-	_______________
-	_______________
-	(ItemResource.gd):
-	class_name ItemResource
-	extends Resource
-	
-	enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM }
-	enum ConsumableEffect {NONE, HEAL_HP, HEAL_MP, REVIVE, CURE_STATUS, CUSTOM}
-	enum EquipSlot {NONE, HEAD, TORSO, LEGS, HAND, FOOT, RING, TOE_RING}
-	
-	@export_group("Item")
-	@export var item_name: String = ""
-	@export var description: String = ""
-	@export var icon: Texture2D
-	@export var item_type: ItemType = ItemType.CONSUMABLE
-	@export var value: int = 0       # Gold value for shops
-	@export var stackable: bool = true
-	@export var max_stack: int = 99
-	@export var quantity: int = 1
-	@export_group("Consumable Effect")
-	@export var effect_type: ConsumableEffect = ConsumableEffect.NONE
-	@export var effect_value: int
-	@export var custom_effects: Array[int] # Only in use for custom ConsumableEffects. CUSTOM is not allowed here
-	@export var custom_values: Array[int] # Only in use for custom ConsumableEffects, must have same number of entries as Custom Effects, valuless effects use 0
-	@export_group("Equipment")
-	@export var equip_slot: EquipSlot = EquipSlot.NONE
-	@export var two_handed : bool = false
-	@export var stat_modifiers: Dictionary # Must match statblock keys EXACTLY "str", "agi", "vit", "intelligence", "wil"
-	@export_group("Key Item")
-	@export var sets_flag: String = ""
-	func apply_to(stats : CharacterStatBlock) -> bool:
-		match effect_type:
-			ItemResource.ConsumableEffect.HEAL_HP:
-				if stats.current_hp == stats.max_hp():
-					return false
-				stats.current_hp = clampi(stats.current_hp + effect_value, 0, stats.max_hp())
-			ItemResource.ConsumableEffect.HEAL_MP:
-				if stats.current_mp == stats.max_mp():
-					return false
-				stats.current_mp = clampi(stats.current_mp + effect_value, 0, stats.max_mp())
-			ItemResource.ConsumableEffect.REVIVE:
-				if stats.current_hp <= 0:
-					stats.current_hp = 10
-				else:
-					return false
-			ItemResource.ConsumableEffect.CURE_STATUS:
-				pass # handled via combatmanager
-				#if combatant.active_statuses.size() > 0:
-					#combatant.active_statuses = []
-			ItemResource.ConsumableEffect.CUSTOM:
-				var is_true = false
-				for i in custom_effects.size():
-					match custom_effects[i]:
-						ItemResource.ConsumableEffect.HEAL_HP:
-							if stats.current_hp != stats.max_hp():
-								is_true = true
-							stats.current_hp = clampi(stats.current_hp + custom_values[i], 0, stats.max_hp())
-						ItemResource.ConsumableEffect.HEAL_MP:
-							if stats.current_mp != stats.max_mp():
-								is_true = true
-							stats.current_mp = clampi(stats.current_mp + custom_values[i], 0, stats.max_mp())
-						ItemResource.ConsumableEffect.REVIVE:
-							if stats.current_hp <= 0:
-								is_true = true
-								stats.current_hp = 10
-						ItemResource.ConsumableEffect.CURE_STATUS:
-							pass # handled via combatmanager
-							#if combatant.active_statuses.size() > 0:
-								#combatant.active_statuses = []
-				return is_true
-			ItemResource.ConsumableEffect.NONE:
-				pass
-		return true
-	
-	func stats_to_text() -> String:
-		var output = ""
-		for i in stat_modifiers.keys().size():
-			output += "%s: " % stat_modifiers.keys()[i]
-			if stat_modifiers[stat_modifiers.keys()[i]] > 0:
-				output += "+"
-			output += "%s" % stat_modifiers[stat_modifiers.keys()[i]]
-			if i < stat_modifiers.keys().size() -1:
-				output += ", "
-		if !(effect_type == ConsumableEffect.NONE):
-			if output != "":
-				output += " | "
-			if effect_type != ConsumableEffect.CUSTOM:
-				output += "%s " % ItemResource.ConsumableEffect.keys()[effect_type]
-				if effect_value > 0:
-					output += "+"
-				output += "%s" % effect_value
-			else:
-				for i in custom_effects.size():
-					output += "%s " % ItemResource.ConsumableEffect.keys()[custom_effects[i]]
-					if custom_values[i] > 0:
-						output += "+"
-					output += "%s" % custom_values[i]
-					if i < custom_effects.size()-1:
-						output += ", "
-		return output
-	
-	_______________
-	_______________
-	(PartyMemberResource.gd):
-	class_name PartyMemberResource
-	extends EntityResource
-	
-	@export var battle_sprite_frames: SpriteFrames
-	@export var portrait: Texture2D
-	@export var pending_xp : float = 0.0
-	@export var xp_gauge: float = 0.0
-	@export var xp_till_level_up : float = 100.0
-	
-	@export var stat_levels = {
-		"str" : [0.0, 100.0],
-		"agi" : [0.0, 100.0],
-		"vit" : [0.0, 100.0],
-		"intelligence" : [0.0, 100.0],
-		"wil" : [0.0, 100.0],
-	}
-	
-	@export var previous_location = null
-	
-	func accumulate(stat_name : String, amount : float):
-		stat_levels[stat_name][0] += amount
-		pending_xp += amount * 0.5
-	
-	func process_progression():
-		for i in stat_levels.keys():
-			while stat_levels[i][0] >= stat_levels[i][1]:
-				stat_levels[i][0] -= stat_levels[i][1]
-				stat_levels[i][1] = stat_levels[i][1] * 1.2
-				stats.set(i, stats.get(i)+1)
-				EventBus.stat_increased.emit(self, i, stats.get(i))
-				print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
-		xp_gauge += pending_xp
-		pending_xp = 0
-		while xp_gauge >= xp_till_level_up:
-			xp_gauge -= xp_till_level_up
-			xp_till_level_up = xp_till_level_up * 1.2
-			stats.level += 1
-			EventBus.level_increased.emit(self, stats.level)
-			print("%s's level raised to %s" % [stats.character_name, stats.level])
-			for i in stat_levels.keys():
-				stat_levels[i][0] = stat_levels[i][0] * 1.2
-				if stat_levels[i][0] >= stat_levels[i][1]:
-					stat_levels[i][0] -= stat_levels[i][1]
-					stat_levels[i][1] = stat_levels[i][1] * 1.2
-					stats.set(i, stats.get(i)+1)
-					EventBus.stat_increased.emit(self, i, stats.get(i))
-					print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
-		
-	
-	_______________
-	_______________
-	(StatusEffect.gd):
-	class_name StatusEffect
-	extends Resource
-	
-	enum StatusType {POISON, SLEEP, BLIND, STUN, BERSERK}
-	
-	@export var status_name : String = ""
-	@export var status_type : StatusType = StatusType.POISON
-	@export var duration_turns : int = -1
-	@export var damage_per_turn : int = 0
-	@export var blocks_action : bool = false
-	@export var accuracy_modifier : float = 1.0
-	
-	_______________
-	_______________
-	(WarpDefinition.gd):
-	class_name WarpDefinition
-	extends Resource
-	
-	@export var target_scene: String = ""    # res://scenes/... path
-	@export var target_warp_id: String = ""  # ID of the arrival warp in target scene
-	@export var transition: String = "fade"  # matches SceneManager transition names
-	
-	_______________
-	UI:
-	WORLD:
+    signal turn_started(combatant: BattleCombatant) # fired when a new combatant's turn begins, UI uses this to highlight whose turn it is
+    signal combatant_damaged(combatant: BattleCombatant, amount: int) # fired after damage is applied, HP bar animates in response
+    signal combatant_healed(combatant: BattleCombatant, amount: int) # same pattern for healing
+    signal combatant_status_applied(combatant: BattleCombatant, status: StatusEffect) # UI shows the status icon
+    signal combatant_status_expired(combatant: BattleCombatant, status: StatusEffect) # UI removes the status icon
+    signal combatant_died(combatant: BattleCombatant) # UI plays death state, CombatManager checks victory/defeat condition
+    signal player_turn_started()
+    signal player_action_selected(action: BattleAction)
+    signal player_targets_selected(targets: Array[BattleCombatant])
+    signal player_item_selected(item : ItemResource)
+    signal player_flee_attempted()
+    signal target_select_requested(targets: Array[BattleCombatant])
+    signal all_targets()
+    
+    
+    # Dialogue signals
+    signal dialogue_started(sequence: DialogueSequence)
+    signal advance_dialogue_requested()
+    signal dialogue_line_advanced(line : DialogueLine)
+    signal dialogue_choices_available(choices: Array[DialogueChoice])
+    signal dialogue_choice_selected(choice : DialogueChoice)
+    signal dialogue_finished()
+    
+    # Inventory signals
+    signal item_acquired(item: Resource)
+    signal item_used(item: Resource)
+    signal item_dropped(item: Resource)
+    
+    # Game state signals
+    signal flag_changed(flag_name: String, value: Variant)
+    signal gold_changed(new_amount: int)
+    
+    # Progression signals
+    signal level_increased(character : PartyMemberResource, new_value : int)
+    signal stat_increased(character : PartyMemberResource, stat : String, new_value : int)
+    
+    # Audio signals
+    signal music_change_requested(track_path: String, transition: String)
+    signal sfx_requested(sfx_path: String)
+    
+    # Manipulation signals
+    signal interact_pressed
+    signal world_menu_opened
+    signal world_menu_closed
+    
+    _______________
+    _______________
+    (GameState.gd):
+    extends Node
+    
+    # World flags — anything that "happened": doors opened, quests advanced,
+    # NPCs talked to. Key is a string, value is bool/int/String.
+    var flags: Dictionary = {}
+    
+    # Economy
+    var gold: int = 0
+    var pending_inventory: Array[ItemResource] = []
+    var inventory: Array[ItemResource] = []
+    
+    # Party
+    var party: Array[PartyMemberResource] = []
+    
+    # Tracking
+    var current_map_path: String = ""
+    var save_slot: int = 0
+    var pending_warp_id : String = "test_town_entrance"
+    var previous_player_location : Vector2 = Vector2(-1, -1)
+    var previous_safe_zone : Array = [] # Scene, Warp_ID
+    
+    var pending_enemy_group : EnemyGroupResource = null
+    var in_combat := false
+    var movement_locks := 0
+    
+    func _ready() -> void:
+    	EventBus.combat_started.connect(func(enemy_group):in_combat=true)
+    	EventBus.combat_ended.connect(func(result):in_combat=false)
+    	party.append(load("res://data/characters/norb_party_member.tres").duplicate(true))
+    	party.append(load("res://data/characters/dog_party_member.tres").duplicate(true))
+    	inventory.append_array([load("res://data/items/elixer.tres"), load("res://data/items/magicrestore.tres"), load("res://data/items/potion.tres"), load("res://data/items/sword.tres")])
+    
+    func set_flag(flag_name: String, value: Variant) -> void:
+    	flags[flag_name] = value
+    	EventBus.flag_changed.emit(flag_name, value)
+    
+    
+    func get_flag(flag_name: String, default: Variant = null) -> Variant:
+    	return flags.get(flag_name, default)
+    
+    
+    func add_gold(amount: int) -> void:
+    	gold += amount
+    	EventBus.gold_changed.emit(gold)
+    
+    func spend_gold(amount: int) -> bool:
+    	if gold < amount:
+    		return false
+    	gold -= amount
+    	EventBus.gold_changed.emit(gold)
+    	return true
+    
+    func inventory_drop(drop_table : Array[ItemResource]):
+    	if drop_table.is_empty():
+    		return
+    	var dropped_items = randi_range(0, drop_table.size()-1)
+    	for i in dropped_items:
+    		give_item(drop_table[i])
+    
+    func give_item(item : ItemResource):
+    	pending_inventory.append(item)
+    	EventBus.item_dropped.emit(item)
+    	print("Item dropped: %s" % item.item_name)
+    
+    func inventory_transfer():
+    	for i in pending_inventory:
+    		inventory.append(i)
+    		EventBus.item_acquired.emit(i)
+    		print("Item aquired: %s" % i.item_name)
+    	pending_inventory = []
+    
+    _______________
+    _______________
+    (SaveManager.gd):
+    extends Node
+    @warning_ignore_start("unused_parameter")
+    func save(slot: int) -> void:
+    	pass  # Phase 9
+    
+    
+    func load_save(slot: int) -> void:
+    	pass  # Phase 9
+    
+    
+    func save_exists(slot: int) -> bool:
+    	return false  # Phase 9
+    
+    _______________
+    _______________
+    (SceneManager.gd):
+    extends Node
+    
+    var _is_transitioning: bool = false
+    
+    
+    func travel_to(scene_path: String, warp_id : String = "", transition: String = "fade") -> void:
+    	if _is_transitioning:
+    		return
+    	_is_transitioning = true
+    	EventBus.scene_transition_requested.emit(scene_path, transition)
+    	# Transition animation plays, then calls _do_scene_change()
+    	# For now, skip the animation and swap directly
+    	GameState.pending_warp_id = warp_id
+    	_do_scene_change(scene_path)
+    
+    
+    func _do_scene_change(scene_path: String) -> void:
+    	get_tree().call_deferred('change_scene_to_file',scene_path)
+    	_is_transitioning = false
+    	EventBus.scene_transition_finished.emit()
+    
+    
+    func start_combat(enemy_group: Resource) -> void:
+    	# Store the return scene so we can come back after combat
+    	if get_tree().current_scene.scene_file_path != "res://scenes/battle/Battle.tscn":
+    		GameState.current_map_path = get_tree().current_scene.scene_file_path
+    		print(GameState.current_map_path )
+    	EventBus.combat_started.emit(enemy_group)
+    	GameState.pending_enemy_group = enemy_group
+    	travel_to("res://scenes/battle/Battle.tscn", "", "flash")
+    
+    
+    func end_combat(result: String) -> void:
+    	EventBus.combat_ended.emit(result)
+    	#for i : PartyMemberResource in GameState.party:
+    		#GameState.hp_cache[i.stats.character_name] = i.stats.current_hp
+    		#GameState.mp_cache[i.stats.character_name] = i.stats.current_mp
+    	if result == "defeat":
+    		travel_to(GameState.previous_safe_zone[0], GameState.previous_safe_zone[1], "fade")
+    	else:
+    		travel_to(GameState.current_map_path, "", "fade")
+    
+    _______________
+    COMBAT:
+    _______________
+    (BattleCombatant.gd):
+    class_name BattleCombatant
+    extends RefCounted
+    
+    var stats: CharacterStatBlock 
+    var is_player_controlled: bool
+    #var active_statuses: Array[Dictionary] = []
+    var source_resource : EntityResource
+    var physical_actions: Array[BattleAction] = []
+    var magic_actions: Array[BattleAction] = []
+    var healing_actions: Array[BattleAction] = []
+    var other_actions: Array[BattleAction] = []
+    #var inventory : Array[ItemResource] = []
+    
+    func _init(char_stats : CharacterStatBlock) -> void:
+    	stats = char_stats
+    	if stats.current_hp == -1:
+    		stats.current_hp = stats.max_hp()
+    	if stats.current_mp == -1:
+    		stats.current_mp = stats.max_mp()
+    
+    static func create_enemy(character : EnemyResource) -> BattleCombatant:
+    	var combatant = BattleCombatant.new(character.stats.duplicate(true))
+    	combatant.is_player_controlled = false
+    	combatant.source_resource = character.duplicate_deep()
+    	character.stats.character_name = character.enemy_name
+    	combatant.create_action_arrays(character.actions)
+    	return combatant
+    
+    static func create_party_member(character : PartyMemberResource) -> BattleCombatant:
+    	var combatant = BattleCombatant.new(character.stats)
+    	combatant.is_player_controlled = true
+    	combatant.source_resource = character.duplicate_deep()
+    	combatant.create_action_arrays(character.actions)
+    	return combatant
+    
+    func create_action_arrays(actions : Array[BattleAction]):
+    	for action : BattleAction in actions:
+    		match action.damage_type:
+    			action.DamageType.PHYSICAL:
+    				physical_actions.append(action)
+    			action.DamageType.MAGICAL:
+    				magic_actions.append(action)
+    			action.DamageType.HEALING:
+    				healing_actions.append(action)
+    			action.DamageType.NONE:
+    				other_actions.append(action)
+    
+    func return_available_magic_actions() -> Array[BattleAction]:
+    	var array : Array[BattleAction] = []
+    	for action : BattleAction in magic_actions:
+    		if action.mp_cost <= stats.current_mp:
+    			array.append(action)
+    	return array
+    
+    func return_available_healing_actions() -> Array[BattleAction]:
+    	var array : Array[BattleAction] = []
+    	for action : BattleAction in healing_actions:
+    		if action.mp_cost <= stats.current_mp:
+    			array.append(action)
+    	return array
+    
+    #func max_hp() -> int:
+    	#return 20 + (stats.vit * 8) + (stats.level * 5)
+    #func max_mp() -> int:
+    	#return 10 + (stats.wil * 5) + (stats.level * 3)
+    func is_alive() -> bool: # reads stats.current_hp
+    	return stats.current_hp > 0
+    func can_act() -> bool: # checks is_alive() and whether any active status blocks_action
+    	if is_alive():
+    		if source_resource.active_statuses.is_empty():
+    			return true
+    		else:
+    			for i in source_resource.active_statuses:
+    				if i["effect"].blocks_action == true:
+    					return false
+    			return true
+    	else:
+    		return false
+    func take_damage(amount: int) -> void: # subtracts from stats.current_hp, clamps to zero
+    	stats.current_hp = clampi(stats.current_hp - amount, 0, stats.max_hp())
+    	print("%s HP: %s" % [stats.character_name, stats.current_hp])
+    func heal(amount: int) -> void: # adds to stats.current_hp, clamps to max_hp()
+    	stats.current_hp = clampi(stats.current_hp + amount, 0, stats.max_hp())
+    func apply_status(status: StatusEffect) -> bool: # appends to active_statuses, but only if not already present
+    	var new = true
+    	for i in source_resource.active_statuses:
+    		if i["effect"] == status:
+    			new = false
+    	if new == true:
+    		source_resource.active_statuses.append({"effect" = status, "turns_remaining" = status.duration_turns})
+    	return new
+    func tick_statuses() -> void: #decrements duration_turns on each status, removes expired ones, applies damage_per_turn for POISON
+    	var statuses = source_resource.active_statuses.duplicate()
+    	for status in statuses:
+    		status["turns_remaining"] -= 1
+    		take_damage(status["effect"].damage_per_turn)
+    		if status["turns_remaining"] <= 0:
+    			source_resource.active_statuses.erase(status)
+    		print("%s is %s with %s turns left." % [stats.character_name, status["effect"].status_name, status["turns_remaining"]])
+    func effective_stat(stat : String) -> float:
+    	var base_stat = source_resource.stats.get(stat)
+    	var stat_mod = source_resource.stat_mods.get(stat, 0.0)
+    	var stat_bonus = source_resource.get_bonus(stat)
+    	if base_stat != null:
+    		return base_stat + stat_mod + stat_bonus
+    	else:
+    		push_error("effective stat typo: %s" % stat)
+    		return stat_mod + stat_bonus
+    
+    _______________
+    _______________
+    (combat_manager.gd):
+    extends Node
+    class_name CombatManager
+    
+    @warning_ignore_start("integer_division")
+    
+    enum State {
+    	IDLE          , # waiting for something to happen (brief, between states)
+    	PLAYER_INPUT  , # player is choosing an action
+    	TARGET_SELECT , # player is choosing a target
+    	RESOLVING     , # an action is executing (damage applied, log updated)
+    	# STATUS_TICK   , # status effects proc at start/end of turn
+    	ENEMY_TURN    , # AI is selecting and executing an action
+    	VICTORY       , # all enemies dead, award EXP/gold
+    	DEFEAT        , # all party members dead
+    	FLED          , # ran successfully
+    }
+    
+    var _turn_queue: Array[BattleCombatant] = []
+    var _current_turn_index: int = -1
+    var current_combatant : BattleCombatant = null
+    var _state: State = State.IDLE
+    var _pending_action: BattleAction = null
+    var _pending_targets: Array[BattleCombatant] = []
+    var _pending_item: ItemResource = null
+    var _enemy_group: EnemyGroupResource = null
+    var _party_members: Array[PartyMemberResource] = []
+    var _enemy_combatants : Array[BattleCombatant] = []
+    var _party_combatants: Array[BattleCombatant] = []
+    
+    func _ready() -> void:
+    	#EventBus.combat_started.connect(start_battle)
+    	EventBus.player_action_selected.connect(_on_player_action_selected)
+    	EventBus.player_item_selected.connect(_on_player_item_selected)
+    	EventBus.player_targets_selected.connect(_on_player_targets_selected)
+    	EventBus.player_flee_attempted.connect(_on_player_flee_attempted)
+    	EventBus.combat_visuals_ready.connect(start_next_turn)
+    	if GameState.pending_enemy_group != null:
+    		start_battle(GameState.pending_enemy_group)
+    		GameState.pending_enemy_group = null
+    
+    func start_battle(enemy_group : EnemyGroupResource):
+    	_enemy_group = enemy_group
+    	_party_members = GameState.party
+    	for entity in _party_members + _enemy_group.enemies:
+    		var combatant : BattleCombatant
+    		if entity is PartyMemberResource:
+    			combatant = BattleCombatant.create_party_member(entity)
+    			_party_combatants.append(combatant)
+    		elif entity is EnemyResource:
+    			entity.stats.character_name = entity.enemy_name
+    			combatant = BattleCombatant.create_enemy(entity)
+    			_enemy_combatants.append(combatant)
+    		_turn_queue.append(combatant)
+    	_turn_queue.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.effective_stat("agi") > b.effective_stat("agi"))
+    	EventBus.combat_queued.emit(_turn_queue)
+    	#start_next_turn()
+    
+    func start_next_turn():
+    	await get_tree().create_timer(0.3).timeout
+    	_state = State.IDLE
+    	advance_index()
+    	if !any_alive(true): # handle failure
+    		_state = State.DEFEAT
+    		#EventBus.combat_ended.emit("defeat")
+    		_process_party_progression()
+    		var player : PartyMemberResource
+    		for i : PartyMemberResource in _party_members:
+    			if i.is_player:
+    				i.stats.current_hp = i.stats.max_hp()/2
+    		SceneManager.end_combat("defeat")
+    		return
+    	if !any_alive(false): # handle victory
+    		_state = State.VICTORY
+    		for i in _enemy_group.enemies:
+    			GameState.add_gold(i.gold_reward)
+    			for ii : PartyMemberResource in _party_members:
+    				ii.pending_xp += i.experience_reward 
+    			GameState.inventory_drop(i.drop_table)
+    			for equipment in i.equipped.keys():
+    				if !(i.equipped[equipment] is Array):
+    					if i.equipped[equipment] != null:
+    						var item : ItemResource = i.equipped[equipment]
+    						if randf() < i.equip_drop_chance:
+    							GameState.give_item(item)
+    				else:
+    					for item in i.equipped[equipment]:
+    						if item is ItemResource:
+    							if randf() < i.equip_drop_chance:
+    								GameState.give_item(item)
+    		GameState.inventory_transfer()
+    		#EventBus.combat_ended.emit("victory")
+    		_process_party_progression()
+    		
+    		SceneManager.end_combat("victory")
+    		return
+    	current_combatant = _turn_queue[_current_turn_index]
+    	while not current_combatant.is_alive():
+    		advance_index()
+    		current_combatant = _turn_queue[_current_turn_index]
+    	EventBus.turn_started.emit(current_combatant)
+    	if current_combatant.is_player_controlled:
+    		_state = State.PLAYER_INPUT
+    		EventBus.player_turn_started.emit()
+    	else:
+    		_state = State.ENEMY_TURN
+    		_run_enemy_turn()
+    
+    func _run_enemy_turn():
+    	if !current_combatant.can_act():
+    		var log_string = "%s is " % current_combatant.stats.character_name
+    		for status in current_combatant.source_resource.active_statuses:
+    			if status["effect"].status_type == StatusEffect.StatusType.SLEEP:
+    				log_string += "asleep"
+    				current_combatant.tick_statuses()
+    				break
+    			elif status["effect"].status_type == StatusEffect.StatusType.STUN:
+    				log_string += "stunned"
+    				current_combatant.tick_statuses()
+    				break
+    		EventBus.combat_log_updated.emit(log_string)
+    		start_next_turn()
+    	else:
+    		var enemy_data = current_combatant.source_resource as EnemyResource
+    		var party = living_entities(_party_combatants)
+    		party.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
+    		var enemies = living_entities(_enemy_combatants)
+    		enemies.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
+    		var targets : Array[BattleCombatant] = []
+    		var action : BattleAction
+    		match enemy_data.behavior:
+    			EnemyResource.AIBehavior.RANDOM: 
+    				targets.append(party.pick_random())
+    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+    			EnemyResource.AIBehavior.AGGRESSIVE:
+    				targets.append(party[0])
+    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+    			EnemyResource.AIBehavior.DEFENSIVE:
+    				targets.append(party[-1])
+    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+    			EnemyResource.AIBehavior.HEALER:
+    				targets.append(enemies[-1])
+    				action = current_combatant.return_available_healing_actions().pick_random()
+    			EnemyResource.AIBehavior.BERSERKER:
+    				targets.append(party[0])
+    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+    		if action == null:
+    			EventBus.combat_log_updated.emit("%s does nothing" % current_combatant.stats.character_name)
+    			start_next_turn()
+    			return
+    		_resolve_action(current_combatant, targets, action)
+    
+    func living_entities(array : Array[BattleCombatant]) -> Array[BattleCombatant]:
+    	var new_array = array.duplicate()
+    	for i in array:
+    		if !i.is_alive():
+    			new_array.erase(i)
+    	return new_array
+    
+    func _resolve_action(attacker : BattleCombatant, targets : Array[BattleCombatant], action : BattleAction):
+    	EventBus.combat_action_resolving.emit()
+    	_state = State.RESOLVING
+    	var healing = action.damage_type == BattleAction.DamageType.HEALING
+    	if action.category == BattleAction.ActionCategory.MAGIC:
+    		attacker.stats.current_mp -= action.mp_cost
+    	for target in targets:
+    		if action.category == BattleAction.ActionCategory.ATTACK:
+    			EventBus.combat_log_updated.emit("%s attacks %s" % [attacker.stats.character_name, target.stats.character_name])
+    			var damage = (attacker.effective_stat("str") * action.power) / maxf(1.0, target.effective_stat("vit"))
+    			if accuracy_check(attacker):
+    				if attacker.is_player_controlled:
+    					(attacker.source_resource as PartyMemberResource).accumulate("str", target.effective_stat("vit"))
+    					(attacker.source_resource as PartyMemberResource).accumulate("agi", target.effective_stat("agi"))
+    				elif target.is_player_controlled:
+    					(target.source_resource as PartyMemberResource).accumulate("vit", damage)
+    					(target.source_resource as PartyMemberResource).accumulate("agi", attacker.effective_stat("agi"))
+    				target.take_damage(roundi(damage))
+    				EventBus.combatant_damaged.emit(target, roundi(damage))
+    			else:
+    				EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+    		elif action.category == BattleAction.ActionCategory.MAGIC:
+    			if !healing:
+    				var damage = (attacker.effective_stat("intelligence") * action.power) / maxf(1.0, target.effective_stat("wil"))
+    				EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+    				if accuracy_check(attacker):
+    					if attacker.is_player_controlled:
+    						(attacker.source_resource as PartyMemberResource).accumulate("intelligence", target.effective_stat("wil"))
+    					target.take_damage(roundi(damage))
+    					EventBus.combatant_damaged.emit(target, roundi(damage))
+    				else:
+    					EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+    			else:
+    				var amount = (attacker.effective_stat("intelligence") * action.power)
+    				EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+    				if attacker.is_player_controlled:
+    					(attacker.source_resource as PartyMemberResource).accumulate("wil", amount)
+    					(attacker.source_resource as PartyMemberResource).accumulate("intelligence", amount * 0.5)
+    				target.heal(roundi(amount))
+    				EventBus.combatant_healed.emit(target, roundi(amount))
+    		elif action.category == BattleAction.ActionCategory.SKILL:
+    			EventBus.combat_log_updated.emit("%s uses %s" % [attacker.stats.character_name, action.action_name])
+    		if action.status_to_apply != null:
+    			if randf()<action.status_chance:
+    				if target.apply_status(action.status_to_apply):
+    					EventBus.combatant_status_applied.emit(target, action.status_to_apply)
+    		if !target.is_alive():
+    			EventBus.combatant_died.emit(target)
+    			
+    	attacker.tick_statuses()
+    	#start_next_turn.call_deferred()
+    	EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
+    	_pending_action = null
+    
+    func _resolve_item(attacker : BattleCombatant, targets : Array[BattleCombatant], item : ItemResource):
+    	EventBus.combat_action_resolving.emit()
+    	_state = State.RESOLVING
+    	var item_used : bool = false
+    	for combatant : BattleCombatant in targets:
+    		var hp_before = combatant.stats.current_hp
+    		item_used = item.apply_to(combatant.stats)
+    		if item_used:
+    			if combatant.stats.current_hp > hp_before:
+    				EventBus.combatant_healed.emit(combatant, combatant.stats.current_hp - hp_before)
+    			if item.effect_type == ItemResource.ConsumableEffect.CURE_STATUS:
+    				if combatant.source_resource.active_statuses.size() > 0:
+    					combatant.source_resource.active_statuses = []
+    			elif item.effect_type == ItemResource.ConsumableEffect.CUSTOM:
+    					for i in item.custom_effects.size():
+    						if item.custom_effects[i] == ItemResource.ConsumableEffect.CURE_STATUS:
+    							if combatant.source_resource.active_statuses.size() > 0:
+    								combatant.source_resource.active_statuses = []
+    	if item_used:
+    		item.quantity -= 1
+    		if item.quantity <= 0:
+    			if attacker.is_player_controlled:
+    				GameState.inventory.erase(item)
+    			else:
+    				attacker.source_resource.inventory.erase(item)
+    		EventBus.item_used.emit(item)
+    		attacker.tick_statuses()
+    		#start_next_turn.call_deferred()
+    		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
+    	else:
+    		#EventBus.item_used.emit(ItemResource.new())
+    		attacker.tick_statuses()
+    		#start_next_turn.call_deferred()
+    		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
+    	_pending_item = null
+    
+    func _on_player_action_selected(action: BattleAction):
+    	if _state == State.PLAYER_INPUT:
+    		_pending_action = action
+    		_state = State.TARGET_SELECT
+    		if action.target_type == BattleAction.TargetType.ALL_ENEMIES or action.target_type == BattleAction.TargetType.ALL_ALLIES:
+    			EventBus.all_targets.emit()
+    		var valid_targets = get_targets(action.target_type)
+    		EventBus.target_select_requested.emit(valid_targets)
+    
+    func _on_player_item_selected(item: ItemResource):
+    	if _state == State.PLAYER_INPUT:
+    		_pending_item = item
+    		_state = State.TARGET_SELECT
+    		var valid_targets = get_targets(BattleAction.TargetType.SINGLE_ALLY)
+    		EventBus.target_select_requested.emit(valid_targets)
+    
+    func get_targets(target_type : BattleAction.TargetType):
+    	if target_type == BattleAction.TargetType.SINGLE_ENEMY or target_type == BattleAction.TargetType.ALL_ENEMIES:
+    		if current_combatant.is_player_controlled:
+    			return living_entities(_enemy_combatants)
+    		else:
+    			return living_entities(_party_combatants)
+    	elif target_type == BattleAction.TargetType.SINGLE_ALLY or target_type == BattleAction.TargetType.ALL_ALLIES:
+    		if current_combatant.is_player_controlled:
+    			return living_entities(_party_combatants)
+    		else:
+    			return living_entities(_enemy_combatants)
+    	elif target_type == BattleAction.TargetType.SELF:
+    		return [current_combatant]
+    
+    func _on_player_targets_selected(targets: Array[BattleCombatant]):
+    	if _state == State.TARGET_SELECT:
+    		_pending_targets = targets
+    		if _pending_action != null:
+    			_resolve_action(current_combatant, _pending_targets, _pending_action)
+    		elif _pending_item != null:
+    			_resolve_item(current_combatant, _pending_targets, _pending_item)
+    	
+    func _on_player_flee_attempted():
+    	if _state == State.PLAYER_INPUT:
+    		var player_agi = 0
+    		var player_count = 0
+    		var enemy_agi = 0
+    		var enemy_count = 0
+    		for i : BattleCombatant in _turn_queue:
+    			if i.is_alive():
+    				if i.is_player_controlled:
+    					player_agi += i.effective_stat("agi")
+    					player_count += 1
+    				else:
+    					enemy_agi += i.effective_stat("agi")
+    					enemy_count += 1
+    		for i : BattleCombatant in _turn_queue:
+    			if i.is_alive() and i.is_player_controlled:
+    				(i.source_resource as PartyMemberResource).accumulate("agi", enemy_agi / enemy_count)
+    		EventBus.combat_log_updated.emit("%s attempted to flee" % current_combatant.stats.character_name)
+    		if float(player_agi) / float(player_count) > (float(enemy_agi) / float(enemy_count) * 0.8):
+    			_state = State.FLED
+    			EventBus.combat_log_updated.emit("%s fled" % current_combatant.stats.character_name)
+    			#EventBus.combat_ended.emit("fled")
+    			_process_party_progression()
+    			SceneManager.end_combat("fled")
+    		else:
+    			EventBus.combat_log_updated.emit("%s failed to escape" % current_combatant.stats.character_name)
+    			start_next_turn()
+    
+    func _process_party_progression():
+    	for i : BattleCombatant in _turn_queue:
+    		if i.is_player_controlled:
+    			(i.source_resource as PartyMemberResource).process_progression()
+    
+    func accuracy_check(attacker : BattleCombatant) -> bool:
+    	var hit_roll = randf()
+    	var accuracy = 1.0
+    	# apply accuracy modifier from any BLIND status on attacker
+    	for status in attacker.source_resource.active_statuses:
+    		accuracy *= status["effect"].accuracy_modifier
+    	if hit_roll > accuracy:
+    		return false
+    	return true
+    
+    func advance_index() -> void:
+    	_current_turn_index = (_current_turn_index + 1) % _turn_queue.size()
+    
+    func any_alive(player_controlled : bool) -> bool:
+    	for i : BattleCombatant in _turn_queue:
+    		if i.is_player_controlled == player_controlled and i.is_alive():
+    			return true
+    	return false
+    
+    _______________
+    ENTITIES:
+    RESOURCES:
+    _______________
+    (BattleAction.gd):
+    class_name BattleAction
+    extends Resource
+    
+    enum ActionCategory {ATTACK, MAGIC, SKILL}
+    enum TargetType {SINGLE_ENEMY, ALL_ENEMIES, SINGLE_ALLY, ALL_ALLIES, SELF}
+    enum DamageType {PHYSICAL, MAGICAL, HEALING, NONE}
+    
+    @export var action_name: String = ""
+    @export var description: String = ""
+    @export var category: ActionCategory = ActionCategory.ATTACK
+    @export var mp_cost: int = 0 # zero for physical attacks
+    @export var target_type: TargetType = TargetType.SINGLE_ENEMY
+    @export var damage_type: DamageType = DamageType.PHYSICAL
+    @export var power: int = 1 #the base value the damage formula will scale from
+    @export var status_to_apply: StatusEffect = null # null means no status, so no default needed
+    @export_range(0.0, 1.0, 0.1) var status_chance: float = 0.5 # probability the status applies, 0.0 to 1.0
+    @export var animation_key: String = ""
+    
+    _______________
+    _______________
+    (CharacterStatBlock.gd):
+    class_name CharacterStatBlock
+    extends Resource
+    
+    @warning_ignore_start("shadowed_global_identifier")
+    
+    @export var character_name: String = ""
+    @export var level: int = 1
+    @export var base_move_speed: float = 150.0
+    
+    @export_group("Primary Stats")
+    @export var str: int = 10   # Physical attack, carry weight
+    @export var agi: int = 10   # Turn order, evasion, accuracy
+    @export var vit: int = 10   # Max HP, physical defense
+    @export var intelligence: int = 10  # Magic attack, item effectiveness
+    @export var wil: int = 10   # Max MP, magic resist, status resist
+    
+    @export_group("Runtime State")
+    @export var current_hp : int = -1
+    @export var current_mp : int = -1
+    
+    func max_hp() -> int:
+    	return 20 + (vit * 8) + (level * 5)
+    func max_mp() -> int:
+    	return 10 + (wil * 5) + (level * 3)
+    
+    _______________
+    _______________
+    (DialogueChoice.gd):
+    class_name DialogueChoice
+    extends Resource
+    
+    @export var label: String = ""  # What the player sees in the menu
+    
+    # Condition — leave flag_required empty for always-available choices
+    @export var flag_required: String = ""
+    @export var required_value: Variant = null
+    
+    # Consequence
+    @export var sets_flag: String = ""
+    @export var sets_value: Variant = null
+    
+    # Where this choice leads
+    @export var next_lines: Array[DialogueLine] = []
+    @export var next_sequence_id : String = ""
+    
+    _______________
+    _______________
+    (DialogueLine.gd):
+    class_name DialogueLine
+    extends Resource
+    
+    @export var speaker_name: String = ""
+    @export var portrait: Texture2D  # null = no portrait shown
+    @export var text: String = ""
+    
+    # Empty array = linear advance. Populated = show choice menu.
+    @export var choices: Array[DialogueChoice] = []
+    
+    _______________
+    _______________
+    (DialogueSequence.gd):
+    class_name DialogueSequence
+    extends Resource
+    
+    @export var sequence_id: String = ""
+    @export var lines: Array[DialogueLine] = []
+    
+    _______________
+    _______________
+    (EnemyGroupResource.gd):
+    class_name EnemyGroupResource
+    extends Resource
+    
+    @export var enemies: Array[EnemyResource] = []
+    @export var encounter_music: String = ""  # res://audio/music/... path
+    
+    _______________
+    _______________
+    (EnemyResource.gd):
+    class_name EnemyResource
+    extends EntityResource
+    
+    enum AIBehavior { RANDOM, AGGRESSIVE, DEFENSIVE, HEALER, BERSERKER }
+    
+    @export var enemy_name: String = ""
+    @export var sprite_frames: SpriteFrames
+    
+    @export_group("Rewards")
+    @export var experience_reward: int = 0
+    @export var gold_reward: int = 0
+    @export var drop_table: Array[ItemResource] = []
+    @export var equip_drop_chance : float = 0.5
+    
+    @export_group("Battle")
+    @export var behavior: AIBehavior = AIBehavior.RANDOM
+    
+    _______________
+    _______________
+    (EntityResource.gd):
+    class_name EntityResource
+    extends Resource
+    
+    @export var stats: CharacterStatBlock
+    @export var actions: Array[BattleAction]
+    @export var inventory: Array[ItemResource]
+    @export var is_player := false
+    var active_statuses: Array[Dictionary] = []
+    var equipped: Dictionary
+    var stat_mods = {
+    	"str": 0.0,
+    	"agi": 0.0,
+    	"vit": 0.0,
+    	"intelligence": 0.0,
+    	"wil": 0.0,
+    }
+    
+    const BLOCKED_SLOT = "blocked"
+    
+    func _init() -> void:
+    	equipped = {
+    		"head": null,
+    		"torso": null,
+    		"legs": null,
+    		"hand": [null, null],
+    		"foot": [null, null],
+    		"ring": [null, null, null, null, null, null, null, null, null, null],
+    		"toe_ring": [null, null, null, null, null, null, null, null, null, null],
+    	}
+    
+    func get_bonus(stat_name: String) -> int:
+    	var amount = 0
+    	for key in equipped.keys():
+    		if equipped[key] is Array:
+    			for value in equipped[key]:
+    				if value is ItemResource:
+    					var item : ItemResource = value
+    					amount += item.stat_modifiers.get(stat_name, 0)
+    		else:
+    			if equipped[key] is ItemResource:
+    				var item : ItemResource = equipped[key]
+    				amount += item.stat_modifiers.get(stat_name, 0)
+    	return amount
+    
+    func equip_item(item:ItemResource) -> bool:
+    	if item.item_type != ItemResource.ItemType.EQUIPMENT:
+    		return false
+    	var slot_key : String = locate_equip_slot(item)
+    	if slot_key == "":
+    		return false
+    	if slot_key not in equipped.keys():
+    		return false
+    	var current_equip = equipped[slot_key]
+    	if !(current_equip is Array):
+    		if current_equip == null:
+    			equipped[slot_key] = item
+    			return true
+    		else:
+    			unequip_item(current_equip)
+    			equipped[slot_key] = item
+    			return true
+    	else:
+    		var index = 0
+    		for i : int in current_equip.size():
+    			index = i
+    			if current_equip[index] == null:
+    				equipped[slot_key][index] = item
+    				return true
+    		unequip_item(current_equip[-1])
+    		(current_equip as Array).remove_at(-1)
+    		(current_equip as Array).insert(0, item)
+    		if item.two_handed:
+    			current_equip[0] = item
+    			if current_equip[1] is ItemResource:
+    				unequip_item(current_equip[1])
+    			equipped[slot_key][1] = BLOCKED_SLOT
+    		return true
+    
+    func unequip_item(item:ItemResource):
+    	var _inventory
+    	if is_player:
+    		_inventory = GameState.inventory.duplicate()
+    	else:
+    		_inventory = inventory.duplicate()
+    	var slot = locate_equip_slot(item)
+    	var current_equip = equipped[slot]
+    	if current_equip is Array:
+    		if current_equip.has(item):
+    			_inventory.append(item)
+    			equipped[slot][current_equip.find(item)] = null
+    			#return true
+    		#else:
+    			#return false
+    	else:
+    		if current_equip == item:
+    			_inventory.append(current_equip)
+    			equipped[slot] = null
+    			#return true
+    		#else:
+    			#return false
+    	if is_player:
+    		GameState.inventory = _inventory
+    	else:
+    		inventory = _inventory
+    	
+    
+    func locate_equip_slot(item : ItemResource) -> String:
+    	if item.item_type != ItemResource.ItemType.EQUIPMENT:
+    		return ""
+    	return (ItemResource.EquipSlot.keys()[item.equip_slot] as String).to_lower()
+    
+    _______________
+    _______________
+    (ItemResource.gd):
+    class_name ItemResource
+    extends Resource
+    
+    enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM }
+    enum ConsumableEffect {NONE, HEAL_HP, HEAL_MP, REVIVE, CURE_STATUS, CUSTOM}
+    enum EquipSlot {NONE, HEAD, TORSO, LEGS, HAND, FOOT, RING, TOE_RING}
+    
+    @export_group("Item")
+    @export var item_name: String = ""
+    @export var description: String = ""
+    @export var icon: Texture2D
+    @export var item_type: ItemType = ItemType.CONSUMABLE
+    @export var value: int = 0       # Gold value for shops
+    @export var stackable: bool = true
+    @export var max_stack: int = 99
+    @export var quantity: int = 1
+    @export_group("Consumable Effect")
+    @export var effect_type: ConsumableEffect = ConsumableEffect.NONE
+    @export var effect_value: int
+    @export var custom_effects: Array[int] # Only in use for custom ConsumableEffects. CUSTOM is not allowed here
+    @export var custom_values: Array[int] # Only in use for custom ConsumableEffects, must have same number of entries as Custom Effects, valuless effects use 0
+    @export_group("Equipment")
+    @export var equip_slot: EquipSlot = EquipSlot.NONE
+    @export var two_handed : bool = false
+    @export var stat_modifiers: Dictionary # Must match statblock keys EXACTLY "str", "agi", "vit", "intelligence", "wil"
+    @export_group("Key Item")
+    @export var sets_flag: String = ""
+    func apply_to(stats : CharacterStatBlock) -> bool:
+    	match effect_type:
+    		ItemResource.ConsumableEffect.HEAL_HP:
+    			if stats.current_hp == stats.max_hp():
+    				return false
+    			stats.current_hp = clampi(stats.current_hp + effect_value, 0, stats.max_hp())
+    		ItemResource.ConsumableEffect.HEAL_MP:
+    			if stats.current_mp == stats.max_mp():
+    				return false
+    			stats.current_mp = clampi(stats.current_mp + effect_value, 0, stats.max_mp())
+    		ItemResource.ConsumableEffect.REVIVE:
+    			if stats.current_hp <= 0:
+    				stats.current_hp = 10
+    			else:
+    				return false
+    		ItemResource.ConsumableEffect.CURE_STATUS:
+    			pass # handled via combatmanager
+    			#if combatant.active_statuses.size() > 0:
+    				#combatant.active_statuses = []
+    		ItemResource.ConsumableEffect.CUSTOM:
+    			var is_true = false
+    			for i in custom_effects.size():
+    				match custom_effects[i]:
+    					ItemResource.ConsumableEffect.HEAL_HP:
+    						if stats.current_hp != stats.max_hp():
+    							is_true = true
+    						stats.current_hp = clampi(stats.current_hp + custom_values[i], 0, stats.max_hp())
+    					ItemResource.ConsumableEffect.HEAL_MP:
+    						if stats.current_mp != stats.max_mp():
+    							is_true = true
+    						stats.current_mp = clampi(stats.current_mp + custom_values[i], 0, stats.max_mp())
+    					ItemResource.ConsumableEffect.REVIVE:
+    						if stats.current_hp <= 0:
+    							is_true = true
+    							stats.current_hp = 10
+    					ItemResource.ConsumableEffect.CURE_STATUS:
+    						pass # handled via combatmanager
+    						#if combatant.active_statuses.size() > 0:
+    							#combatant.active_statuses = []
+    			return is_true
+    		ItemResource.ConsumableEffect.NONE:
+    			pass
+    	return true
+    
+    func stats_to_text() -> String:
+    	var output = ""
+    	for i in stat_modifiers.keys().size():
+    		output += "%s: " % stat_modifiers.keys()[i]
+    		if stat_modifiers[stat_modifiers.keys()[i]] > 0:
+    			output += "+"
+    		output += "%s" % stat_modifiers[stat_modifiers.keys()[i]]
+    		if i < stat_modifiers.keys().size() -1:
+    			output += ", "
+    	if !(effect_type == ConsumableEffect.NONE):
+    		if output != "":
+    			output += " | "
+    		if effect_type != ConsumableEffect.CUSTOM:
+    			output += "%s " % ItemResource.ConsumableEffect.keys()[effect_type]
+    			if effect_value > 0:
+    				output += "+"
+    			output += "%s" % effect_value
+    		else:
+    			for i in custom_effects.size():
+    				output += "%s " % ItemResource.ConsumableEffect.keys()[custom_effects[i]]
+    				if custom_values[i] > 0:
+    					output += "+"
+    				output += "%s" % custom_values[i]
+    				if i < custom_effects.size()-1:
+    					output += ", "
+    	return output
+    
+    _______________
+    _______________
+    (PartyMemberResource.gd):
+    class_name PartyMemberResource
+    extends EntityResource
+    
+    @export var battle_sprite_frames: SpriteFrames
+    @export var portrait: Texture2D
+    @export var pending_xp : float = 0.0
+    @export var xp_gauge: float = 0.0
+    @export var xp_till_level_up : float = 100.0
+    
+    @export var stat_levels = {
+    	"str" : [0.0, 100.0],
+    	"agi" : [0.0, 100.0],
+    	"vit" : [0.0, 100.0],
+    	"intelligence" : [0.0, 100.0],
+    	"wil" : [0.0, 100.0],
+    }
+    
+    @export var previous_location = null
+    
+    func accumulate(stat_name : String, amount : float):
+    	stat_levels[stat_name][0] += amount
+    	pending_xp += amount * 0.5
+    
+    func process_progression():
+    	for i in stat_levels.keys():
+    		while stat_levels[i][0] >= stat_levels[i][1]:
+    			stat_levels[i][0] -= stat_levels[i][1]
+    			stat_levels[i][1] = stat_levels[i][1] * 1.2
+    			stats.set(i, stats.get(i)+1)
+    			EventBus.stat_increased.emit(self, i, stats.get(i))
+    			print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
+    	xp_gauge += pending_xp
+    	pending_xp = 0
+    	while xp_gauge >= xp_till_level_up:
+    		xp_gauge -= xp_till_level_up
+    		xp_till_level_up = xp_till_level_up * 1.2
+    		stats.level += 1
+    		EventBus.level_increased.emit(self, stats.level)
+    		print("%s's level raised to %s" % [stats.character_name, stats.level])
+    		for i in stat_levels.keys():
+    			stat_levels[i][0] = stat_levels[i][0] * 1.2
+    			if stat_levels[i][0] >= stat_levels[i][1]:
+    				stat_levels[i][0] -= stat_levels[i][1]
+    				stat_levels[i][1] = stat_levels[i][1] * 1.2
+    				stats.set(i, stats.get(i)+1)
+    				EventBus.stat_increased.emit(self, i, stats.get(i))
+    				print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
+    	
+    
+    _______________
+    _______________
+    (StatusEffect.gd):
+    class_name StatusEffect
+    extends Resource
+    
+    enum StatusType {POISON, SLEEP, BLIND, STUN, BERSERK}
+    
+    @export var status_name : String = ""
+    @export var status_type : StatusType = StatusType.POISON
+    @export var duration_turns : int = -1
+    @export var damage_per_turn : int = 0
+    @export var blocks_action : bool = false
+    @export var accuracy_modifier : float = 1.0
+    
+    _______________
+    _______________
+    (WarpDefinition.gd):
+    class_name WarpDefinition
+    extends Resource
+    
+    @export var target_scene: String = ""    # res://scenes/... path
+    @export var target_warp_id: String = ""  # ID of the arrival warp in target scene
+    @export var transition: String = "fade"  # matches SceneManager transition names
+    
+    _______________
+    UI:
+    WORLD:

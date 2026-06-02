@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://dkknl2p7mfvuu"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_hrray"]
+[ext_resource type="Resource" uid="uid://1jxsq0x8ybtq" path="res://data/actions/basic_attack.tres" id="2_nntq0"]
+[ext_resource type="Resource" uid="uid://wg6813ukebvk" path="res://data/actions/enemy_heal.tres" id="3_a0umr"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="4_kqbre"]
+[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="5_ukx02"]
+[ext_resource type="SpriteFrames" uid="uid://drlchlv55b7pt" path="res://art/characters/enemies/debug/debug.tres" id="6_rnkfv"]
+[ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="7_mrd03"]
+
+[sub_resource type="Resource" id="Resource_rai4i"]
+script = ExtResource("7_mrd03")
+intelligence = 14
+
+[resource]
+script = ExtResource("5_ukx02")
+enemy_name = "sprite"
+sprite_frames = ExtResource("6_rnkfv")
+experience_reward = 10
+gold_reward = 100
+behavior = 3
+stats = SubResource("Resource_rai4i")
+actions = Array[ExtResource("1_hrray")]([ExtResource("2_nntq0"), ExtResource("3_a0umr")])

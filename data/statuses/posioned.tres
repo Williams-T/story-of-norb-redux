@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://dwabx76nwmvo7"]
+
+[ext_resource type="Script" uid="uid://drtxpo1ba0lwu" path="res://src/resources/StatusEffect.gd" id="1_tsr5n"]
+
+[resource]
+script = ExtResource("1_tsr5n")
+status_name = "Poisoned"
+duration_turns = 3
+damage_per_turn = 20
+metadata/_custom_type_script = "uid://drtxpo1ba0lwu"

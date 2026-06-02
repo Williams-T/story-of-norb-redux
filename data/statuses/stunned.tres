@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://dbsq04q5hbn1g"]
+
+[ext_resource type="Script" uid="uid://drtxpo1ba0lwu" path="res://src/resources/StatusEffect.gd" id="1_1ic4b"]
+
+[resource]
+script = ExtResource("1_1ic4b")
+status_name = "Stunned"
+status_type = 3
+duration_turns = 1
+blocks_action = true
+metadata/_custom_type_script = "uid://drtxpo1ba0lwu"

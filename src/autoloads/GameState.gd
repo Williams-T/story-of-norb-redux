@@ -17,9 +17,11 @@ var current_map_path: String = ""
 var save_slot: int = 0
 var pending_warp_id : String = "test_town_entrance"
 var previous_player_location : Vector2 = Vector2(-1, -1)
+var previous_safe_zone : Array = [] # Scene, Warp_ID
 
 var pending_enemy_group : EnemyGroupResource = null
 var in_combat := false
+var movement_locks := 0
 
 func _ready() -> void:
 	EventBus.combat_started.connect(func(enemy_group):in_combat=true)
@@ -58,9 +60,11 @@ func inventory_drop(drop_table : Array[ItemResource]):
 func give_item(item : ItemResource):
 	pending_inventory.append(item)
 	EventBus.item_dropped.emit(item)
+	print("Item dropped: %s" % item.item_name)
 
 func inventory_transfer():
 	for i in pending_inventory:
 		inventory.append(i)
 		EventBus.item_acquired.emit(i)
+		print("Item aquired: %s" % i.item_name)
 	pending_inventory = []

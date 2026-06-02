@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://bqlmxm32bhfp4"]
+
+[ext_resource type="Script" uid="uid://drtxpo1ba0lwu" path="res://src/resources/StatusEffect.gd" id="1_774l0"]
+
+[resource]
+script = ExtResource("1_774l0")
+status_name = "Blind"
+status_type = 2
+duration_turns = 2
+accuracy_modifier = 0.5
+metadata/_custom_type_script = "uid://drtxpo1ba0lwu"

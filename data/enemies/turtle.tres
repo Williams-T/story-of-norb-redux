@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://0u1kr58h4561"]
+
+[ext_resource type="Script" uid="uid://d3fdo4ho75i4u" path="res://src/resources/BattleAction.gd" id="1_yoav5"]
+[ext_resource type="Resource" uid="uid://1jxsq0x8ybtq" path="res://data/actions/basic_attack.tres" id="2_dg52j"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="3_tgpt5"]
+[ext_resource type="Script" uid="uid://und7th2eghly" path="res://src/resources/EnemyResource.gd" id="4_v0hcn"]
+[ext_resource type="SpriteFrames" uid="uid://drlchlv55b7pt" path="res://art/characters/enemies/debug/debug.tres" id="5_m63uj"]
+[ext_resource type="Script" uid="uid://bck3giaak2qgo" path="res://src/resources/CharacterStatBlock.gd" id="6_wcywq"]
+
+[sub_resource type="Resource" id="Resource_rcvaf"]
+script = ExtResource("6_wcywq")
+vit = 13
+
+[resource]
+script = ExtResource("4_v0hcn")
+enemy_name = "turtle"
+sprite_frames = ExtResource("5_m63uj")
+experience_reward = 10
+gold_reward = 100
+behavior = 2
+stats = SubResource("Resource_rcvaf")
+actions = Array[ExtResource("1_yoav5")]([ExtResource("2_dg52j")])
