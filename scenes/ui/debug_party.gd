@@ -100,9 +100,11 @@ func populate_fields():
 	if current_party_member.stats.current_hp == -1:
 		current_party_member.stats.current_hp = current_party_member.stats.max_hp()
 	hp_spin.value = current_party_member.stats.current_hp
+	hp_spin.max_value = current_party_member.stats.max_hp()
 	if current_party_member.stats.current_mp == -1:
 		current_party_member.stats.current_mp = current_party_member.stats.max_mp()
 	mp_spin.value = current_party_member.stats.current_mp
+	mp_spin.max_value = current_party_member.stats.max_mp()
 	str_spin.value = current_party_member.stats.str
 	vit_spin.value = current_party_member.stats.vit
 	agi_spin.value = current_party_member.stats.agi

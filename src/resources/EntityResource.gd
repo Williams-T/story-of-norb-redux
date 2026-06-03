@@ -102,9 +102,21 @@ func unequip_item(item:ItemResource):
 		GameState.inventory = _inventory
 	else:
 		inventory = _inventory
-	
 
 func locate_equip_slot(item : ItemResource) -> String:
 	if item.item_type != ItemResource.ItemType.EQUIPMENT:
 		return ""
 	return (ItemResource.EquipSlot.keys()[item.equip_slot] as String).to_lower()
+
+func get_all_equipped_items() -> Array[ItemResource]:
+	var items : Array[ItemResource]= []
+	for equipment in equipped.keys():
+		if !(equipped[equipment] is Array):
+			if equipped[equipment] is ItemResource:
+				var item : ItemResource = equipped[equipment]
+				items.append(item)
+		else:
+			for item in equipped[equipment]:
+				if item is ItemResource:
+					items.append(item)
+	return items

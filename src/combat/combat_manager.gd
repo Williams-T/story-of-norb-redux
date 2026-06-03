@@ -60,38 +60,10 @@ func start_next_turn():
 	_state = State.IDLE
 	advance_index()
 	if !any_alive(true): # handle failure
-		_state = State.DEFEAT
-		#EventBus.combat_ended.emit("defeat")
-		_process_party_progression()
-		var player : PartyMemberResource
-		for i : PartyMemberResource in _party_members:
-			if i.is_player:
-				i.stats.current_hp = i.stats.max_hp()/2
-		SceneManager.end_combat("defeat")
+		_handle_defeat()
 		return
 	if !any_alive(false): # handle victory
-		_state = State.VICTORY
-		for i in _enemy_group.enemies:
-			GameState.add_gold(i.gold_reward)
-			for ii : PartyMemberResource in _party_members:
-				ii.pending_xp += i.experience_reward 
-			GameState.inventory_drop(i.drop_table)
-			for equipment in i.equipped.keys():
-				if !(i.equipped[equipment] is Array):
-					if i.equipped[equipment] != null:
-						var item : ItemResource = i.equipped[equipment]
-						if randf() < i.equip_drop_chance:
-							GameState.give_item(item)
-				else:
-					for item in i.equipped[equipment]:
-						if item is ItemResource:
-							if randf() < i.equip_drop_chance:
-								GameState.give_item(item)
-		GameState.inventory_transfer()
-		#EventBus.combat_ended.emit("victory")
-		_process_party_progression()
-		
-		SceneManager.end_combat("victory")
+		_handle_victory()
 		return
 	current_combatant = _turn_queue[_current_turn_index]
 	while not current_combatant.is_alive():
@@ -104,6 +76,41 @@ func start_next_turn():
 	else:
 		_state = State.ENEMY_TURN
 		_run_enemy_turn()
+
+func _handle_defeat():
+	_state = State.DEFEAT
+	#EventBus.combat_ended.emit("defeat")
+	_process_party_progression()
+	var player : PartyMemberResource
+	for i : PartyMemberResource in _party_members:
+		if i.is_player:
+			i.stats.current_hp = i.stats.max_hp()/2
+	SceneManager.end_combat("defeat")
+
+func _handle_victory():
+	_state = State.VICTORY
+	for i in _enemy_group.enemies:
+		GameState.add_gold(i.gold_reward)
+		for ii : PartyMemberResource in _party_members:
+			ii.pending_xp += i.experience_reward 
+		GameState.inventory_drop(i.drop_table)
+		for equipment : ItemResource in i.get_all_equipped_items():
+			if randf() < i.equip_drop_chance:
+				GameState.give_item(equipment)
+		#for equipment in i.equipped.keys():
+			#if !(i.equipped[equipment] is Array):
+				#if i.equipped[equipment] != null:
+					#var item : ItemResource = i.equipped[equipment]
+					#if randf() < i.equip_drop_chance:
+						#GameState.give_item(item)
+			#else:
+				#for item in i.equipped[equipment]:
+					#if item is ItemResource:
+						#if randf() < i.equip_drop_chance:
+							#GameState.give_item(item)
+	GameState.inventory_transfer()
+	_process_party_progression()
+	SceneManager.end_combat("victory")
 
 func _run_enemy_turn():
 	if !current_combatant.can_act():
@@ -164,38 +171,40 @@ func _resolve_action(attacker : BattleCombatant, targets : Array[BattleCombatant
 		attacker.stats.current_mp -= action.mp_cost
 	for target in targets:
 		if action.category == BattleAction.ActionCategory.ATTACK:
-			EventBus.combat_log_updated.emit("%s attacks %s" % [attacker.stats.character_name, target.stats.character_name])
-			var damage = (attacker.effective_stat("str") * action.power) / maxf(1.0, target.effective_stat("vit"))
-			if accuracy_check(attacker):
-				if attacker.is_player_controlled:
-					(attacker.source_resource as PartyMemberResource).accumulate("str", target.effective_stat("vit"))
-					(attacker.source_resource as PartyMemberResource).accumulate("agi", target.effective_stat("agi"))
-				elif target.is_player_controlled:
-					(target.source_resource as PartyMemberResource).accumulate("vit", damage)
-					(target.source_resource as PartyMemberResource).accumulate("agi", attacker.effective_stat("agi"))
-				target.take_damage(roundi(damage))
-				EventBus.combatant_damaged.emit(target, roundi(damage))
-			else:
-				EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+			_resolve_attack(attacker, target, action)
+			#EventBus.combat_log_updated.emit("%s attacks %s" % [attacker.stats.character_name, target.stats.character_name])
+			#var damage = (attacker.effective_stat("str") * action.power) / maxf(1.0, target.effective_stat("vit"))
+			#if accuracy_check(attacker):
+				#if attacker.is_player_controlled:
+					#(attacker.source_resource as PartyMemberResource).accumulate("str", target.effective_stat("vit"))
+					#(attacker.source_resource as PartyMemberResource).accumulate("agi", target.effective_stat("agi"))
+				#elif target.is_player_controlled:
+					#(target.source_resource as PartyMemberResource).accumulate("vit", damage)
+					#(target.source_resource as PartyMemberResource).accumulate("agi", attacker.effective_stat("agi"))
+				#target.take_damage(roundi(damage))
+				#EventBus.combatant_damaged.emit(target, roundi(damage))
+			#else:
+				#EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
 		elif action.category == BattleAction.ActionCategory.MAGIC:
-			if !healing:
-				var damage = (attacker.effective_stat("intelligence") * action.power) / maxf(1.0, target.effective_stat("wil"))
-				EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
-				if accuracy_check(attacker):
-					if attacker.is_player_controlled:
-						(attacker.source_resource as PartyMemberResource).accumulate("intelligence", target.effective_stat("wil"))
-					target.take_damage(roundi(damage))
-					EventBus.combatant_damaged.emit(target, roundi(damage))
-				else:
-					EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
-			else:
-				var amount = (attacker.effective_stat("intelligence") * action.power)
-				EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
-				if attacker.is_player_controlled:
-					(attacker.source_resource as PartyMemberResource).accumulate("wil", amount)
-					(attacker.source_resource as PartyMemberResource).accumulate("intelligence", amount * 0.5)
-				target.heal(roundi(amount))
-				EventBus.combatant_healed.emit(target, roundi(amount))
+			_resolve_magic(attacker, target, action, healing)
+			#if !healing:
+				#var damage = (attacker.effective_stat("intelligence") * action.power) / maxf(1.0, target.effective_stat("wil"))
+				#EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+				#if accuracy_check(attacker):
+					#if attacker.is_player_controlled:
+						#(attacker.source_resource as PartyMemberResource).accumulate("intelligence", target.effective_stat("wil"))
+					#target.take_damage(roundi(damage))
+					#EventBus.combatant_damaged.emit(target, roundi(damage))
+				#else:
+					#EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+			#else:
+				#var amount = (attacker.effective_stat("intelligence") * action.power)
+				#EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+				#if attacker.is_player_controlled:
+					#(attacker.source_resource as PartyMemberResource).accumulate("wil", amount)
+					#(attacker.source_resource as PartyMemberResource).accumulate("intelligence", amount * 0.5)
+				#target.heal(roundi(amount))
+				#EventBus.combatant_healed.emit(target, roundi(amount))
 		elif action.category == BattleAction.ActionCategory.SKILL:
 			EventBus.combat_log_updated.emit("%s uses %s" % [attacker.stats.character_name, action.action_name])
 		if action.status_to_apply != null:
@@ -209,6 +218,44 @@ func _resolve_action(attacker : BattleCombatant, targets : Array[BattleCombatant
 	#start_next_turn.call_deferred()
 	EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
 	_pending_action = null
+
+func _resolve_attack(attacker, target, action):
+	EventBus.combat_log_updated.emit("%s attacks %s" % [attacker.stats.character_name, target.stats.character_name])
+	var damage = (attacker.effective_stat("str") * action.power) / maxf(1.0, target.effective_stat("vit"))
+	if accuracy_check(attacker):
+		if attacker.is_player_controlled:
+			(attacker.source_resource as PartyMemberResource).accumulate("str", target.effective_stat("vit"))
+			(attacker.source_resource as PartyMemberResource).accumulate("agi", target.effective_stat("agi"))
+		elif target.is_player_controlled:
+			(target.source_resource as PartyMemberResource).accumulate("vit", damage)
+			(target.source_resource as PartyMemberResource).accumulate("agi", attacker.effective_stat("agi"))
+		target.take_damage(roundi(damage))
+		EventBus.combatant_damaged.emit(target, roundi(damage))
+	else:
+		EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+
+func _resolve_magic(attacker, target, action, healing):
+	if !healing:
+		var damage = (attacker.effective_stat("intelligence") * action.power) / maxf(1.0, target.effective_stat("wil"))
+		EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+		if accuracy_check(attacker):
+			if attacker.is_player_controlled:
+				(attacker.source_resource as PartyMemberResource).accumulate("intelligence", target.effective_stat("wil"))
+			target.take_damage(roundi(damage))
+			EventBus.combatant_damaged.emit(target, roundi(damage))
+		else:
+			EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+	else:
+		var amount = (attacker.effective_stat("intelligence") * action.power)
+		EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+		if attacker.is_player_controlled:
+			(attacker.source_resource as PartyMemberResource).accumulate("wil", amount)
+			(attacker.source_resource as PartyMemberResource).accumulate("intelligence", amount * 0.5)
+		target.heal(roundi(amount))
+		EventBus.combatant_healed.emit(target, roundi(amount))
+
+func _resolve_healing():
+	pass
 
 func _resolve_item(attacker : BattleCombatant, targets : Array[BattleCombatant], item : ItemResource):
 	EventBus.combat_action_resolving.emit()
@@ -236,14 +283,8 @@ func _resolve_item(attacker : BattleCombatant, targets : Array[BattleCombatant],
 			else:
 				attacker.source_resource.inventory.erase(item)
 		EventBus.item_used.emit(item)
-		attacker.tick_statuses()
-		#start_next_turn.call_deferred()
-		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
-	else:
-		#EventBus.item_used.emit(ItemResource.new())
-		attacker.tick_statuses()
-		#start_next_turn.call_deferred()
-		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
+	attacker.tick_statuses()
+	EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
 	_pending_item = null
 
 func _on_player_action_selected(action: BattleAction):
@@ -323,9 +364,7 @@ func accuracy_check(attacker : BattleCombatant) -> bool:
 	# apply accuracy modifier from any BLIND status on attacker
 	for status in attacker.source_resource.active_statuses:
 		accuracy *= status["effect"].accuracy_modifier
-	if hit_roll > accuracy:
-		return false
-	return true
+	return hit_roll <= accuracy
 
 func advance_index() -> void:
 	_current_turn_index = (_current_turn_index + 1) % _turn_queue.size()

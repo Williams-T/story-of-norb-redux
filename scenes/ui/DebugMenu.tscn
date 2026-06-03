@@ -45,7 +45,7 @@ custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_hh07i")
-current_tab = 5
+current_tab = 1
 
 [node name="Start Combat" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=240798581]
 visible = false
@@ -62,7 +62,6 @@ layout_mode = 2
 text = "Fight"
 
 [node name="Edit Combat" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1928381547]
-visible = false
 layout_mode = 2
 script = ExtResource("3_5dagh")
 metadata/_tab_index = 1
@@ -468,6 +467,7 @@ update_on_text_changed = true
 prefix = "WIL: "
 
 [node name="Teleport" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1008854473]
+visible = false
 layout_mode = 2
 script = ExtResource("7_b5u4c")
 metadata/_tab_index = 5

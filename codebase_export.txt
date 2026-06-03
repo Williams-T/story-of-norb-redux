@@ -1,17 +1,17 @@
 StoryOfNorbRedux
 
 ROOT:
-    body.png
-    codebase_export.txt
-    debug_enemy_normal.png
-    debug_partymember_normal.png
-    debug_tileset.tres
-    ground_tiles.tres
-    README.md
-    rings.png
-    test_square.png
-    test_square2.png
-    wall_tiles.tres
+	body.png
+	codebase_export.txt
+	debug_enemy_normal.png
+	debug_partymember_normal.png
+	debug_tileset.tres
+	ground_tiles.tres
+	README.md
+	rings.png
+	test_square.png
+	test_square2.png
+	wall_tiles.tres
 _______________
 (indicator.gd):
 extends Control
@@ -2833,12 +2833,12 @@ _______________
       # Called when the node enters the scene tree for the first time.
       func refresh(scene_root : Node):
       	for i in warp_container.get_children():
-      		if i.name != 'ErrorLabel':
+	  		if i.name != 'ErrorLabel':
       			warp_container.remove_child(i)
       			i.queue_free()
-      	if scene_root.has_node('Warps') and scene_root.get_node('Warps').get_child_count() > 0:
+	  	if scene_root.has_node('Warps') and scene_root.get_node('Warps').get_child_count() > 0:
       		error_label.hide()
-      		for warp in scene_root.get_node('Warps').get_children():
+	  		for warp in scene_root.get_node('Warps').get_children():
       			if warp is WarpPoint:
       				var new_row = row.instantiate()
       				warp_container.add_child(new_row)
@@ -2904,19 +2904,19 @@ _______________
       
       func _on_warp_id_edit_text_set() -> void:
       	if warp_point:
-      		#field_changed.emit(warp_point, 'warp_id', warp_id_field.text)
+	  		#field_changed.emit(warp_point, 'warp_id', warp_id_field.text)
       		warp_point.warp_id = warp_id_field.text
       
       
       func _on_target_scene_edit_text_set() -> void:
       	if warp_point:
-      		#field_changed.emit(warp_point, 'target_scene', target_scene_field.text)
+	  		#field_changed.emit(warp_point, 'target_scene', target_scene_field.text)
       		warp_point.warp_definition.target_scene = target_scene_field.text
       
       
       func _on_target_warp_id_edit_text_set() -> void:
       	if warp_point:
-      		#field_changed.emit(warp_point, 'target_warp_id', target_warp_id_field.text)
+	  		#field_changed.emit(warp_point, 'target_warp_id', target_warp_id_field.text)
       		warp_point.warp_definition.target_warp_id = target_warp_id_field.text
       
       
@@ -3863,6 +3863,7 @@ _______________
     var enemies = []
     var positions = {}
     var slots = {}
+    var visuals = {}
     var selecting_targets : bool = false
     
     
@@ -3892,22 +3893,27 @@ _______________
     var _tweens_remaining = 0
     var _animations_pending = 0
     
+    class CombatantVisuals:
+    	var slot : Control
+    	var sprite : AnimatedSprite2D
+    	var indicator : Indicator
+    
     @warning_ignore_start("unused_parameter")
     # Called when the node enters the scene tree for the first time.
     func _ready() -> void:
     	EventBus.turn_started.connect(func(c : BattleCombatant): _current_combatant = c)
-    	EventBus.combat_queued.connect(set_positions)
+    	EventBus.combat_queued.connect(prepare_combatants)
     	EventBus.player_turn_started.connect(set_up)
     	EventBus.target_select_requested.connect(target_select)
     	EventBus.all_targets.connect(func(): all_targets = true)
-    	EventBus.combatant_status_applied.connect(func(combatant : BattleCombatant, status : StatusEffect): (positions[combatant].get_child(1) as Indicator).change_text(status.status_name))
-    	EventBus.combatant_status_expired.connect(func(combatant : BattleCombatant, status : StatusEffect): (positions[combatant].get_child(1) as Indicator).change_text(""))
+    	EventBus.combatant_status_applied.connect(func(combatant : BattleCombatant, status : StatusEffect): (visuals[combatant].indicator as Indicator).change_text(status.status_name))
+    	EventBus.combatant_status_expired.connect(func(combatant : BattleCombatant, status : StatusEffect): (visuals[combatant].indicator as Indicator).change_text(""))
     	EventBus.combat_action_resolving.connect(_on_resolve_started)
     	action_menu.get_child(0).grab_focus()
-    	attack_button.pressed.connect(_on_action_menu_pressed.bind('attack'))
-    	spell_button.pressed.connect(_on_action_menu_pressed.bind('spell'))
-    	item_button.pressed.connect(_on_action_menu_pressed.bind('item'))
-    	escape_button.pressed.connect(_on_action_menu_pressed.bind('escape'))
+		attack_button.pressed.connect(_on_action_menu_pressed.bind('attack'))
+		spell_button.pressed.connect(_on_action_menu_pressed.bind('spell'))
+		item_button.pressed.connect(_on_action_menu_pressed.bind('item'))
+		escape_button.pressed.connect(_on_action_menu_pressed.bind('escape'))
     	slots["enemy"]=[
     		enemy_position_1,
     		enemy_position_2,
@@ -3932,7 +3938,79 @@ _______________
     	battle_log_label.text = text
     		
     
-    func set_positions(combatants : Array[BattleCombatant]):
+    func prepare_combatants(combatants : Array[BattleCombatant]):
+    	assign_to_slots(combatants)
+    	create_visuals(combatants)
+    	tween_into_battle(combatants)
+    	attach_indicators(combatants)
+    	#party.clear()
+    	#enemies.clear()
+    	#for i in combatants:
+    		#if i.is_player_controlled:
+    			#party.append(i)
+    		#else:
+    			#enemies.append(i)
+    	#for i in slots["enemy"].size():
+    		#if i < enemies.size():
+    			##positions[enemies[i]]=slots["enemy"][i]
+    			#visuals[enemies[i]] = CombatantVisuals.new()
+    			#visuals[enemies[i]].slot = slots["enemy"][i]
+    		#else:
+    			#slots["enemy"][i].hide()
+    	#for i in slots["party"].size():
+    		#if i < party.size():
+    			#visuals[party[i]] = CombatantVisuals.new()
+    			#visuals[party[i]].slot = slots["party"][i]
+    		#else:
+    			#slots["party"][i].hide()
+    	#_tweens_remaining = visuals.keys().size()
+    	#for i : BattleCombatant in visuals.keys():
+    		#var sprite = AnimatedSprite2D.new()
+    		##sprite.sprite_frames = i.source_resource.sprite_frames
+    		#if i.source_resource is EnemyResource:
+    			#sprite.sprite_frames = i.source_resource.sprite_frames
+    		#elif i.source_resource is PartyMemberResource:
+    			#sprite.sprite_frames = i.source_resource.battle_sprite_frames
+    		#visuals[i].slot.add_child(sprite)
+    		#visuals[i].sprite = sprite
+    		#var offset = Vector2(600, 0) if not i.is_player_controlled else Vector2(-600, 0)
+    		#sprite.position = offset
+    		#sprite.set_meta("dead", false)
+    		#sprite.animation_finished.connect(func():
+    			#if not sprite.get_meta("dead"):
+    				#if sprite.sprite_frames.has_animation("idle"):
+    					#sprite.play("idle")
+    			#else:
+    				#sprite.stop())
+    		##sprite.play("battle_entrance")
+    		#if sprite.sprite_frames.has_animation("idle"):
+    			#sprite.play("idle")
+    		#var target_pos = visuals[i].slot.size
+    		#var tween = create_tween()
+    		#tween.tween_property(sprite, "position", target_pos, 0.4)
+    		#tween.finished.connect(func():
+    			#_tweens_remaining -= 1
+    			#if _tweens_remaining <= 0:
+    				#EventBus.combat_visuals_ready.emit()
+    				#_tweens_remaining = visuals.keys().size())
+    		#var indicator : Indicator = preload("res://scenes/ui/indicator.tscn").instantiate()
+    		#visuals[i].slot.add_child(indicator)
+    		#visuals[i].indicator = indicator
+    		#visuals[i].indicator.hide()
+    		#indicator.hp_bar.min_value = 0
+    		#indicator.mp_bar.min_value = 0
+    		#indicator.hp_bar.max_value = i.stats.max_hp()
+    		#indicator.mp_bar.max_value = i.stats.max_mp()
+    		#indicator.hp_bar.value = i.stats.current_hp
+    		#indicator.mp_bar.value = i.stats.current_mp
+    		##indicator.text = "v"
+    		#indicator.offset_transform_enabled = true
+    		#indicator.offset_transform_position = Vector2(80,-50)
+    		##indicator.offset_transform_position_ratio = Vector2(1.8, -0.8)
+    		#indicator.offset_transform_position = Vector2(125,60)
+    		#indicator.name = "SelectionArrow"
+    
+    func assign_to_slots(combatants : Array[BattleCombatant]):
     	party.clear()
     	enemies.clear()
     	for i in combatants:
@@ -3942,23 +4020,29 @@ _______________
     			enemies.append(i)
     	for i in slots["enemy"].size():
     		if i < enemies.size():
-    			positions[enemies[i]]=slots["enemy"][i]
+    			#positions[enemies[i]]=slots["enemy"][i]
+    			visuals[enemies[i]] = CombatantVisuals.new()
+    			visuals[enemies[i]].slot = slots["enemy"][i]
     		else:
     			slots["enemy"][i].hide()
     	for i in slots["party"].size():
     		if i < party.size():
-    			positions[party[i]]=slots["party"][i]
+    			visuals[party[i]] = CombatantVisuals.new()
+    			visuals[party[i]].slot = slots["party"][i]
     		else:
     			slots["party"][i].hide()
-    	_tweens_remaining = positions.keys().size()
-    	for i : BattleCombatant in positions.keys():
+    
+    func create_visuals(combatants : Array[BattleCombatant]):
+    	_tweens_remaining = visuals.keys().size()
+    	for i : BattleCombatant in visuals.keys():
     		var sprite = AnimatedSprite2D.new()
     		#sprite.sprite_frames = i.source_resource.sprite_frames
     		if i.source_resource is EnemyResource:
     			sprite.sprite_frames = i.source_resource.sprite_frames
     		elif i.source_resource is PartyMemberResource:
     			sprite.sprite_frames = i.source_resource.battle_sprite_frames
-    		positions[i].add_child(sprite)
+    		visuals[i].slot.add_child(sprite)
+    		visuals[i].sprite = sprite
     		var offset = Vector2(600, 0) if not i.is_player_controlled else Vector2(-600, 0)
     		sprite.position = offset
     		sprite.set_meta("dead", false)
@@ -3971,17 +4055,24 @@ _______________
     		#sprite.play("battle_entrance")
     		if sprite.sprite_frames.has_animation("idle"):
     			sprite.play("idle")
-    		var target_pos = positions[i].size
+    
+    func tween_into_battle(combatants : Array[BattleCombatant]):
+    	for i : BattleCombatant in visuals.keys():
+    		var target_pos = visuals[i].slot.size
     		var tween = create_tween()
-    		tween.tween_property(sprite, "position", target_pos, 0.4)
+    		tween.tween_property(visuals[i].sprite, "position", target_pos, 0.4)
     		tween.finished.connect(func():
     			_tweens_remaining -= 1
     			if _tweens_remaining <= 0:
     				EventBus.combat_visuals_ready.emit()
-    				_tweens_remaining = positions.keys().size())
+    				_tweens_remaining = visuals.keys().size())
+    
+    func attach_indicators(combatants : Array[BattleCombatant]):
+    	for i : BattleCombatant in visuals.keys():
     		var indicator : Indicator = preload("res://scenes/ui/indicator.tscn").instantiate()
-    		positions[i].add_child(indicator)
-    		positions[i].get_child(1).hide()
+    		visuals[i].slot.add_child(indicator)
+    		visuals[i].indicator = indicator
+    		visuals[i].indicator.hide()
     		indicator.hp_bar.min_value = 0
     		indicator.mp_bar.min_value = 0
     		indicator.hp_bar.max_value = i.stats.max_hp()
@@ -3991,9 +4082,7 @@ _______________
     		#indicator.text = "v"
     		indicator.offset_transform_enabled = true
     		indicator.offset_transform_position = Vector2(80,-50)
-    		##indicator.offset_transform_position_ratio = Vector2(1.8, -0.8)
-    		#indicator.offset_transform_position = Vector2(125,60)
-    		#indicator.name = "SelectionArrow"
+    
     func set_up(prev_node : GridContainer = null): 
     	if prev_node != null:
     		prev_node.hide()
@@ -4004,13 +4093,13 @@ _______________
     
     func _on_action_menu_pressed(choice : String):
     	match choice:
-    		'attack':
+			'attack':
     			populate_attack_menu()
-    		'spell':
+			'spell':
     			populate_spell_menu()
-    		'item':
+			'item':
     			populate_item_menu()
-    		'escape':
+			'escape':
     			EventBus.player_flee_attempted.emit()
     
     func paginate(action_array : Array, base_node : GridContainer, page : int = 0):
@@ -4069,7 +4158,7 @@ _______________
     	target_array = valid_targets
     	target_index = 0
     	clear_arrows()
-    	var arrow = positions[target_array[target_index]].get_child(1)
+    	var arrow = visuals[target_array[target_index]].indicator
     	arrow.show()
     	arrow.change_color(Color.RED)
     	update_target_arrow()
@@ -4081,19 +4170,19 @@ _______________
     		EventBus.combat_animations_finished.emit()
     
     func _on_combatant_damaged(combatant : BattleCombatant, amount : int):
-    	var arrow = positions[combatant].get_child(1)
+    	var arrow = visuals[combatant].indicator
     	arrow.show()
     	if combatant.is_player_controlled:
     		arrow.change_color(Color.YELLOW)
     	else:
     		arrow.change_color(Color.RED)
-    	var sprite : AnimatedSprite2D = positions[combatant].get_child(0)
+    	var sprite : AnimatedSprite2D = visuals[combatant].sprite
     	if sprite.sprite_frames.has_animation("hurt"):
     		sprite.play("hurt")
     	_animations_pending += 1
     	var tween = create_tween()
     	tween.tween_property(sprite, "modulate", Color.RED, 0.3)
-    	var indicator : Indicator = positions[combatant].get_child(1)
+    	var indicator : Indicator = visuals[combatant].indicator
     	indicator.update_hp(combatant.stats.current_hp)
     	tween.tween_property(sprite, "modulate", Color.WHITE, 0.3)
     	tween.finished.connect(func():
@@ -4103,15 +4192,15 @@ _______________
     	
     	
     func _on_combatant_died(combatant : BattleCombatant):
-    	var sprite : AnimatedSprite2D = positions[combatant].get_child(0)
+    	var sprite : AnimatedSprite2D = visuals[combatant].sprite
     	if sprite.sprite_frames.has_animation("died"):
     		sprite.play("died")
     	sprite.set_meta("dead",true)
     	sprite.animation_finished.connect(func():
     		_animations_pending += 1
     		var tween = create_tween()
-    		tween.tween_property(positions[combatant], "custom_minimum_size.x", 0, 0.3)
-    		tween.tween_callback(positions[combatant].hide)
+    		tween.tween_property(visuals[combatant].slot, "size.x", 0, 0.3)
+    		tween.tween_callback(visuals[combatant].hide)
     		tween.finished.connect(func():
     			_animations_pending -= 1
     			if _animations_pending <= 0:
@@ -4119,13 +4208,13 @@ _______________
     		)
     	
     func _on_combatant_healed(combatant : BattleCombatant, amount : int):
-    	var sprite : AnimatedSprite2D = positions[combatant].get_child(0)
+    	var sprite : AnimatedSprite2D = visuals[combatant].sprite
     	if sprite.sprite_frames.has_animation("healed"):
     		sprite.play("healed")
     	_animations_pending += 1
     	var tween = create_tween()
     	tween.tween_property(sprite, "modulate", Color.GREEN, 0.3)
-    	var indicator : Indicator = positions[combatant].get_child(1)
+    	var indicator : Indicator = visuals[combatant].indicator
     	indicator.update_hp(combatant.stats.current_hp)
     	tween.tween_property(sprite, "modulate", Color.WHITE, 0.3)
     	tween.finished.connect(func():
@@ -4133,15 +4222,30 @@ _______________
     		if _animations_pending <= 0:
     			EventBus.combat_animations_finished.emit())
     
+    #func animation_helper(combatant : BattleCombatant, animation_name : String, flash_color : Color, what_else : Callable = null):
+    	#var sprite : AnimatedSprite2D = visuals[combatant].sprite
+    	#if sprite.sprite_frames.has_animation(animation_name):
+    		#sprite.play(animation_name)
+    	#_animations_pending += 1
+    	#var tween = create_tween()
+    	#tween.tween_property(sprite, "modulate", flash_color, 0.3)
+    	#if what_else != null:
+    		#tween.tween_callback(what_else)
+    	#tween.tween_property(sprite, "modulate", Color.WHITE, 0.3)
+    	#tween.finished.connect(func():
+    		#_animations_pending -= 1
+    		#if _animations_pending <= 0:
+    			#EventBus.combat_animations_finished.emit())
+    
     func _on_turn_started(combatant : BattleCombatant):
     	clear_arrows()
-    	var arrow = positions[combatant].get_child(1)
+    	var arrow = visuals[combatant].indicator
     	arrow.show()
     	arrow.change_color(Color.YELLOW)
     
     func clear_arrows():
     	for i : BattleCombatant in enemies + party:
-    		var node : Indicator = positions[i].get_child(1)
+    		var node : Indicator = visuals[i].indicator
     		#node.modulate = Color.WHITE
     		node.hide()
     
@@ -4182,10 +4286,10 @@ _______________
     			targets.append(target_array[target_index])
     			EventBus.player_targets_selected.emit(targets)
     			selecting_targets = false
-    		elif event.is_action_pressed('move_right') or event.is_action_pressed("move_down"):
+			elif event.is_action_pressed('move_right') or event.is_action_pressed("move_down"):
     			target_index = wrapi(target_index - 1, 0, target_array.size())
     			update_target_arrow()
-    		elif event.is_action_pressed('move_left') or event.is_action_pressed("move_up"):
+			elif event.is_action_pressed('move_left') or event.is_action_pressed("move_up"):
     			target_index = wrapi(target_index + 1, 0, target_array.size())
     			update_target_arrow()
     		elif event.is_action_pressed("combat_cancel"):
@@ -4201,13 +4305,13 @@ _______________
     func update_target_arrow():
     	if !all_targets:
     		clear_arrows()
-    		var arrow = positions[target_array[target_index]].get_child(1)
+    		var arrow = visuals[target_array[target_index]].indicator
     		arrow.show()
     		arrow.change_color(Color.RED)
     	else:
     		clear_arrows()
     		for i in target_array.size():
-    			var arrow = positions[target_array[i]].get_child(1)
+    			var arrow = visuals[target_array[i]].indicator
     			arrow.show()
     			arrow.change_color(Color.RED)
     
@@ -4312,14 +4416,14 @@ _______________
     func _on_body_entered(body: Node2D) -> void:
     	if just_spawned or destination_only:
     		return
-    	if require_interact == false and body.is_in_group('player'):
+		if require_interact == false and body.is_in_group('player'):
     		_execute_warp()
     
     func try_interact():
     	if not require_interact or destination_only:
     		return
     	for body in get_overlapping_bodies():
-    		if body.is_in_group('player'):
+			if body.is_in_group('player'):
     			_execute_warp()
     			return
     
@@ -5257,7 +5361,7 @@ _______________
     layout_mode = 2
     size_flags_vertical = 3
     theme_override_styles/panel = SubResource("StyleBoxFlat_hh07i")
-    current_tab = 5
+    current_tab = 1
     
     [node name="Start Combat" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=240798581]
     visible = false
@@ -5274,7 +5378,6 @@ _______________
     text = "Fight"
     
     [node name="Edit Combat" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1928381547]
-    visible = false
     layout_mode = 2
     script = ExtResource("3_5dagh")
     metadata/_tab_index = 1
@@ -5680,6 +5783,7 @@ _______________
     prefix = "WIL: "
     
     [node name="Teleport" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1008854473]
+    visible = false
     layout_mode = 2
     script = ExtResource("7_b5u4c")
     metadata/_tab_index = 5
@@ -5770,7 +5874,7 @@ _______________
     @onready var status_cancel_button : Button = $Status_Popup/VBoxContainer/HBoxContainer/Button2
     
     var combatants : Array[BattleCombatant] = []
-    
+    var combat_manager : CombatManager
     # Called when the node enters the scene tree for the first time.
     func _ready() -> void:
     	hp_button.pressed.connect(popup_hp_mp.bind("hp"))
@@ -5781,7 +5885,7 @@ _______________
     	status_cancel_button.pressed.connect(func():status_popup.hide())
     
     func refresh_combatants(root : CombatManager):
-    	var combat_manager = root
+    	combat_manager = root
     	for node in combatants_container.get_children():
     		node.queue_free()
     	for i : BattleCombatant in combat_manager._turn_queue:
@@ -5806,17 +5910,30 @@ _______________
     		hp_mp_confirm_button.pressed.disconnect(send_hp_mp)
     	if mode == "hp":
     		hp_mp_label.text = "Set HP"
+    		hp_mp_spinbox.max_value = current_combatant.stats.max_hp()
     		hp_mp_confirm_button.pressed.connect(send_hp_mp.bind("hp"))
     	elif mode == "mp":
     		hp_mp_label.text = "Set MP"
+    		hp_mp_spinbox.max_value = current_combatant.stats.max_mp()
     		hp_mp_confirm_button.pressed.connect(send_hp_mp.bind("mp"))
     	hp_mp_popup.show()
     
     func send_hp_mp(mode : String):
     	if mode == "hp":
-    		current_combatant.stats.current_hp = min(hp_mp_spinbox.value, current_combatant.stats.max_hp())
+    		#current_combatant.stats.current_hp = min(hp_mp_spinbox.value, current_combatant.stats.max_hp())
+    		for combatant : BattleCombatant in combat_manager._turn_queue:
+    			if combatant == current_combatant:
+    				if combatant.stats.current_hp < hp_mp_spinbox.value:
+    					combatant.heal(hp_mp_spinbox.value - combatant.stats.current_hp)
+    					EventBus.emit_signal("combatant_healed", combatant, hp_mp_spinbox.value - combatant.stats.current_hp)
+    				else:
+    					combatant.take_damage(combatant.stats.current_hp - hp_mp_spinbox.value)
+    					EventBus.emit_signal("combatant_damaged", combatant, combatant.stats.current_hp - hp_mp_spinbox.value)
     	elif mode == "mp":
     		current_combatant.stats.current_mp = min(hp_mp_spinbox.value, current_combatant.stats.max_mp())
+    		#for combatant : BattleCombatant in combat_manager._turn_queue:
+    			#if combatant == current_combatant:
+    				#combatant. (hp_mp_spinbox.value - combatant.stats.current_hp)
     	refresh_stats(current_combatant)
     	hp_mp_popup.hide()
     
@@ -5849,10 +5966,6 @@ _______________
     				current_combatant.source_resource.active_statuses.erase(i)
     	refresh_stats(current_combatant)
     	status_popup.hide()
-    
-    # Called every frame. 'delta' is the elapsed time since the previous frame.
-    func _process(delta: float) -> void:
-    	pass
     
     _______________
     _______________
@@ -6196,9 +6309,11 @@ _______________
     	if current_party_member.stats.current_hp == -1:
     		current_party_member.stats.current_hp = current_party_member.stats.max_hp()
     	hp_spin.value = current_party_member.stats.current_hp
+    	hp_spin.max_value = current_party_member.stats.max_hp()
     	if current_party_member.stats.current_mp == -1:
     		current_party_member.stats.current_mp = current_party_member.stats.max_mp()
     	mp_spin.value = current_party_member.stats.current_mp
+    	mp_spin.max_value = current_party_member.stats.max_mp()
     	str_spin.value = current_party_member.stats.str
     	vit_spin.value = current_party_member.stats.vit
     	agi_spin.value = current_party_member.stats.agi
@@ -6248,7 +6363,7 @@ _______________
     
     func start_combat():
     	if GameState.in_combat:
-    		SceneManager.end_combat('')
+			SceneManager.end_combat('')
     	if combat_list.is_anything_selected():
     		DebugMenu.hide()
     		SceneManager.start_combat(combat_list.get_item_metadata(combat_list.get_selected_items()[0]))
@@ -7339,7 +7454,7 @@ _______________
     		var anchor_node := Node2D.new()
     		var button := Button.new()
     		button.text = "   %s   " % i.stats.character_name
-    		button.add_to_group('member_buttons')
+			button.add_to_group('member_buttons')
     		button.pressed.connect(func(): current_party_member = i; refresh_item_list(); set_button_color(button))
     		button.rotation_degrees = -90
     		member_container.add_child(spacer_control)
@@ -7349,8 +7464,8 @@ _______________
     		anchor_node.add_child(button)
     		spacer_control.custom_minimum_size = Vector2(0, button.size.x)
     		spacer_control.custom_maximum_size = Vector2(0, button.size.x)
-    	var button : Button = get_tree().get_nodes_in_group('member_buttons')[0]
-    	button.emit_signal('pressed')
+		var button : Button = get_tree().get_nodes_in_group('member_buttons')[0]
+		button.emit_signal('pressed')
     	
     
     func refresh_item_list():
@@ -7406,9 +7521,9 @@ _______________
     	item_list.item_selected.connect(_on_item_selected.bind(item_list))
     
     func set_button_color(button : Button):
-    	for child in get_tree().get_nodes_in_group('member_buttons'):
-    		child.add_theme_color_override('font_color', Color.WHITE)
-    	button.add_theme_color_override('font_color', Color.GOLD)
+		for child in get_tree().get_nodes_in_group('member_buttons'):
+			child.add_theme_color_override('font_color', Color.WHITE)
+		button.add_theme_color_override('font_color', Color.GOLD)
     
     func _on_item_selected(index : int, item_list : ItemList):
     	var item : ItemResource = item_list.get_item_metadata(index)
@@ -7506,7 +7621,7 @@ _______________
     	if safe_zone_scene != "" and safe_zone_warp_id != "":
     		GameState.previous_safe_zone = [safe_zone_scene, safe_zone_warp_id]
     	#print(GameState.previous_safe_zone)
-    	player = get_tree().get_nodes_in_group('player')[0]
+		player = get_tree().get_nodes_in_group('player')[0]
     	for warp in warps.get_children():
     		if warp is WarpPoint and (warp as WarpPoint).warp_id == GameState.pending_warp_id:
     			pending_warp = warp
@@ -7542,7 +7657,7 @@ _______________
     	pass # Replace with function body.
     
     
-    # Called every frame. 'delta' is the elapsed time since the previous frame.
+	# Called every frame. 'delta' is the elapsed time since the previous frame.
     func _process(delta: float) -> void:
     	pass
     
@@ -7753,1054 +7868,1105 @@ _______________
     signal combat_animations_finished()
     signal combat_action_resolving()
     signal combat_log_updated(text: String) # anything that happens in battle gets narrated here: "Norb attacks!", "Slime is poisoned!", "Norb takes 14 damage!"
-    signal turn_started(combatant: BattleCombatant) # fired when a new combatant's turn begins, UI uses this to highlight whose turn it is
-    signal combatant_damaged(combatant: BattleCombatant, amount: int) # fired after damage is applied, HP bar animates in response
-    signal combatant_healed(combatant: BattleCombatant, amount: int) # same pattern for healing
-    signal combatant_status_applied(combatant: BattleCombatant, status: StatusEffect) # UI shows the status icon
-    signal combatant_status_expired(combatant: BattleCombatant, status: StatusEffect) # UI removes the status icon
-    signal combatant_died(combatant: BattleCombatant) # UI plays death state, CombatManager checks victory/defeat condition
-    signal player_turn_started()
-    signal player_action_selected(action: BattleAction)
-    signal player_targets_selected(targets: Array[BattleCombatant])
-    signal player_item_selected(item : ItemResource)
-    signal player_flee_attempted()
-    signal target_select_requested(targets: Array[BattleCombatant])
-    signal all_targets()
-    
-    
-    # Dialogue signals
-    signal dialogue_started(sequence: DialogueSequence)
-    signal advance_dialogue_requested()
-    signal dialogue_line_advanced(line : DialogueLine)
-    signal dialogue_choices_available(choices: Array[DialogueChoice])
-    signal dialogue_choice_selected(choice : DialogueChoice)
-    signal dialogue_finished()
-    
-    # Inventory signals
-    signal item_acquired(item: Resource)
-    signal item_used(item: Resource)
-    signal item_dropped(item: Resource)
-    
-    # Game state signals
-    signal flag_changed(flag_name: String, value: Variant)
-    signal gold_changed(new_amount: int)
-    
-    # Progression signals
-    signal level_increased(character : PartyMemberResource, new_value : int)
-    signal stat_increased(character : PartyMemberResource, stat : String, new_value : int)
-    
-    # Audio signals
-    signal music_change_requested(track_path: String, transition: String)
-    signal sfx_requested(sfx_path: String)
-    
-    # Manipulation signals
-    signal interact_pressed
-    signal world_menu_opened
-    signal world_menu_closed
-    
-    _______________
-    _______________
-    (GameState.gd):
-    extends Node
-    
-    # World flags — anything that "happened": doors opened, quests advanced,
-    # NPCs talked to. Key is a string, value is bool/int/String.
-    var flags: Dictionary = {}
-    
-    # Economy
-    var gold: int = 0
-    var pending_inventory: Array[ItemResource] = []
-    var inventory: Array[ItemResource] = []
-    
-    # Party
-    var party: Array[PartyMemberResource] = []
-    
-    # Tracking
-    var current_map_path: String = ""
-    var save_slot: int = 0
-    var pending_warp_id : String = "test_town_entrance"
-    var previous_player_location : Vector2 = Vector2(-1, -1)
-    var previous_safe_zone : Array = [] # Scene, Warp_ID
-    
-    var pending_enemy_group : EnemyGroupResource = null
-    var in_combat := false
-    var movement_locks := 0
-    
-    func _ready() -> void:
-    	EventBus.combat_started.connect(func(enemy_group):in_combat=true)
-    	EventBus.combat_ended.connect(func(result):in_combat=false)
-    	party.append(load("res://data/characters/norb_party_member.tres").duplicate(true))
-    	party.append(load("res://data/characters/dog_party_member.tres").duplicate(true))
-    	inventory.append_array([load("res://data/items/elixer.tres"), load("res://data/items/magicrestore.tres"), load("res://data/items/potion.tres"), load("res://data/items/sword.tres")])
-    
-    func set_flag(flag_name: String, value: Variant) -> void:
-    	flags[flag_name] = value
-    	EventBus.flag_changed.emit(flag_name, value)
-    
-    
-    func get_flag(flag_name: String, default: Variant = null) -> Variant:
-    	return flags.get(flag_name, default)
-    
-    
-    func add_gold(amount: int) -> void:
-    	gold += amount
-    	EventBus.gold_changed.emit(gold)
-    
-    func spend_gold(amount: int) -> bool:
-    	if gold < amount:
-    		return false
-    	gold -= amount
-    	EventBus.gold_changed.emit(gold)
-    	return true
-    
-    func inventory_drop(drop_table : Array[ItemResource]):
-    	if drop_table.is_empty():
-    		return
-    	var dropped_items = randi_range(0, drop_table.size()-1)
-    	for i in dropped_items:
-    		give_item(drop_table[i])
-    
-    func give_item(item : ItemResource):
-    	pending_inventory.append(item)
-    	EventBus.item_dropped.emit(item)
-    	print("Item dropped: %s" % item.item_name)
-    
-    func inventory_transfer():
-    	for i in pending_inventory:
-    		inventory.append(i)
-    		EventBus.item_acquired.emit(i)
-    		print("Item aquired: %s" % i.item_name)
-    	pending_inventory = []
-    
-    _______________
-    _______________
-    (SaveManager.gd):
-    extends Node
-    @warning_ignore_start("unused_parameter")
-    func save(slot: int) -> void:
-    	pass  # Phase 9
-    
-    
-    func load_save(slot: int) -> void:
-    	pass  # Phase 9
-    
-    
-    func save_exists(slot: int) -> bool:
-    	return false  # Phase 9
-    
-    _______________
-    _______________
-    (SceneManager.gd):
-    extends Node
-    
-    var _is_transitioning: bool = false
-    
-    
-    func travel_to(scene_path: String, warp_id : String = "", transition: String = "fade") -> void:
-    	if _is_transitioning:
-    		return
-    	_is_transitioning = true
-    	EventBus.scene_transition_requested.emit(scene_path, transition)
-    	# Transition animation plays, then calls _do_scene_change()
-    	# For now, skip the animation and swap directly
-    	GameState.pending_warp_id = warp_id
-    	_do_scene_change(scene_path)
-    
-    
-    func _do_scene_change(scene_path: String) -> void:
-    	get_tree().call_deferred('change_scene_to_file',scene_path)
-    	_is_transitioning = false
-    	EventBus.scene_transition_finished.emit()
-    
-    
-    func start_combat(enemy_group: Resource) -> void:
-    	# Store the return scene so we can come back after combat
-    	if get_tree().current_scene.scene_file_path != "res://scenes/battle/Battle.tscn":
-    		GameState.current_map_path = get_tree().current_scene.scene_file_path
-    		print(GameState.current_map_path )
-    	EventBus.combat_started.emit(enemy_group)
-    	GameState.pending_enemy_group = enemy_group
-    	travel_to("res://scenes/battle/Battle.tscn", "", "flash")
-    
-    
-    func end_combat(result: String) -> void:
-    	EventBus.combat_ended.emit(result)
-    	#for i : PartyMemberResource in GameState.party:
-    		#GameState.hp_cache[i.stats.character_name] = i.stats.current_hp
-    		#GameState.mp_cache[i.stats.character_name] = i.stats.current_mp
-    	if result == "defeat":
-    		travel_to(GameState.previous_safe_zone[0], GameState.previous_safe_zone[1], "fade")
-    	else:
-    		travel_to(GameState.current_map_path, "", "fade")
-    
-    _______________
-    COMBAT:
-    _______________
-    (BattleCombatant.gd):
-    class_name BattleCombatant
-    extends RefCounted
-    
-    var stats: CharacterStatBlock 
-    var is_player_controlled: bool
-    #var active_statuses: Array[Dictionary] = []
-    var source_resource : EntityResource
-    var physical_actions: Array[BattleAction] = []
-    var magic_actions: Array[BattleAction] = []
-    var healing_actions: Array[BattleAction] = []
-    var other_actions: Array[BattleAction] = []
-    #var inventory : Array[ItemResource] = []
-    
-    func _init(char_stats : CharacterStatBlock) -> void:
-    	stats = char_stats
-    	if stats.current_hp == -1:
-    		stats.current_hp = stats.max_hp()
-    	if stats.current_mp == -1:
-    		stats.current_mp = stats.max_mp()
-    
-    static func create_enemy(character : EnemyResource) -> BattleCombatant:
-    	var combatant = BattleCombatant.new(character.stats.duplicate(true))
-    	combatant.is_player_controlled = false
-    	combatant.source_resource = character.duplicate_deep()
-    	character.stats.character_name = character.enemy_name
-    	combatant.create_action_arrays(character.actions)
-    	return combatant
-    
-    static func create_party_member(character : PartyMemberResource) -> BattleCombatant:
-    	var combatant = BattleCombatant.new(character.stats)
-    	combatant.is_player_controlled = true
-    	combatant.source_resource = character.duplicate_deep()
-    	combatant.create_action_arrays(character.actions)
-    	return combatant
-    
-    func create_action_arrays(actions : Array[BattleAction]):
-    	for action : BattleAction in actions:
-    		match action.damage_type:
-    			action.DamageType.PHYSICAL:
-    				physical_actions.append(action)
-    			action.DamageType.MAGICAL:
-    				magic_actions.append(action)
-    			action.DamageType.HEALING:
-    				healing_actions.append(action)
-    			action.DamageType.NONE:
-    				other_actions.append(action)
-    
-    func return_available_magic_actions() -> Array[BattleAction]:
-    	var array : Array[BattleAction] = []
-    	for action : BattleAction in magic_actions:
-    		if action.mp_cost <= stats.current_mp:
-    			array.append(action)
-    	return array
-    
-    func return_available_healing_actions() -> Array[BattleAction]:
-    	var array : Array[BattleAction] = []
-    	for action : BattleAction in healing_actions:
-    		if action.mp_cost <= stats.current_mp:
-    			array.append(action)
-    	return array
-    
-    #func max_hp() -> int:
-    	#return 20 + (stats.vit * 8) + (stats.level * 5)
-    #func max_mp() -> int:
-    	#return 10 + (stats.wil * 5) + (stats.level * 3)
-    func is_alive() -> bool: # reads stats.current_hp
-    	return stats.current_hp > 0
-    func can_act() -> bool: # checks is_alive() and whether any active status blocks_action
-    	if is_alive():
-    		if source_resource.active_statuses.is_empty():
-    			return true
-    		else:
-    			for i in source_resource.active_statuses:
-    				if i["effect"].blocks_action == true:
-    					return false
-    			return true
-    	else:
-    		return false
-    func take_damage(amount: int) -> void: # subtracts from stats.current_hp, clamps to zero
-    	stats.current_hp = clampi(stats.current_hp - amount, 0, stats.max_hp())
-    	print("%s HP: %s" % [stats.character_name, stats.current_hp])
-    func heal(amount: int) -> void: # adds to stats.current_hp, clamps to max_hp()
-    	stats.current_hp = clampi(stats.current_hp + amount, 0, stats.max_hp())
-    func apply_status(status: StatusEffect) -> bool: # appends to active_statuses, but only if not already present
-    	var new = true
-    	for i in source_resource.active_statuses:
-    		if i["effect"] == status:
-    			new = false
-    	if new == true:
-    		source_resource.active_statuses.append({"effect" = status, "turns_remaining" = status.duration_turns})
-    	return new
-    func tick_statuses() -> void: #decrements duration_turns on each status, removes expired ones, applies damage_per_turn for POISON
-    	var statuses = source_resource.active_statuses.duplicate()
-    	for status in statuses:
-    		status["turns_remaining"] -= 1
-    		take_damage(status["effect"].damage_per_turn)
-    		if status["turns_remaining"] <= 0:
-    			source_resource.active_statuses.erase(status)
-    		print("%s is %s with %s turns left." % [stats.character_name, status["effect"].status_name, status["turns_remaining"]])
-    func effective_stat(stat : String) -> float:
-    	var base_stat = source_resource.stats.get(stat)
-    	var stat_mod = source_resource.stat_mods.get(stat, 0.0)
-    	var stat_bonus = source_resource.get_bonus(stat)
-    	if base_stat != null:
-    		return base_stat + stat_mod + stat_bonus
-    	else:
-    		push_error("effective stat typo: %s" % stat)
-    		return stat_mod + stat_bonus
-    
-    _______________
-    _______________
-    (combat_manager.gd):
-    extends Node
-    class_name CombatManager
-    
-    @warning_ignore_start("integer_division")
-    
-    enum State {
-    	IDLE          , # waiting for something to happen (brief, between states)
-    	PLAYER_INPUT  , # player is choosing an action
-    	TARGET_SELECT , # player is choosing a target
-    	RESOLVING     , # an action is executing (damage applied, log updated)
-    	# STATUS_TICK   , # status effects proc at start/end of turn
-    	ENEMY_TURN    , # AI is selecting and executing an action
-    	VICTORY       , # all enemies dead, award EXP/gold
-    	DEFEAT        , # all party members dead
-    	FLED          , # ran successfully
-    }
-    
-    var _turn_queue: Array[BattleCombatant] = []
-    var _current_turn_index: int = -1
-    var current_combatant : BattleCombatant = null
-    var _state: State = State.IDLE
-    var _pending_action: BattleAction = null
-    var _pending_targets: Array[BattleCombatant] = []
-    var _pending_item: ItemResource = null
-    var _enemy_group: EnemyGroupResource = null
-    var _party_members: Array[PartyMemberResource] = []
-    var _enemy_combatants : Array[BattleCombatant] = []
-    var _party_combatants: Array[BattleCombatant] = []
-    
-    func _ready() -> void:
-    	#EventBus.combat_started.connect(start_battle)
-    	EventBus.player_action_selected.connect(_on_player_action_selected)
-    	EventBus.player_item_selected.connect(_on_player_item_selected)
-    	EventBus.player_targets_selected.connect(_on_player_targets_selected)
-    	EventBus.player_flee_attempted.connect(_on_player_flee_attempted)
-    	EventBus.combat_visuals_ready.connect(start_next_turn)
-    	if GameState.pending_enemy_group != null:
-    		start_battle(GameState.pending_enemy_group)
-    		GameState.pending_enemy_group = null
-    
-    func start_battle(enemy_group : EnemyGroupResource):
-    	_enemy_group = enemy_group
-    	_party_members = GameState.party
-    	for entity in _party_members + _enemy_group.enemies:
-    		var combatant : BattleCombatant
-    		if entity is PartyMemberResource:
-    			combatant = BattleCombatant.create_party_member(entity)
-    			_party_combatants.append(combatant)
-    		elif entity is EnemyResource:
-    			entity.stats.character_name = entity.enemy_name
-    			combatant = BattleCombatant.create_enemy(entity)
-    			_enemy_combatants.append(combatant)
-    		_turn_queue.append(combatant)
-    	_turn_queue.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.effective_stat("agi") > b.effective_stat("agi"))
-    	EventBus.combat_queued.emit(_turn_queue)
-    	#start_next_turn()
-    
-    func start_next_turn():
-    	await get_tree().create_timer(0.3).timeout
-    	_state = State.IDLE
-    	advance_index()
-    	if !any_alive(true): # handle failure
-    		_state = State.DEFEAT
-    		#EventBus.combat_ended.emit("defeat")
-    		_process_party_progression()
-    		var player : PartyMemberResource
-    		for i : PartyMemberResource in _party_members:
-    			if i.is_player:
-    				i.stats.current_hp = i.stats.max_hp()/2
-    		SceneManager.end_combat("defeat")
-    		return
-    	if !any_alive(false): # handle victory
-    		_state = State.VICTORY
-    		for i in _enemy_group.enemies:
-    			GameState.add_gold(i.gold_reward)
-    			for ii : PartyMemberResource in _party_members:
-    				ii.pending_xp += i.experience_reward 
-    			GameState.inventory_drop(i.drop_table)
-    			for equipment in i.equipped.keys():
-    				if !(i.equipped[equipment] is Array):
-    					if i.equipped[equipment] != null:
-    						var item : ItemResource = i.equipped[equipment]
-    						if randf() < i.equip_drop_chance:
-    							GameState.give_item(item)
-    				else:
-    					for item in i.equipped[equipment]:
-    						if item is ItemResource:
-    							if randf() < i.equip_drop_chance:
-    								GameState.give_item(item)
-    		GameState.inventory_transfer()
-    		#EventBus.combat_ended.emit("victory")
-    		_process_party_progression()
-    		
-    		SceneManager.end_combat("victory")
-    		return
-    	current_combatant = _turn_queue[_current_turn_index]
-    	while not current_combatant.is_alive():
-    		advance_index()
-    		current_combatant = _turn_queue[_current_turn_index]
-    	EventBus.turn_started.emit(current_combatant)
-    	if current_combatant.is_player_controlled:
-    		_state = State.PLAYER_INPUT
-    		EventBus.player_turn_started.emit()
-    	else:
-    		_state = State.ENEMY_TURN
-    		_run_enemy_turn()
-    
-    func _run_enemy_turn():
-    	if !current_combatant.can_act():
-    		var log_string = "%s is " % current_combatant.stats.character_name
-    		for status in current_combatant.source_resource.active_statuses:
-    			if status["effect"].status_type == StatusEffect.StatusType.SLEEP:
-    				log_string += "asleep"
-    				current_combatant.tick_statuses()
-    				break
-    			elif status["effect"].status_type == StatusEffect.StatusType.STUN:
-    				log_string += "stunned"
-    				current_combatant.tick_statuses()
-    				break
-    		EventBus.combat_log_updated.emit(log_string)
-    		start_next_turn()
-    	else:
-    		var enemy_data = current_combatant.source_resource as EnemyResource
-    		var party = living_entities(_party_combatants)
-    		party.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
-    		var enemies = living_entities(_enemy_combatants)
-    		enemies.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
-    		var targets : Array[BattleCombatant] = []
-    		var action : BattleAction
-    		match enemy_data.behavior:
-    			EnemyResource.AIBehavior.RANDOM: 
-    				targets.append(party.pick_random())
-    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-    			EnemyResource.AIBehavior.AGGRESSIVE:
-    				targets.append(party[0])
-    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-    			EnemyResource.AIBehavior.DEFENSIVE:
-    				targets.append(party[-1])
-    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-    			EnemyResource.AIBehavior.HEALER:
-    				targets.append(enemies[-1])
-    				action = current_combatant.return_available_healing_actions().pick_random()
-    			EnemyResource.AIBehavior.BERSERKER:
-    				targets.append(party[0])
-    				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
-    		if action == null:
-    			EventBus.combat_log_updated.emit("%s does nothing" % current_combatant.stats.character_name)
-    			start_next_turn()
-    			return
-    		_resolve_action(current_combatant, targets, action)
-    
-    func living_entities(array : Array[BattleCombatant]) -> Array[BattleCombatant]:
-    	var new_array = array.duplicate()
-    	for i in array:
-    		if !i.is_alive():
-    			new_array.erase(i)
-    	return new_array
-    
-    func _resolve_action(attacker : BattleCombatant, targets : Array[BattleCombatant], action : BattleAction):
-    	EventBus.combat_action_resolving.emit()
-    	_state = State.RESOLVING
-    	var healing = action.damage_type == BattleAction.DamageType.HEALING
-    	if action.category == BattleAction.ActionCategory.MAGIC:
-    		attacker.stats.current_mp -= action.mp_cost
-    	for target in targets:
-    		if action.category == BattleAction.ActionCategory.ATTACK:
-    			EventBus.combat_log_updated.emit("%s attacks %s" % [attacker.stats.character_name, target.stats.character_name])
-    			var damage = (attacker.effective_stat("str") * action.power) / maxf(1.0, target.effective_stat("vit"))
-    			if accuracy_check(attacker):
-    				if attacker.is_player_controlled:
-    					(attacker.source_resource as PartyMemberResource).accumulate("str", target.effective_stat("vit"))
-    					(attacker.source_resource as PartyMemberResource).accumulate("agi", target.effective_stat("agi"))
-    				elif target.is_player_controlled:
-    					(target.source_resource as PartyMemberResource).accumulate("vit", damage)
-    					(target.source_resource as PartyMemberResource).accumulate("agi", attacker.effective_stat("agi"))
-    				target.take_damage(roundi(damage))
-    				EventBus.combatant_damaged.emit(target, roundi(damage))
-    			else:
-    				EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
-    		elif action.category == BattleAction.ActionCategory.MAGIC:
-    			if !healing:
-    				var damage = (attacker.effective_stat("intelligence") * action.power) / maxf(1.0, target.effective_stat("wil"))
-    				EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
-    				if accuracy_check(attacker):
-    					if attacker.is_player_controlled:
-    						(attacker.source_resource as PartyMemberResource).accumulate("intelligence", target.effective_stat("wil"))
-    					target.take_damage(roundi(damage))
-    					EventBus.combatant_damaged.emit(target, roundi(damage))
-    				else:
-    					EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
-    			else:
-    				var amount = (attacker.effective_stat("intelligence") * action.power)
-    				EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
-    				if attacker.is_player_controlled:
-    					(attacker.source_resource as PartyMemberResource).accumulate("wil", amount)
-    					(attacker.source_resource as PartyMemberResource).accumulate("intelligence", amount * 0.5)
-    				target.heal(roundi(amount))
-    				EventBus.combatant_healed.emit(target, roundi(amount))
-    		elif action.category == BattleAction.ActionCategory.SKILL:
-    			EventBus.combat_log_updated.emit("%s uses %s" % [attacker.stats.character_name, action.action_name])
-    		if action.status_to_apply != null:
-    			if randf()<action.status_chance:
-    				if target.apply_status(action.status_to_apply):
-    					EventBus.combatant_status_applied.emit(target, action.status_to_apply)
-    		if !target.is_alive():
-    			EventBus.combatant_died.emit(target)
-    			
-    	attacker.tick_statuses()
-    	#start_next_turn.call_deferred()
-    	EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
-    	_pending_action = null
-    
-    func _resolve_item(attacker : BattleCombatant, targets : Array[BattleCombatant], item : ItemResource):
-    	EventBus.combat_action_resolving.emit()
-    	_state = State.RESOLVING
-    	var item_used : bool = false
-    	for combatant : BattleCombatant in targets:
-    		var hp_before = combatant.stats.current_hp
-    		item_used = item.apply_to(combatant.stats)
-    		if item_used:
-    			if combatant.stats.current_hp > hp_before:
-    				EventBus.combatant_healed.emit(combatant, combatant.stats.current_hp - hp_before)
-    			if item.effect_type == ItemResource.ConsumableEffect.CURE_STATUS:
-    				if combatant.source_resource.active_statuses.size() > 0:
-    					combatant.source_resource.active_statuses = []
-    			elif item.effect_type == ItemResource.ConsumableEffect.CUSTOM:
-    					for i in item.custom_effects.size():
-    						if item.custom_effects[i] == ItemResource.ConsumableEffect.CURE_STATUS:
-    							if combatant.source_resource.active_statuses.size() > 0:
-    								combatant.source_resource.active_statuses = []
-    	if item_used:
-    		item.quantity -= 1
-    		if item.quantity <= 0:
-    			if attacker.is_player_controlled:
-    				GameState.inventory.erase(item)
-    			else:
-    				attacker.source_resource.inventory.erase(item)
-    		EventBus.item_used.emit(item)
-    		attacker.tick_statuses()
-    		#start_next_turn.call_deferred()
-    		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
-    	else:
-    		#EventBus.item_used.emit(ItemResource.new())
-    		attacker.tick_statuses()
-    		#start_next_turn.call_deferred()
-    		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
-    	_pending_item = null
-    
-    func _on_player_action_selected(action: BattleAction):
-    	if _state == State.PLAYER_INPUT:
-    		_pending_action = action
-    		_state = State.TARGET_SELECT
-    		if action.target_type == BattleAction.TargetType.ALL_ENEMIES or action.target_type == BattleAction.TargetType.ALL_ALLIES:
-    			EventBus.all_targets.emit()
-    		var valid_targets = get_targets(action.target_type)
-    		EventBus.target_select_requested.emit(valid_targets)
-    
-    func _on_player_item_selected(item: ItemResource):
-    	if _state == State.PLAYER_INPUT:
-    		_pending_item = item
-    		_state = State.TARGET_SELECT
-    		var valid_targets = get_targets(BattleAction.TargetType.SINGLE_ALLY)
-    		EventBus.target_select_requested.emit(valid_targets)
-    
-    func get_targets(target_type : BattleAction.TargetType):
-    	if target_type == BattleAction.TargetType.SINGLE_ENEMY or target_type == BattleAction.TargetType.ALL_ENEMIES:
-    		if current_combatant.is_player_controlled:
-    			return living_entities(_enemy_combatants)
-    		else:
-    			return living_entities(_party_combatants)
-    	elif target_type == BattleAction.TargetType.SINGLE_ALLY or target_type == BattleAction.TargetType.ALL_ALLIES:
-    		if current_combatant.is_player_controlled:
-    			return living_entities(_party_combatants)
-    		else:
-    			return living_entities(_enemy_combatants)
-    	elif target_type == BattleAction.TargetType.SELF:
-    		return [current_combatant]
-    
-    func _on_player_targets_selected(targets: Array[BattleCombatant]):
-    	if _state == State.TARGET_SELECT:
-    		_pending_targets = targets
-    		if _pending_action != null:
-    			_resolve_action(current_combatant, _pending_targets, _pending_action)
-    		elif _pending_item != null:
-    			_resolve_item(current_combatant, _pending_targets, _pending_item)
-    	
-    func _on_player_flee_attempted():
-    	if _state == State.PLAYER_INPUT:
-    		var player_agi = 0
-    		var player_count = 0
-    		var enemy_agi = 0
-    		var enemy_count = 0
-    		for i : BattleCombatant in _turn_queue:
-    			if i.is_alive():
-    				if i.is_player_controlled:
-    					player_agi += i.effective_stat("agi")
-    					player_count += 1
-    				else:
-    					enemy_agi += i.effective_stat("agi")
-    					enemy_count += 1
-    		for i : BattleCombatant in _turn_queue:
-    			if i.is_alive() and i.is_player_controlled:
-    				(i.source_resource as PartyMemberResource).accumulate("agi", enemy_agi / enemy_count)
-    		EventBus.combat_log_updated.emit("%s attempted to flee" % current_combatant.stats.character_name)
-    		if float(player_agi) / float(player_count) > (float(enemy_agi) / float(enemy_count) * 0.8):
-    			_state = State.FLED
-    			EventBus.combat_log_updated.emit("%s fled" % current_combatant.stats.character_name)
-    			#EventBus.combat_ended.emit("fled")
-    			_process_party_progression()
-    			SceneManager.end_combat("fled")
-    		else:
-    			EventBus.combat_log_updated.emit("%s failed to escape" % current_combatant.stats.character_name)
-    			start_next_turn()
-    
-    func _process_party_progression():
-    	for i : BattleCombatant in _turn_queue:
-    		if i.is_player_controlled:
-    			(i.source_resource as PartyMemberResource).process_progression()
-    
-    func accuracy_check(attacker : BattleCombatant) -> bool:
-    	var hit_roll = randf()
-    	var accuracy = 1.0
-    	# apply accuracy modifier from any BLIND status on attacker
-    	for status in attacker.source_resource.active_statuses:
-    		accuracy *= status["effect"].accuracy_modifier
-    	if hit_roll > accuracy:
-    		return false
-    	return true
-    
-    func advance_index() -> void:
-    	_current_turn_index = (_current_turn_index + 1) % _turn_queue.size()
-    
-    func any_alive(player_controlled : bool) -> bool:
-    	for i : BattleCombatant in _turn_queue:
-    		if i.is_player_controlled == player_controlled and i.is_alive():
-    			return true
-    	return false
-    
-    _______________
-    ENTITIES:
-    RESOURCES:
-    _______________
-    (BattleAction.gd):
-    class_name BattleAction
-    extends Resource
-    
-    enum ActionCategory {ATTACK, MAGIC, SKILL}
-    enum TargetType {SINGLE_ENEMY, ALL_ENEMIES, SINGLE_ALLY, ALL_ALLIES, SELF}
-    enum DamageType {PHYSICAL, MAGICAL, HEALING, NONE}
-    
-    @export var action_name: String = ""
-    @export var description: String = ""
-    @export var category: ActionCategory = ActionCategory.ATTACK
-    @export var mp_cost: int = 0 # zero for physical attacks
-    @export var target_type: TargetType = TargetType.SINGLE_ENEMY
-    @export var damage_type: DamageType = DamageType.PHYSICAL
-    @export var power: int = 1 #the base value the damage formula will scale from
-    @export var status_to_apply: StatusEffect = null # null means no status, so no default needed
-    @export_range(0.0, 1.0, 0.1) var status_chance: float = 0.5 # probability the status applies, 0.0 to 1.0
-    @export var animation_key: String = ""
-    
-    _______________
-    _______________
-    (CharacterStatBlock.gd):
-    class_name CharacterStatBlock
-    extends Resource
-    
-    @warning_ignore_start("shadowed_global_identifier")
-    
-    @export var character_name: String = ""
-    @export var level: int = 1
-    @export var base_move_speed: float = 150.0
-    
-    @export_group("Primary Stats")
-    @export var str: int = 10   # Physical attack, carry weight
-    @export var agi: int = 10   # Turn order, evasion, accuracy
-    @export var vit: int = 10   # Max HP, physical defense
-    @export var intelligence: int = 10  # Magic attack, item effectiveness
-    @export var wil: int = 10   # Max MP, magic resist, status resist
-    
-    @export_group("Runtime State")
-    @export var current_hp : int = -1
-    @export var current_mp : int = -1
-    
-    func max_hp() -> int:
-    	return 20 + (vit * 8) + (level * 5)
-    func max_mp() -> int:
-    	return 10 + (wil * 5) + (level * 3)
-    
-    _______________
-    _______________
-    (DialogueChoice.gd):
-    class_name DialogueChoice
-    extends Resource
-    
-    @export var label: String = ""  # What the player sees in the menu
-    
-    # Condition — leave flag_required empty for always-available choices
-    @export var flag_required: String = ""
-    @export var required_value: Variant = null
-    
-    # Consequence
-    @export var sets_flag: String = ""
-    @export var sets_value: Variant = null
-    
-    # Where this choice leads
-    @export var next_lines: Array[DialogueLine] = []
-    @export var next_sequence_id : String = ""
-    
-    _______________
-    _______________
-    (DialogueLine.gd):
-    class_name DialogueLine
-    extends Resource
-    
-    @export var speaker_name: String = ""
-    @export var portrait: Texture2D  # null = no portrait shown
-    @export var text: String = ""
-    
-    # Empty array = linear advance. Populated = show choice menu.
-    @export var choices: Array[DialogueChoice] = []
-    
-    _______________
-    _______________
-    (DialogueSequence.gd):
-    class_name DialogueSequence
-    extends Resource
-    
-    @export var sequence_id: String = ""
-    @export var lines: Array[DialogueLine] = []
-    
-    _______________
-    _______________
-    (EnemyGroupResource.gd):
-    class_name EnemyGroupResource
-    extends Resource
-    
-    @export var enemies: Array[EnemyResource] = []
-    @export var encounter_music: String = ""  # res://audio/music/... path
-    
-    _______________
-    _______________
-    (EnemyResource.gd):
-    class_name EnemyResource
-    extends EntityResource
-    
-    enum AIBehavior { RANDOM, AGGRESSIVE, DEFENSIVE, HEALER, BERSERKER }
-    
-    @export var enemy_name: String = ""
-    @export var sprite_frames: SpriteFrames
-    
-    @export_group("Rewards")
-    @export var experience_reward: int = 0
-    @export var gold_reward: int = 0
-    @export var drop_table: Array[ItemResource] = []
-    @export var equip_drop_chance : float = 0.5
-    
-    @export_group("Battle")
-    @export var behavior: AIBehavior = AIBehavior.RANDOM
-    
-    _______________
-    _______________
-    (EntityResource.gd):
-    class_name EntityResource
-    extends Resource
-    
-    @export var stats: CharacterStatBlock
-    @export var actions: Array[BattleAction]
-    @export var inventory: Array[ItemResource]
-    @export var is_player := false
-    var active_statuses: Array[Dictionary] = []
-    var equipped: Dictionary
-    var stat_mods = {
-    	"str": 0.0,
-    	"agi": 0.0,
-    	"vit": 0.0,
-    	"intelligence": 0.0,
-    	"wil": 0.0,
-    }
-    
-    const BLOCKED_SLOT = "blocked"
-    
-    func _init() -> void:
-    	equipped = {
-    		"head": null,
-    		"torso": null,
-    		"legs": null,
-    		"hand": [null, null],
-    		"foot": [null, null],
-    		"ring": [null, null, null, null, null, null, null, null, null, null],
-    		"toe_ring": [null, null, null, null, null, null, null, null, null, null],
-    	}
-    
-    func get_bonus(stat_name: String) -> int:
-    	var amount = 0
-    	for key in equipped.keys():
-    		if equipped[key] is Array:
-    			for value in equipped[key]:
-    				if value is ItemResource:
-    					var item : ItemResource = value
-    					amount += item.stat_modifiers.get(stat_name, 0)
-    		else:
-    			if equipped[key] is ItemResource:
-    				var item : ItemResource = equipped[key]
-    				amount += item.stat_modifiers.get(stat_name, 0)
-    	return amount
-    
-    func equip_item(item:ItemResource) -> bool:
-    	if item.item_type != ItemResource.ItemType.EQUIPMENT:
-    		return false
-    	var slot_key : String = locate_equip_slot(item)
-    	if slot_key == "":
-    		return false
-    	if slot_key not in equipped.keys():
-    		return false
-    	var current_equip = equipped[slot_key]
-    	if !(current_equip is Array):
-    		if current_equip == null:
-    			equipped[slot_key] = item
-    			return true
-    		else:
-    			unequip_item(current_equip)
-    			equipped[slot_key] = item
-    			return true
-    	else:
-    		var index = 0
-    		for i : int in current_equip.size():
-    			index = i
-    			if current_equip[index] == null:
-    				equipped[slot_key][index] = item
-    				return true
-    		unequip_item(current_equip[-1])
-    		(current_equip as Array).remove_at(-1)
-    		(current_equip as Array).insert(0, item)
-    		if item.two_handed:
-    			current_equip[0] = item
-    			if current_equip[1] is ItemResource:
-    				unequip_item(current_equip[1])
-    			equipped[slot_key][1] = BLOCKED_SLOT
-    		return true
-    
-    func unequip_item(item:ItemResource):
-    	var _inventory
-    	if is_player:
-    		_inventory = GameState.inventory.duplicate()
-    	else:
-    		_inventory = inventory.duplicate()
-    	var slot = locate_equip_slot(item)
-    	var current_equip = equipped[slot]
-    	if current_equip is Array:
-    		if current_equip.has(item):
-    			_inventory.append(item)
-    			equipped[slot][current_equip.find(item)] = null
-    			#return true
-    		#else:
-    			#return false
-    	else:
-    		if current_equip == item:
-    			_inventory.append(current_equip)
-    			equipped[slot] = null
-    			#return true
-    		#else:
-    			#return false
-    	if is_player:
-    		GameState.inventory = _inventory
-    	else:
-    		inventory = _inventory
-    	
-    
-    func locate_equip_slot(item : ItemResource) -> String:
-    	if item.item_type != ItemResource.ItemType.EQUIPMENT:
-    		return ""
-    	return (ItemResource.EquipSlot.keys()[item.equip_slot] as String).to_lower()
-    
-    _______________
-    _______________
-    (ItemResource.gd):
-    class_name ItemResource
-    extends Resource
-    
-    enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM }
-    enum ConsumableEffect {NONE, HEAL_HP, HEAL_MP, REVIVE, CURE_STATUS, CUSTOM}
-    enum EquipSlot {NONE, HEAD, TORSO, LEGS, HAND, FOOT, RING, TOE_RING}
-    
-    @export_group("Item")
-    @export var item_name: String = ""
-    @export var description: String = ""
-    @export var icon: Texture2D
-    @export var item_type: ItemType = ItemType.CONSUMABLE
-    @export var value: int = 0       # Gold value for shops
-    @export var stackable: bool = true
-    @export var max_stack: int = 99
-    @export var quantity: int = 1
-    @export_group("Consumable Effect")
-    @export var effect_type: ConsumableEffect = ConsumableEffect.NONE
-    @export var effect_value: int
-    @export var custom_effects: Array[int] # Only in use for custom ConsumableEffects. CUSTOM is not allowed here
-    @export var custom_values: Array[int] # Only in use for custom ConsumableEffects, must have same number of entries as Custom Effects, valuless effects use 0
-    @export_group("Equipment")
-    @export var equip_slot: EquipSlot = EquipSlot.NONE
-    @export var two_handed : bool = false
-    @export var stat_modifiers: Dictionary # Must match statblock keys EXACTLY "str", "agi", "vit", "intelligence", "wil"
-    @export_group("Key Item")
-    @export var sets_flag: String = ""
-    func apply_to(stats : CharacterStatBlock) -> bool:
-    	match effect_type:
-    		ItemResource.ConsumableEffect.HEAL_HP:
-    			if stats.current_hp == stats.max_hp():
-    				return false
-    			stats.current_hp = clampi(stats.current_hp + effect_value, 0, stats.max_hp())
-    		ItemResource.ConsumableEffect.HEAL_MP:
-    			if stats.current_mp == stats.max_mp():
-    				return false
-    			stats.current_mp = clampi(stats.current_mp + effect_value, 0, stats.max_mp())
-    		ItemResource.ConsumableEffect.REVIVE:
-    			if stats.current_hp <= 0:
-    				stats.current_hp = 10
-    			else:
-    				return false
-    		ItemResource.ConsumableEffect.CURE_STATUS:
-    			pass # handled via combatmanager
-    			#if combatant.active_statuses.size() > 0:
-    				#combatant.active_statuses = []
-    		ItemResource.ConsumableEffect.CUSTOM:
-    			var is_true = false
-    			for i in custom_effects.size():
-    				match custom_effects[i]:
-    					ItemResource.ConsumableEffect.HEAL_HP:
-    						if stats.current_hp != stats.max_hp():
-    							is_true = true
-    						stats.current_hp = clampi(stats.current_hp + custom_values[i], 0, stats.max_hp())
-    					ItemResource.ConsumableEffect.HEAL_MP:
-    						if stats.current_mp != stats.max_mp():
-    							is_true = true
-    						stats.current_mp = clampi(stats.current_mp + custom_values[i], 0, stats.max_mp())
-    					ItemResource.ConsumableEffect.REVIVE:
-    						if stats.current_hp <= 0:
-    							is_true = true
-    							stats.current_hp = 10
-    					ItemResource.ConsumableEffect.CURE_STATUS:
-    						pass # handled via combatmanager
-    						#if combatant.active_statuses.size() > 0:
-    							#combatant.active_statuses = []
-    			return is_true
-    		ItemResource.ConsumableEffect.NONE:
-    			pass
-    	return true
-    
-    func stats_to_text() -> String:
-    	var output = ""
-    	for i in stat_modifiers.keys().size():
-    		output += "%s: " % stat_modifiers.keys()[i]
-    		if stat_modifiers[stat_modifiers.keys()[i]] > 0:
-    			output += "+"
-    		output += "%s" % stat_modifiers[stat_modifiers.keys()[i]]
-    		if i < stat_modifiers.keys().size() -1:
-    			output += ", "
-    	if !(effect_type == ConsumableEffect.NONE):
-    		if output != "":
-    			output += " | "
-    		if effect_type != ConsumableEffect.CUSTOM:
-    			output += "%s " % ItemResource.ConsumableEffect.keys()[effect_type]
-    			if effect_value > 0:
-    				output += "+"
-    			output += "%s" % effect_value
-    		else:
-    			for i in custom_effects.size():
-    				output += "%s " % ItemResource.ConsumableEffect.keys()[custom_effects[i]]
-    				if custom_values[i] > 0:
-    					output += "+"
-    				output += "%s" % custom_values[i]
-    				if i < custom_effects.size()-1:
-    					output += ", "
-    	return output
-    
-    _______________
-    _______________
-    (PartyMemberResource.gd):
-    class_name PartyMemberResource
-    extends EntityResource
-    
-    @export var battle_sprite_frames: SpriteFrames
-    @export var portrait: Texture2D
-    @export var pending_xp : float = 0.0
-    @export var xp_gauge: float = 0.0
-    @export var xp_till_level_up : float = 100.0
-    
-    @export var stat_levels = {
-    	"str" : [0.0, 100.0],
-    	"agi" : [0.0, 100.0],
-    	"vit" : [0.0, 100.0],
-    	"intelligence" : [0.0, 100.0],
-    	"wil" : [0.0, 100.0],
-    }
-    
-    @export var previous_location = null
-    
-    func accumulate(stat_name : String, amount : float):
-    	stat_levels[stat_name][0] += amount
-    	pending_xp += amount * 0.5
-    
-    func process_progression():
-    	for i in stat_levels.keys():
-    		while stat_levels[i][0] >= stat_levels[i][1]:
-    			stat_levels[i][0] -= stat_levels[i][1]
-    			stat_levels[i][1] = stat_levels[i][1] * 1.2
-    			stats.set(i, stats.get(i)+1)
-    			EventBus.stat_increased.emit(self, i, stats.get(i))
-    			print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
-    	xp_gauge += pending_xp
-    	pending_xp = 0
-    	while xp_gauge >= xp_till_level_up:
-    		xp_gauge -= xp_till_level_up
-    		xp_till_level_up = xp_till_level_up * 1.2
-    		stats.level += 1
-    		EventBus.level_increased.emit(self, stats.level)
-    		print("%s's level raised to %s" % [stats.character_name, stats.level])
-    		for i in stat_levels.keys():
-    			stat_levels[i][0] = stat_levels[i][0] * 1.2
-    			if stat_levels[i][0] >= stat_levels[i][1]:
-    				stat_levels[i][0] -= stat_levels[i][1]
-    				stat_levels[i][1] = stat_levels[i][1] * 1.2
-    				stats.set(i, stats.get(i)+1)
-    				EventBus.stat_increased.emit(self, i, stats.get(i))
-    				print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
-    	
-    
-    _______________
-    _______________
-    (StatusEffect.gd):
-    class_name StatusEffect
-    extends Resource
-    
-    enum StatusType {POISON, SLEEP, BLIND, STUN, BERSERK}
-    
-    @export var status_name : String = ""
-    @export var status_type : StatusType = StatusType.POISON
-    @export var duration_turns : int = -1
-    @export var damage_per_turn : int = 0
-    @export var blocks_action : bool = false
-    @export var accuracy_modifier : float = 1.0
-    
-    _______________
-    _______________
-    (WarpDefinition.gd):
-    class_name WarpDefinition
-    extends Resource
-    
-    @export var target_scene: String = ""    # res://scenes/... path
-    @export var target_warp_id: String = ""  # ID of the arrival warp in target scene
-    @export var transition: String = "fade"  # matches SceneManager transition names
-    
-    _______________
-    UI:
-    WORLD:
+	signal turn_started(combatant: BattleCombatant) # fired when a new combatant's turn begins, UI uses this to highlight whose turn it is
+	signal combatant_damaged(combatant: BattleCombatant, amount: int) # fired after damage is applied, HP bar animates in response
+	signal combatant_healed(combatant: BattleCombatant, amount: int) # same pattern for healing
+	signal combatant_status_applied(combatant: BattleCombatant, status: StatusEffect) # UI shows the status icon
+	signal combatant_status_expired(combatant: BattleCombatant, status: StatusEffect) # UI removes the status icon
+	signal combatant_died(combatant: BattleCombatant) # UI plays death state, CombatManager checks victory/defeat condition
+	signal player_turn_started()
+	signal player_action_selected(action: BattleAction)
+	signal player_targets_selected(targets: Array[BattleCombatant])
+	signal player_item_selected(item : ItemResource)
+	signal player_flee_attempted()
+	signal target_select_requested(targets: Array[BattleCombatant])
+	signal all_targets()
+	
+	
+	# Dialogue signals
+	signal dialogue_started(sequence: DialogueSequence)
+	signal advance_dialogue_requested()
+	signal dialogue_line_advanced(line : DialogueLine)
+	signal dialogue_choices_available(choices: Array[DialogueChoice])
+	signal dialogue_choice_selected(choice : DialogueChoice)
+	signal dialogue_finished()
+	
+	# Inventory signals
+	signal item_acquired(item: Resource)
+	signal item_used(item: Resource)
+	signal item_dropped(item: Resource)
+	
+	# Game state signals
+	signal flag_changed(flag_name: String, value: Variant)
+	signal gold_changed(new_amount: int)
+	
+	# Progression signals
+	signal level_increased(character : PartyMemberResource, new_value : int)
+	signal stat_increased(character : PartyMemberResource, stat : String, new_value : int)
+	
+	# Audio signals
+	signal music_change_requested(track_path: String, transition: String)
+	signal sfx_requested(sfx_path: String)
+	
+	# Manipulation signals
+	signal interact_pressed
+	signal world_menu_opened
+	signal world_menu_closed
+	
+	_______________
+	_______________
+	(GameState.gd):
+	extends Node
+	
+	# World flags — anything that "happened": doors opened, quests advanced,
+	# NPCs talked to. Key is a string, value is bool/int/String.
+	var flags: Dictionary = {}
+	
+	# Economy
+	var gold: int = 0
+	var pending_inventory: Array[ItemResource] = []
+	var inventory: Array[ItemResource] = []
+	
+	# Party
+	var party: Array[PartyMemberResource] = []
+	
+	# Tracking
+	var current_map_path: String = ""
+	var save_slot: int = 0
+	var pending_warp_id : String = "test_town_entrance"
+	var previous_player_location : Vector2 = Vector2(-1, -1)
+	var previous_safe_zone : Array = [] # Scene, Warp_ID
+	
+	var pending_enemy_group : EnemyGroupResource = null
+	var in_combat := false
+	var movement_locks := 0
+	
+	func _ready() -> void:
+		EventBus.combat_started.connect(func(enemy_group):in_combat=true)
+		EventBus.combat_ended.connect(func(result):in_combat=false)
+		party.append(load("res://data/characters/norb_party_member.tres").duplicate(true))
+		party.append(load("res://data/characters/dog_party_member.tres").duplicate(true))
+		inventory.append_array([load("res://data/items/elixer.tres"), load("res://data/items/magicrestore.tres"), load("res://data/items/potion.tres"), load("res://data/items/sword.tres")])
+	
+	func set_flag(flag_name: String, value: Variant) -> void:
+		flags[flag_name] = value
+		EventBus.flag_changed.emit(flag_name, value)
+	
+	
+	func get_flag(flag_name: String, default: Variant = null) -> Variant:
+		return flags.get(flag_name, default)
+	
+	
+	func add_gold(amount: int) -> void:
+		gold += amount
+		EventBus.gold_changed.emit(gold)
+	
+	func spend_gold(amount: int) -> bool:
+		if gold < amount:
+			return false
+		gold -= amount
+		EventBus.gold_changed.emit(gold)
+		return true
+	
+	func inventory_drop(drop_table : Array[ItemResource]):
+		if drop_table.is_empty():
+			return
+		var dropped_items = randi_range(0, drop_table.size()-1)
+		for i in dropped_items:
+			give_item(drop_table[i])
+	
+	func give_item(item : ItemResource):
+		pending_inventory.append(item)
+		EventBus.item_dropped.emit(item)
+		print("Item dropped: %s" % item.item_name)
+	
+	func inventory_transfer():
+		for i in pending_inventory:
+			inventory.append(i)
+			EventBus.item_acquired.emit(i)
+			print("Item aquired: %s" % i.item_name)
+		pending_inventory = []
+	
+	_______________
+	_______________
+	(SaveManager.gd):
+	extends Node
+	@warning_ignore_start("unused_parameter")
+	func save(slot: int) -> void:
+		pass  # Phase 9
+	
+	
+	func load_save(slot: int) -> void:
+		pass  # Phase 9
+	
+	
+	func save_exists(slot: int) -> bool:
+		return false  # Phase 9
+	
+	_______________
+	_______________
+	(SceneManager.gd):
+	extends Node
+	
+	var _is_transitioning: bool = false
+	
+	
+	func travel_to(scene_path: String, warp_id : String = "", transition: String = "fade") -> void:
+		if _is_transitioning:
+			return
+		_is_transitioning = true
+		EventBus.scene_transition_requested.emit(scene_path, transition)
+		# Transition animation plays, then calls _do_scene_change()
+		# For now, skip the animation and swap directly
+		GameState.pending_warp_id = warp_id
+		_do_scene_change(scene_path)
+	
+	
+	func _do_scene_change(scene_path: String) -> void:
+		get_tree().call_deferred('change_scene_to_file',scene_path)
+		_is_transitioning = false
+		EventBus.scene_transition_finished.emit()
+	
+	
+	func start_combat(enemy_group: Resource) -> void:
+		# Store the return scene so we can come back after combat
+		if get_tree().current_scene.scene_file_path != "res://scenes/battle/Battle.tscn":
+			GameState.current_map_path = get_tree().current_scene.scene_file_path
+			print(GameState.current_map_path )
+		EventBus.combat_started.emit(enemy_group)
+		GameState.pending_enemy_group = enemy_group
+		travel_to("res://scenes/battle/Battle.tscn", "", "flash")
+	
+	
+	func end_combat(result: String) -> void:
+		EventBus.combat_ended.emit(result)
+		#for i : PartyMemberResource in GameState.party:
+			#GameState.hp_cache[i.stats.character_name] = i.stats.current_hp
+			#GameState.mp_cache[i.stats.character_name] = i.stats.current_mp
+		if result == "defeat":
+			travel_to(GameState.previous_safe_zone[0], GameState.previous_safe_zone[1], "fade")
+		else:
+			travel_to(GameState.current_map_path, "", "fade")
+	
+	_______________
+	COMBAT:
+	_______________
+	(BattleCombatant.gd):
+	class_name BattleCombatant
+	extends RefCounted
+	
+	var stats: CharacterStatBlock 
+	var is_player_controlled: bool
+	#var active_statuses: Array[Dictionary] = []
+	var source_resource : EntityResource
+	var physical_actions: Array[BattleAction] = []
+	var magic_actions: Array[BattleAction] = []
+	var healing_actions: Array[BattleAction] = []
+	var other_actions: Array[BattleAction] = []
+	#var inventory : Array[ItemResource] = []
+	
+	func _init(char_stats : CharacterStatBlock) -> void:
+		stats = char_stats
+		if stats.current_hp == -1:
+			stats.current_hp = stats.max_hp()
+		if stats.current_mp == -1:
+			stats.current_mp = stats.max_mp()
+	
+	static func create_enemy(character : EnemyResource) -> BattleCombatant:
+		var combatant = BattleCombatant.new(character.stats.duplicate(true))
+		combatant.is_player_controlled = false
+		combatant.source_resource = character.duplicate_deep()
+		character.stats.character_name = character.enemy_name
+		combatant.create_action_arrays(character.actions)
+		return combatant
+	
+	static func create_party_member(character : PartyMemberResource) -> BattleCombatant:
+		var combatant = BattleCombatant.new(character.stats)
+		combatant.is_player_controlled = true
+		combatant.source_resource = character.duplicate_deep()
+		combatant.create_action_arrays(character.actions)
+		return combatant
+	
+	func create_action_arrays(actions : Array[BattleAction]):
+		for action : BattleAction in actions:
+			match action.damage_type:
+				action.DamageType.PHYSICAL:
+					physical_actions.append(action)
+				action.DamageType.MAGICAL:
+					magic_actions.append(action)
+				action.DamageType.HEALING:
+					healing_actions.append(action)
+				action.DamageType.NONE:
+					other_actions.append(action)
+	
+	func return_available_magic_actions() -> Array[BattleAction]:
+		var array : Array[BattleAction] = []
+		for action : BattleAction in magic_actions:
+			if action.mp_cost <= stats.current_mp:
+				array.append(action)
+		return array
+	
+	func return_available_healing_actions() -> Array[BattleAction]:
+		var array : Array[BattleAction] = []
+		for action : BattleAction in healing_actions:
+			if action.mp_cost <= stats.current_mp:
+				array.append(action)
+		return array
+	
+	#func max_hp() -> int:
+		#return 20 + (stats.vit * 8) + (stats.level * 5)
+	#func max_mp() -> int:
+		#return 10 + (stats.wil * 5) + (stats.level * 3)
+	func is_alive() -> bool: # reads stats.current_hp
+		return stats.current_hp > 0
+	func can_act() -> bool: # checks is_alive() and whether any active status blocks_action
+		if is_alive():
+			if source_resource.active_statuses.is_empty():
+				return true
+			else:
+				for i in source_resource.active_statuses:
+					if i["effect"].blocks_action == true:
+						return false
+				return true
+		else:
+			return false
+	func take_damage(amount: int) -> void: # subtracts from stats.current_hp, clamps to zero
+		stats.current_hp = clampi(stats.current_hp - amount, 0, stats.max_hp())
+		print("%s HP: %s" % [stats.character_name, stats.current_hp])
+	func heal(amount: int) -> void: # adds to stats.current_hp, clamps to max_hp()
+		stats.current_hp = clampi(stats.current_hp + amount, 0, stats.max_hp())
+	func apply_status(status: StatusEffect) -> bool: # appends to active_statuses, but only if not already present
+		var new = true
+		for i in source_resource.active_statuses:
+			if i["effect"] == status:
+				new = false
+		if new == true:
+			source_resource.active_statuses.append({"effect" = status, "turns_remaining" = status.duration_turns})
+		return new
+	func tick_statuses() -> void: #decrements duration_turns on each status, removes expired ones, applies damage_per_turn for POISON
+		var statuses = source_resource.active_statuses.duplicate()
+		for status in statuses:
+			status["turns_remaining"] -= 1
+			take_damage(status["effect"].damage_per_turn)
+			if status["turns_remaining"] <= 0:
+				source_resource.active_statuses.erase(status)
+			print("%s is %s with %s turns left." % [stats.character_name, status["effect"].status_name, status["turns_remaining"]])
+	func effective_stat(stat : String) -> float:
+		var base_stat = source_resource.stats.get(stat)
+		var stat_mod = source_resource.stat_mods.get(stat, 0.0)
+		var stat_bonus = source_resource.get_bonus(stat)
+		if base_stat != null:
+			return base_stat + stat_mod + stat_bonus
+		else:
+			push_error("effective stat typo: %s" % stat)
+			return stat_mod + stat_bonus
+	
+	_______________
+	_______________
+	(combat_manager.gd):
+	extends Node
+	class_name CombatManager
+	
+	@warning_ignore_start("integer_division")
+	
+	enum State {
+		IDLE          , # waiting for something to happen (brief, between states)
+		PLAYER_INPUT  , # player is choosing an action
+		TARGET_SELECT , # player is choosing a target
+		RESOLVING     , # an action is executing (damage applied, log updated)
+		# STATUS_TICK   , # status effects proc at start/end of turn
+		ENEMY_TURN    , # AI is selecting and executing an action
+		VICTORY       , # all enemies dead, award EXP/gold
+		DEFEAT        , # all party members dead
+		FLED          , # ran successfully
+	}
+	
+	var _turn_queue: Array[BattleCombatant] = []
+	var _current_turn_index: int = -1
+	var current_combatant : BattleCombatant = null
+	var _state: State = State.IDLE
+	var _pending_action: BattleAction = null
+	var _pending_targets: Array[BattleCombatant] = []
+	var _pending_item: ItemResource = null
+	var _enemy_group: EnemyGroupResource = null
+	var _party_members: Array[PartyMemberResource] = []
+	var _enemy_combatants : Array[BattleCombatant] = []
+	var _party_combatants: Array[BattleCombatant] = []
+	
+	func _ready() -> void:
+		#EventBus.combat_started.connect(start_battle)
+		EventBus.player_action_selected.connect(_on_player_action_selected)
+		EventBus.player_item_selected.connect(_on_player_item_selected)
+		EventBus.player_targets_selected.connect(_on_player_targets_selected)
+		EventBus.player_flee_attempted.connect(_on_player_flee_attempted)
+		EventBus.combat_visuals_ready.connect(start_next_turn)
+		if GameState.pending_enemy_group != null:
+			start_battle(GameState.pending_enemy_group)
+			GameState.pending_enemy_group = null
+	
+	func start_battle(enemy_group : EnemyGroupResource):
+		_enemy_group = enemy_group
+		_party_members = GameState.party
+		for entity in _party_members + _enemy_group.enemies:
+			var combatant : BattleCombatant
+			if entity is PartyMemberResource:
+				combatant = BattleCombatant.create_party_member(entity)
+				_party_combatants.append(combatant)
+			elif entity is EnemyResource:
+				entity.stats.character_name = entity.enemy_name
+				combatant = BattleCombatant.create_enemy(entity)
+				_enemy_combatants.append(combatant)
+			_turn_queue.append(combatant)
+		_turn_queue.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.effective_stat("agi") > b.effective_stat("agi"))
+		EventBus.combat_queued.emit(_turn_queue)
+		#start_next_turn()
+	
+	func start_next_turn():
+		await get_tree().create_timer(0.3).timeout
+		_state = State.IDLE
+		advance_index()
+		if !any_alive(true): # handle failure
+			_handle_defeat()
+			return
+		if !any_alive(false): # handle victory
+			_handle_victory()
+			return
+		current_combatant = _turn_queue[_current_turn_index]
+		while not current_combatant.is_alive():
+			advance_index()
+			current_combatant = _turn_queue[_current_turn_index]
+		EventBus.turn_started.emit(current_combatant)
+		if current_combatant.is_player_controlled:
+			_state = State.PLAYER_INPUT
+			EventBus.player_turn_started.emit()
+		else:
+			_state = State.ENEMY_TURN
+			_run_enemy_turn()
+	
+	func _handle_defeat():
+		_state = State.DEFEAT
+		#EventBus.combat_ended.emit("defeat")
+		_process_party_progression()
+		var player : PartyMemberResource
+		for i : PartyMemberResource in _party_members:
+			if i.is_player:
+				i.stats.current_hp = i.stats.max_hp()/2
+		SceneManager.end_combat("defeat")
+	
+	func _handle_victory():
+		_state = State.VICTORY
+		for i in _enemy_group.enemies:
+			GameState.add_gold(i.gold_reward)
+			for ii : PartyMemberResource in _party_members:
+				ii.pending_xp += i.experience_reward 
+			GameState.inventory_drop(i.drop_table)
+			for equipment : ItemResource in i.get_all_equipped_items():
+				if randf() < i.equip_drop_chance:
+					GameState.give_item(equipment)
+			#for equipment in i.equipped.keys():
+				#if !(i.equipped[equipment] is Array):
+					#if i.equipped[equipment] != null:
+						#var item : ItemResource = i.equipped[equipment]
+						#if randf() < i.equip_drop_chance:
+							#GameState.give_item(item)
+				#else:
+					#for item in i.equipped[equipment]:
+						#if item is ItemResource:
+							#if randf() < i.equip_drop_chance:
+								#GameState.give_item(item)
+		GameState.inventory_transfer()
+		_process_party_progression()
+		SceneManager.end_combat("victory")
+	
+	func _run_enemy_turn():
+		if !current_combatant.can_act():
+			var log_string = "%s is " % current_combatant.stats.character_name
+			for status in current_combatant.source_resource.active_statuses:
+				if status["effect"].status_type == StatusEffect.StatusType.SLEEP:
+					log_string += "asleep"
+					current_combatant.tick_statuses()
+					break
+				elif status["effect"].status_type == StatusEffect.StatusType.STUN:
+					log_string += "stunned"
+					current_combatant.tick_statuses()
+					break
+			EventBus.combat_log_updated.emit(log_string)
+			start_next_turn()
+		else:
+			var enemy_data = current_combatant.source_resource as EnemyResource
+			var party = living_entities(_party_combatants)
+			party.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
+			var enemies = living_entities(_enemy_combatants)
+			enemies.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
+			var targets : Array[BattleCombatant] = []
+			var action : BattleAction
+			match enemy_data.behavior:
+				EnemyResource.AIBehavior.RANDOM: 
+					targets.append(party.pick_random())
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				EnemyResource.AIBehavior.AGGRESSIVE:
+					targets.append(party[0])
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				EnemyResource.AIBehavior.DEFENSIVE:
+					targets.append(party[-1])
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				EnemyResource.AIBehavior.HEALER:
+					targets.append(enemies[-1])
+					action = current_combatant.return_available_healing_actions().pick_random()
+				EnemyResource.AIBehavior.BERSERKER:
+					targets.append(party[0])
+					action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+			if action == null:
+				EventBus.combat_log_updated.emit("%s does nothing" % current_combatant.stats.character_name)
+				start_next_turn()
+				return
+			_resolve_action(current_combatant, targets, action)
+	
+	func living_entities(array : Array[BattleCombatant]) -> Array[BattleCombatant]:
+		var new_array = array.duplicate()
+		for i in array:
+			if !i.is_alive():
+				new_array.erase(i)
+		return new_array
+	
+	func _resolve_action(attacker : BattleCombatant, targets : Array[BattleCombatant], action : BattleAction):
+		EventBus.combat_action_resolving.emit()
+		_state = State.RESOLVING
+		var healing = action.damage_type == BattleAction.DamageType.HEALING
+		if action.category == BattleAction.ActionCategory.MAGIC:
+			attacker.stats.current_mp -= action.mp_cost
+		for target in targets:
+			if action.category == BattleAction.ActionCategory.ATTACK:
+				_resolve_attack(attacker, target, action)
+				#EventBus.combat_log_updated.emit("%s attacks %s" % [attacker.stats.character_name, target.stats.character_name])
+				#var damage = (attacker.effective_stat("str") * action.power) / maxf(1.0, target.effective_stat("vit"))
+				#if accuracy_check(attacker):
+					#if attacker.is_player_controlled:
+						#(attacker.source_resource as PartyMemberResource).accumulate("str", target.effective_stat("vit"))
+						#(attacker.source_resource as PartyMemberResource).accumulate("agi", target.effective_stat("agi"))
+					#elif target.is_player_controlled:
+						#(target.source_resource as PartyMemberResource).accumulate("vit", damage)
+						#(target.source_resource as PartyMemberResource).accumulate("agi", attacker.effective_stat("agi"))
+					#target.take_damage(roundi(damage))
+					#EventBus.combatant_damaged.emit(target, roundi(damage))
+				#else:
+					#EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+			elif action.category == BattleAction.ActionCategory.MAGIC:
+				_resolve_magic(attacker, target, action, healing)
+				#if !healing:
+					#var damage = (attacker.effective_stat("intelligence") * action.power) / maxf(1.0, target.effective_stat("wil"))
+					#EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+					#if accuracy_check(attacker):
+						#if attacker.is_player_controlled:
+							#(attacker.source_resource as PartyMemberResource).accumulate("intelligence", target.effective_stat("wil"))
+						#target.take_damage(roundi(damage))
+						#EventBus.combatant_damaged.emit(target, roundi(damage))
+					#else:
+						#EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+				#else:
+					#var amount = (attacker.effective_stat("intelligence") * action.power)
+					#EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+					#if attacker.is_player_controlled:
+						#(attacker.source_resource as PartyMemberResource).accumulate("wil", amount)
+						#(attacker.source_resource as PartyMemberResource).accumulate("intelligence", amount * 0.5)
+					#target.heal(roundi(amount))
+					#EventBus.combatant_healed.emit(target, roundi(amount))
+			elif action.category == BattleAction.ActionCategory.SKILL:
+				EventBus.combat_log_updated.emit("%s uses %s" % [attacker.stats.character_name, action.action_name])
+			if action.status_to_apply != null:
+				if randf()<action.status_chance:
+					if target.apply_status(action.status_to_apply):
+						EventBus.combatant_status_applied.emit(target, action.status_to_apply)
+			if !target.is_alive():
+				EventBus.combatant_died.emit(target)
+				
+		attacker.tick_statuses()
+		#start_next_turn.call_deferred()
+		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
+		_pending_action = null
+	
+	func _resolve_attack(attacker, target, action):
+		EventBus.combat_log_updated.emit("%s attacks %s" % [attacker.stats.character_name, target.stats.character_name])
+		var damage = (attacker.effective_stat("str") * action.power) / maxf(1.0, target.effective_stat("vit"))
+		if accuracy_check(attacker):
+			if attacker.is_player_controlled:
+				(attacker.source_resource as PartyMemberResource).accumulate("str", target.effective_stat("vit"))
+				(attacker.source_resource as PartyMemberResource).accumulate("agi", target.effective_stat("agi"))
+			elif target.is_player_controlled:
+				(target.source_resource as PartyMemberResource).accumulate("vit", damage)
+				(target.source_resource as PartyMemberResource).accumulate("agi", attacker.effective_stat("agi"))
+			target.take_damage(roundi(damage))
+			EventBus.combatant_damaged.emit(target, roundi(damage))
+		else:
+			EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+	
+	func _resolve_magic(attacker, target, action, healing):
+		if !healing:
+			var damage = (attacker.effective_stat("intelligence") * action.power) / maxf(1.0, target.effective_stat("wil"))
+			EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+			if accuracy_check(attacker):
+				if attacker.is_player_controlled:
+					(attacker.source_resource as PartyMemberResource).accumulate("intelligence", target.effective_stat("wil"))
+				target.take_damage(roundi(damage))
+				EventBus.combatant_damaged.emit(target, roundi(damage))
+			else:
+				EventBus.combat_log_updated.emit("%s missed" % attacker.stats.character_name)
+		else:
+			var amount = (attacker.effective_stat("intelligence") * action.power)
+			EventBus.combat_log_updated.emit("%s casts %s" % [attacker.stats.character_name, action.action_name])
+			if attacker.is_player_controlled:
+				(attacker.source_resource as PartyMemberResource).accumulate("wil", amount)
+				(attacker.source_resource as PartyMemberResource).accumulate("intelligence", amount * 0.5)
+			target.heal(roundi(amount))
+			EventBus.combatant_healed.emit(target, roundi(amount))
+	
+	func _resolve_healing():
+		pass
+	
+	func _resolve_item(attacker : BattleCombatant, targets : Array[BattleCombatant], item : ItemResource):
+		EventBus.combat_action_resolving.emit()
+		_state = State.RESOLVING
+		var item_used : bool = false
+		for combatant : BattleCombatant in targets:
+			var hp_before = combatant.stats.current_hp
+			item_used = item.apply_to(combatant.stats)
+			if item_used:
+				if combatant.stats.current_hp > hp_before:
+					EventBus.combatant_healed.emit(combatant, combatant.stats.current_hp - hp_before)
+				if item.effect_type == ItemResource.ConsumableEffect.CURE_STATUS:
+					if combatant.source_resource.active_statuses.size() > 0:
+						combatant.source_resource.active_statuses = []
+				elif item.effect_type == ItemResource.ConsumableEffect.CUSTOM:
+						for i in item.custom_effects.size():
+							if item.custom_effects[i] == ItemResource.ConsumableEffect.CURE_STATUS:
+								if combatant.source_resource.active_statuses.size() > 0:
+									combatant.source_resource.active_statuses = []
+		if item_used:
+			item.quantity -= 1
+			if item.quantity <= 0:
+				if attacker.is_player_controlled:
+					GameState.inventory.erase(item)
+				else:
+					attacker.source_resource.inventory.erase(item)
+			EventBus.item_used.emit(item)
+		attacker.tick_statuses()
+		EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)
+		_pending_item = null
+	
+	func _on_player_action_selected(action: BattleAction):
+		if _state == State.PLAYER_INPUT:
+			_pending_action = action
+			_state = State.TARGET_SELECT
+			if action.target_type == BattleAction.TargetType.ALL_ENEMIES or action.target_type == BattleAction.TargetType.ALL_ALLIES:
+				EventBus.all_targets.emit()
+			var valid_targets = get_targets(action.target_type)
+			EventBus.target_select_requested.emit(valid_targets)
+	
+	func _on_player_item_selected(item: ItemResource):
+		if _state == State.PLAYER_INPUT:
+			_pending_item = item
+			_state = State.TARGET_SELECT
+			var valid_targets = get_targets(BattleAction.TargetType.SINGLE_ALLY)
+			EventBus.target_select_requested.emit(valid_targets)
+	
+	func get_targets(target_type : BattleAction.TargetType):
+		if target_type == BattleAction.TargetType.SINGLE_ENEMY or target_type == BattleAction.TargetType.ALL_ENEMIES:
+			if current_combatant.is_player_controlled:
+				return living_entities(_enemy_combatants)
+			else:
+				return living_entities(_party_combatants)
+		elif target_type == BattleAction.TargetType.SINGLE_ALLY or target_type == BattleAction.TargetType.ALL_ALLIES:
+			if current_combatant.is_player_controlled:
+				return living_entities(_party_combatants)
+			else:
+				return living_entities(_enemy_combatants)
+		elif target_type == BattleAction.TargetType.SELF:
+			return [current_combatant]
+	
+	func _on_player_targets_selected(targets: Array[BattleCombatant]):
+		if _state == State.TARGET_SELECT:
+			_pending_targets = targets
+			if _pending_action != null:
+				_resolve_action(current_combatant, _pending_targets, _pending_action)
+			elif _pending_item != null:
+				_resolve_item(current_combatant, _pending_targets, _pending_item)
+		
+	func _on_player_flee_attempted():
+		if _state == State.PLAYER_INPUT:
+			var player_agi = 0
+			var player_count = 0
+			var enemy_agi = 0
+			var enemy_count = 0
+			for i : BattleCombatant in _turn_queue:
+				if i.is_alive():
+					if i.is_player_controlled:
+						player_agi += i.effective_stat("agi")
+						player_count += 1
+					else:
+						enemy_agi += i.effective_stat("agi")
+						enemy_count += 1
+			for i : BattleCombatant in _turn_queue:
+				if i.is_alive() and i.is_player_controlled:
+					(i.source_resource as PartyMemberResource).accumulate("agi", enemy_agi / enemy_count)
+			EventBus.combat_log_updated.emit("%s attempted to flee" % current_combatant.stats.character_name)
+			if float(player_agi) / float(player_count) > (float(enemy_agi) / float(enemy_count) * 0.8):
+				_state = State.FLED
+				EventBus.combat_log_updated.emit("%s fled" % current_combatant.stats.character_name)
+				#EventBus.combat_ended.emit("fled")
+				_process_party_progression()
+				SceneManager.end_combat("fled")
+			else:
+				EventBus.combat_log_updated.emit("%s failed to escape" % current_combatant.stats.character_name)
+				start_next_turn()
+	
+	func _process_party_progression():
+		for i : BattleCombatant in _turn_queue:
+			if i.is_player_controlled:
+				(i.source_resource as PartyMemberResource).process_progression()
+	
+	func accuracy_check(attacker : BattleCombatant) -> bool:
+		var hit_roll = randf()
+		var accuracy = 1.0
+		# apply accuracy modifier from any BLIND status on attacker
+		for status in attacker.source_resource.active_statuses:
+			accuracy *= status["effect"].accuracy_modifier
+		return hit_roll <= accuracy
+	
+	func advance_index() -> void:
+		_current_turn_index = (_current_turn_index + 1) % _turn_queue.size()
+	
+	func any_alive(player_controlled : bool) -> bool:
+		for i : BattleCombatant in _turn_queue:
+			if i.is_player_controlled == player_controlled and i.is_alive():
+				return true
+		return false
+	
+	_______________
+	ENTITIES:
+	RESOURCES:
+	_______________
+	(BattleAction.gd):
+	class_name BattleAction
+	extends Resource
+	
+	enum ActionCategory {ATTACK, MAGIC, SKILL}
+	enum TargetType {SINGLE_ENEMY, ALL_ENEMIES, SINGLE_ALLY, ALL_ALLIES, SELF}
+	enum DamageType {PHYSICAL, MAGICAL, HEALING, NONE}
+	
+	@export var action_name: String = ""
+	@export var description: String = ""
+	@export var category: ActionCategory = ActionCategory.ATTACK
+	@export var mp_cost: int = 0 # zero for physical attacks
+	@export var target_type: TargetType = TargetType.SINGLE_ENEMY
+	@export var damage_type: DamageType = DamageType.PHYSICAL
+	@export var power: int = 1 #the base value the damage formula will scale from
+	@export var status_to_apply: StatusEffect = null # null means no status, so no default needed
+	@export_range(0.0, 1.0, 0.1) var status_chance: float = 0.5 # probability the status applies, 0.0 to 1.0
+	@export var animation_key: String = ""
+	
+	_______________
+	_______________
+	(CharacterStatBlock.gd):
+	class_name CharacterStatBlock
+	extends Resource
+	
+	@warning_ignore_start("shadowed_global_identifier")
+	
+	@export var character_name: String = ""
+	@export var level: int = 1
+	@export var base_move_speed: float = 150.0
+	
+	@export_group("Primary Stats")
+	@export var str: int = 10   # Physical attack, carry weight
+	@export var agi: int = 10   # Turn order, evasion, accuracy
+	@export var vit: int = 10   # Max HP, physical defense
+	@export var intelligence: int = 10  # Magic attack, item effectiveness
+	@export var wil: int = 10   # Max MP, magic resist, status resist
+	
+	@export_group("Runtime State")
+	@export var current_hp : int = -1
+	@export var current_mp : int = -1
+	
+	func max_hp() -> int:
+		return 20 + (vit * 8) + (level * 5)
+	func max_mp() -> int:
+		return 10 + (wil * 5) + (level * 3)
+	
+	_______________
+	_______________
+	(DialogueChoice.gd):
+	class_name DialogueChoice
+	extends Resource
+	
+	@export var label: String = ""  # What the player sees in the menu
+	
+	# Condition — leave flag_required empty for always-available choices
+	@export var flag_required: String = ""
+	@export var required_value: Variant = null
+	
+	# Consequence
+	@export var sets_flag: String = ""
+	@export var sets_value: Variant = null
+	
+	# Where this choice leads
+	@export var next_lines: Array[DialogueLine] = []
+	@export var next_sequence_id : String = ""
+	
+	_______________
+	_______________
+	(DialogueLine.gd):
+	class_name DialogueLine
+	extends Resource
+	
+	@export var speaker_name: String = ""
+	@export var portrait: Texture2D  # null = no portrait shown
+	@export var text: String = ""
+	
+	# Empty array = linear advance. Populated = show choice menu.
+	@export var choices: Array[DialogueChoice] = []
+	
+	_______________
+	_______________
+	(DialogueSequence.gd):
+	class_name DialogueSequence
+	extends Resource
+	
+	@export var sequence_id: String = ""
+	@export var lines: Array[DialogueLine] = []
+	
+	_______________
+	_______________
+	(EnemyGroupResource.gd):
+	class_name EnemyGroupResource
+	extends Resource
+	
+	@export var enemies: Array[EnemyResource] = []
+	@export var encounter_music: String = ""  # res://audio/music/... path
+	
+	_______________
+	_______________
+	(EnemyResource.gd):
+	class_name EnemyResource
+	extends EntityResource
+	
+	enum AIBehavior { RANDOM, AGGRESSIVE, DEFENSIVE, HEALER, BERSERKER }
+	
+	@export var enemy_name: String = ""
+	@export var sprite_frames: SpriteFrames
+	
+	@export_group("Rewards")
+	@export var experience_reward: int = 0
+	@export var gold_reward: int = 0
+	@export var drop_table: Array[ItemResource] = []
+	@export var equip_drop_chance : float = 0.5
+	
+	@export_group("Battle")
+	@export var behavior: AIBehavior = AIBehavior.RANDOM
+	
+	_______________
+	_______________
+	(EntityResource.gd):
+	class_name EntityResource
+	extends Resource
+	
+	@export var stats: CharacterStatBlock
+	@export var actions: Array[BattleAction]
+	@export var inventory: Array[ItemResource]
+	@export var is_player := false
+	var active_statuses: Array[Dictionary] = []
+	var equipped: Dictionary
+	var stat_mods = {
+		"str": 0.0,
+		"agi": 0.0,
+		"vit": 0.0,
+		"intelligence": 0.0,
+		"wil": 0.0,
+	}
+	
+	const BLOCKED_SLOT = "blocked"
+	
+	func _init() -> void:
+		equipped = {
+			"head": null,
+			"torso": null,
+			"legs": null,
+			"hand": [null, null],
+			"foot": [null, null],
+			"ring": [null, null, null, null, null, null, null, null, null, null],
+			"toe_ring": [null, null, null, null, null, null, null, null, null, null],
+		}
+	
+	func get_bonus(stat_name: String) -> int:
+		var amount = 0
+		for key in equipped.keys():
+			if equipped[key] is Array:
+				for value in equipped[key]:
+					if value is ItemResource:
+						var item : ItemResource = value
+						amount += item.stat_modifiers.get(stat_name, 0)
+			else:
+				if equipped[key] is ItemResource:
+					var item : ItemResource = equipped[key]
+					amount += item.stat_modifiers.get(stat_name, 0)
+		return amount
+	
+	func equip_item(item:ItemResource) -> bool:
+		if item.item_type != ItemResource.ItemType.EQUIPMENT:
+			return false
+		var slot_key : String = locate_equip_slot(item)
+		if slot_key == "":
+			return false
+		if slot_key not in equipped.keys():
+			return false
+		var current_equip = equipped[slot_key]
+		if !(current_equip is Array):
+			if current_equip == null:
+				equipped[slot_key] = item
+				return true
+			else:
+				unequip_item(current_equip)
+				equipped[slot_key] = item
+				return true
+		else:
+			var index = 0
+			for i : int in current_equip.size():
+				index = i
+				if current_equip[index] == null:
+					equipped[slot_key][index] = item
+					return true
+			unequip_item(current_equip[-1])
+			(current_equip as Array).remove_at(-1)
+			(current_equip as Array).insert(0, item)
+			if item.two_handed:
+				current_equip[0] = item
+				if current_equip[1] is ItemResource:
+					unequip_item(current_equip[1])
+				equipped[slot_key][1] = BLOCKED_SLOT
+			return true
+	
+	func unequip_item(item:ItemResource):
+		var _inventory
+		if is_player:
+			_inventory = GameState.inventory.duplicate()
+		else:
+			_inventory = inventory.duplicate()
+		var slot = locate_equip_slot(item)
+		var current_equip = equipped[slot]
+		if current_equip is Array:
+			if current_equip.has(item):
+				_inventory.append(item)
+				equipped[slot][current_equip.find(item)] = null
+				#return true
+			#else:
+				#return false
+		else:
+			if current_equip == item:
+				_inventory.append(current_equip)
+				equipped[slot] = null
+				#return true
+			#else:
+				#return false
+		if is_player:
+			GameState.inventory = _inventory
+		else:
+			inventory = _inventory
+	
+	func locate_equip_slot(item : ItemResource) -> String:
+		if item.item_type != ItemResource.ItemType.EQUIPMENT:
+			return ""
+		return (ItemResource.EquipSlot.keys()[item.equip_slot] as String).to_lower()
+	
+	func get_all_equipped_items() -> Array[ItemResource]:
+		var items : Array[ItemResource]= []
+		for equipment in equipped.keys():
+			if !(equipped[equipment] is Array):
+				if equipped[equipment] is ItemResource:
+					var item : ItemResource = equipped[equipment]
+					items.append(item)
+			else:
+				for item in equipped[equipment]:
+					if item is ItemResource:
+						items.append(item)
+		return items
+	
+	_______________
+	_______________
+	(ItemResource.gd):
+	class_name ItemResource
+	extends Resource
+	
+	enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM }
+	enum ConsumableEffect {NONE, HEAL_HP, HEAL_MP, REVIVE, CURE_STATUS, CUSTOM}
+	enum EquipSlot {NONE, HEAD, TORSO, LEGS, HAND, FOOT, RING, TOE_RING}
+	
+	@export_group("Item")
+	@export var item_name: String = ""
+	@export var description: String = ""
+	@export var icon: Texture2D
+	@export var item_type: ItemType = ItemType.CONSUMABLE
+	@export var value: int = 0       # Gold value for shops
+	@export var stackable: bool = true
+	@export var max_stack: int = 99
+	@export var quantity: int = 1
+	@export_group("Consumable Effect")
+	@export var effect_type: ConsumableEffect = ConsumableEffect.NONE
+	@export var effect_value: int
+	@export var custom_effects: Array[int] # Only in use for custom ConsumableEffects. CUSTOM is not allowed here
+	@export var custom_values: Array[int] # Only in use for custom ConsumableEffects, must have same number of entries as Custom Effects, valuless effects use 0
+	@export_group("Equipment")
+	@export var equip_slot: EquipSlot = EquipSlot.NONE
+	@export var two_handed : bool = false
+	@export var stat_modifiers: Dictionary # Must match statblock keys EXACTLY "str", "agi", "vit", "intelligence", "wil"
+	@export_group("Key Item")
+	@export var sets_flag: String = ""
+	func apply_to(stats : CharacterStatBlock) -> bool:
+		match effect_type:
+			ItemResource.ConsumableEffect.HEAL_HP:
+				if stats.current_hp == stats.max_hp():
+					return false
+				stats.current_hp = clampi(stats.current_hp + effect_value, 0, stats.max_hp())
+			ItemResource.ConsumableEffect.HEAL_MP:
+				if stats.current_mp == stats.max_mp():
+					return false
+				stats.current_mp = clampi(stats.current_mp + effect_value, 0, stats.max_mp())
+			ItemResource.ConsumableEffect.REVIVE:
+				if stats.current_hp <= 0:
+					stats.current_hp = 10
+				else:
+					return false
+			ItemResource.ConsumableEffect.CURE_STATUS:
+				pass # handled via combatmanager
+				#if combatant.active_statuses.size() > 0:
+					#combatant.active_statuses = []
+			ItemResource.ConsumableEffect.CUSTOM:
+				var is_true = false
+				for i in custom_effects.size():
+					match custom_effects[i]:
+						ItemResource.ConsumableEffect.HEAL_HP:
+							if stats.current_hp != stats.max_hp():
+								is_true = true
+							stats.current_hp = clampi(stats.current_hp + custom_values[i], 0, stats.max_hp())
+						ItemResource.ConsumableEffect.HEAL_MP:
+							if stats.current_mp != stats.max_mp():
+								is_true = true
+							stats.current_mp = clampi(stats.current_mp + custom_values[i], 0, stats.max_mp())
+						ItemResource.ConsumableEffect.REVIVE:
+							if stats.current_hp <= 0:
+								is_true = true
+								stats.current_hp = 10
+						ItemResource.ConsumableEffect.CURE_STATUS:
+							pass # handled via combatmanager
+							#if combatant.active_statuses.size() > 0:
+								#combatant.active_statuses = []
+				return is_true
+			ItemResource.ConsumableEffect.NONE:
+				pass
+		return true
+	
+	func stats_to_text() -> String:
+		var output = ""
+		for i in stat_modifiers.keys().size():
+			output += "%s: " % stat_modifiers.keys()[i]
+			if stat_modifiers[stat_modifiers.keys()[i]] > 0:
+				output += "+"
+			output += "%s" % stat_modifiers[stat_modifiers.keys()[i]]
+			if i < stat_modifiers.keys().size() -1:
+				output += ", "
+		if !(effect_type == ConsumableEffect.NONE):
+			if output != "":
+				output += " | "
+			if effect_type != ConsumableEffect.CUSTOM:
+				output += "%s " % ItemResource.ConsumableEffect.keys()[effect_type]
+				if effect_value > 0:
+					output += "+"
+				output += "%s" % effect_value
+			else:
+				for i in custom_effects.size():
+					output += "%s " % ItemResource.ConsumableEffect.keys()[custom_effects[i]]
+					if custom_values[i] > 0:
+						output += "+"
+					output += "%s" % custom_values[i]
+					if i < custom_effects.size()-1:
+						output += ", "
+		return output
+	
+	_______________
+	_______________
+	(PartyMemberResource.gd):
+	class_name PartyMemberResource
+	extends EntityResource
+	
+	@export var battle_sprite_frames: SpriteFrames
+	@export var portrait: Texture2D
+	@export var pending_xp : float = 0.0
+	@export var xp_gauge: float = 0.0
+	@export var xp_till_level_up : float = 100.0
+	
+	@export var stat_levels = {
+		"str" : [0.0, 100.0],
+		"agi" : [0.0, 100.0],
+		"vit" : [0.0, 100.0],
+		"intelligence" : [0.0, 100.0],
+		"wil" : [0.0, 100.0],
+	}
+	
+	@export var previous_location = null
+	
+	func accumulate(stat_name : String, amount : float):
+		stat_levels[stat_name][0] += amount
+		pending_xp += amount * 0.5
+	
+	func process_progression():
+		for i in stat_levels.keys():
+			while stat_levels[i][0] >= stat_levels[i][1]:
+				stat_levels[i][0] -= stat_levels[i][1]
+				stat_levels[i][1] = stat_levels[i][1] * 1.2
+				stats.set(i, stats.get(i)+1)
+				EventBus.stat_increased.emit(self, i, stats.get(i))
+				print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
+		xp_gauge += pending_xp
+		pending_xp = 0
+		while xp_gauge >= xp_till_level_up:
+			xp_gauge -= xp_till_level_up
+			xp_till_level_up = xp_till_level_up * 1.2
+			stats.level += 1
+			EventBus.level_increased.emit(self, stats.level)
+			print("%s's level raised to %s" % [stats.character_name, stats.level])
+			for i in stat_levels.keys():
+				stat_levels[i][0] = stat_levels[i][0] * 1.2
+				if stat_levels[i][0] >= stat_levels[i][1]:
+					stat_levels[i][0] -= stat_levels[i][1]
+					stat_levels[i][1] = stat_levels[i][1] * 1.2
+					stats.set(i, stats.get(i)+1)
+					EventBus.stat_increased.emit(self, i, stats.get(i))
+					print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
+		
+	
+	_______________
+	_______________
+	(StatusEffect.gd):
+	class_name StatusEffect
+	extends Resource
+	
+	enum StatusType {POISON, SLEEP, BLIND, STUN, BERSERK}
+	
+	@export var status_name : String = ""
+	@export var status_type : StatusType = StatusType.POISON
+	@export var duration_turns : int = -1
+	@export var damage_per_turn : int = 0
+	@export var blocks_action : bool = false
+	@export var accuracy_modifier : float = 1.0
+	
+	_______________
+	_______________
+	(WarpDefinition.gd):
+	class_name WarpDefinition
+	extends Resource
+	
+	@export var target_scene: String = ""    # res://scenes/... path
+	@export var target_warp_id: String = ""  # ID of the arrival warp in target scene
+	@export var transition: String = "fade"  # matches SceneManager transition names
+	
+	_______________
+	UI:
+	WORLD:

@@ -27,7 +27,7 @@ var current_combatant : BattleCombatant
 @onready var status_cancel_button : Button = $Status_Popup/VBoxContainer/HBoxContainer/Button2
 
 var combatants : Array[BattleCombatant] = []
-
+var combat_manager : CombatManager
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	hp_button.pressed.connect(popup_hp_mp.bind("hp"))
@@ -38,7 +38,7 @@ func _ready() -> void:
 	status_cancel_button.pressed.connect(func():status_popup.hide())
 
 func refresh_combatants(root : CombatManager):
-	var combat_manager = root
+	combat_manager = root
 	for node in combatants_container.get_children():
 		node.queue_free()
 	for i : BattleCombatant in combat_manager._turn_queue:
@@ -63,17 +63,30 @@ func popup_hp_mp(mode : String):
 		hp_mp_confirm_button.pressed.disconnect(send_hp_mp)
 	if mode == "hp":
 		hp_mp_label.text = "Set HP"
+		hp_mp_spinbox.max_value = current_combatant.stats.max_hp()
 		hp_mp_confirm_button.pressed.connect(send_hp_mp.bind("hp"))
 	elif mode == "mp":
 		hp_mp_label.text = "Set MP"
+		hp_mp_spinbox.max_value = current_combatant.stats.max_mp()
 		hp_mp_confirm_button.pressed.connect(send_hp_mp.bind("mp"))
 	hp_mp_popup.show()
 
 func send_hp_mp(mode : String):
 	if mode == "hp":
-		current_combatant.stats.current_hp = min(hp_mp_spinbox.value, current_combatant.stats.max_hp())
+		#current_combatant.stats.current_hp = min(hp_mp_spinbox.value, current_combatant.stats.max_hp())
+		for combatant : BattleCombatant in combat_manager._turn_queue:
+			if combatant == current_combatant:
+				if combatant.stats.current_hp < hp_mp_spinbox.value:
+					combatant.heal(hp_mp_spinbox.value - combatant.stats.current_hp)
+					EventBus.emit_signal("combatant_healed", combatant, hp_mp_spinbox.value - combatant.stats.current_hp)
+				else:
+					combatant.take_damage(combatant.stats.current_hp - hp_mp_spinbox.value)
+					EventBus.emit_signal("combatant_damaged", combatant, combatant.stats.current_hp - hp_mp_spinbox.value)
 	elif mode == "mp":
 		current_combatant.stats.current_mp = min(hp_mp_spinbox.value, current_combatant.stats.max_mp())
+		#for combatant : BattleCombatant in combat_manager._turn_queue:
+			#if combatant == current_combatant:
+				#combatant. (hp_mp_spinbox.value - combatant.stats.current_hp)
 	refresh_stats(current_combatant)
 	hp_mp_popup.hide()
 
@@ -106,7 +119,3 @@ func send_status(mode : String):
 				current_combatant.source_resource.active_statuses.erase(i)
 	refresh_stats(current_combatant)
 	status_popup.hide()
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass

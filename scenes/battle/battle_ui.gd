@@ -9,6 +9,7 @@ var party = []
 var enemies = []
 var positions = {}
 var slots = {}
+var visuals = {}
 var selecting_targets : bool = false
 
 
@@ -38,16 +39,21 @@ var current_menu : GridContainer = null
 var _tweens_remaining = 0
 var _animations_pending = 0
 
+class CombatantVisuals:
+	var slot : Control
+	var sprite : AnimatedSprite2D
+	var indicator : Indicator
+
 @warning_ignore_start("unused_parameter")
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	EventBus.turn_started.connect(func(c : BattleCombatant): _current_combatant = c)
-	EventBus.combat_queued.connect(set_positions)
+	EventBus.combat_queued.connect(prepare_combatants)
 	EventBus.player_turn_started.connect(set_up)
 	EventBus.target_select_requested.connect(target_select)
 	EventBus.all_targets.connect(func(): all_targets = true)
-	EventBus.combatant_status_applied.connect(func(combatant : BattleCombatant, status : StatusEffect): (positions[combatant].get_child(1) as Indicator).change_text(status.status_name))
-	EventBus.combatant_status_expired.connect(func(combatant : BattleCombatant, status : StatusEffect): (positions[combatant].get_child(1) as Indicator).change_text(""))
+	EventBus.combatant_status_applied.connect(func(combatant : BattleCombatant, status : StatusEffect): (visuals[combatant].indicator as Indicator).change_text(status.status_name))
+	EventBus.combatant_status_expired.connect(func(combatant : BattleCombatant, status : StatusEffect): (visuals[combatant].indicator as Indicator).change_text(""))
 	EventBus.combat_action_resolving.connect(_on_resolve_started)
 	action_menu.get_child(0).grab_focus()
 	attack_button.pressed.connect(_on_action_menu_pressed.bind('attack'))
@@ -78,7 +84,79 @@ func _on_combat_log_updated(text : String):
 	battle_log_label.text = text
 		
 
-func set_positions(combatants : Array[BattleCombatant]):
+func prepare_combatants(combatants : Array[BattleCombatant]):
+	assign_to_slots(combatants)
+	create_visuals(combatants)
+	tween_into_battle(combatants)
+	attach_indicators(combatants)
+	#party.clear()
+	#enemies.clear()
+	#for i in combatants:
+		#if i.is_player_controlled:
+			#party.append(i)
+		#else:
+			#enemies.append(i)
+	#for i in slots["enemy"].size():
+		#if i < enemies.size():
+			##positions[enemies[i]]=slots["enemy"][i]
+			#visuals[enemies[i]] = CombatantVisuals.new()
+			#visuals[enemies[i]].slot = slots["enemy"][i]
+		#else:
+			#slots["enemy"][i].hide()
+	#for i in slots["party"].size():
+		#if i < party.size():
+			#visuals[party[i]] = CombatantVisuals.new()
+			#visuals[party[i]].slot = slots["party"][i]
+		#else:
+			#slots["party"][i].hide()
+	#_tweens_remaining = visuals.keys().size()
+	#for i : BattleCombatant in visuals.keys():
+		#var sprite = AnimatedSprite2D.new()
+		##sprite.sprite_frames = i.source_resource.sprite_frames
+		#if i.source_resource is EnemyResource:
+			#sprite.sprite_frames = i.source_resource.sprite_frames
+		#elif i.source_resource is PartyMemberResource:
+			#sprite.sprite_frames = i.source_resource.battle_sprite_frames
+		#visuals[i].slot.add_child(sprite)
+		#visuals[i].sprite = sprite
+		#var offset = Vector2(600, 0) if not i.is_player_controlled else Vector2(-600, 0)
+		#sprite.position = offset
+		#sprite.set_meta("dead", false)
+		#sprite.animation_finished.connect(func():
+			#if not sprite.get_meta("dead"):
+				#if sprite.sprite_frames.has_animation("idle"):
+					#sprite.play("idle")
+			#else:
+				#sprite.stop())
+		##sprite.play("battle_entrance")
+		#if sprite.sprite_frames.has_animation("idle"):
+			#sprite.play("idle")
+		#var target_pos = visuals[i].slot.size
+		#var tween = create_tween()
+		#tween.tween_property(sprite, "position", target_pos, 0.4)
+		#tween.finished.connect(func():
+			#_tweens_remaining -= 1
+			#if _tweens_remaining <= 0:
+				#EventBus.combat_visuals_ready.emit()
+				#_tweens_remaining = visuals.keys().size())
+		#var indicator : Indicator = preload("res://scenes/ui/indicator.tscn").instantiate()
+		#visuals[i].slot.add_child(indicator)
+		#visuals[i].indicator = indicator
+		#visuals[i].indicator.hide()
+		#indicator.hp_bar.min_value = 0
+		#indicator.mp_bar.min_value = 0
+		#indicator.hp_bar.max_value = i.stats.max_hp()
+		#indicator.mp_bar.max_value = i.stats.max_mp()
+		#indicator.hp_bar.value = i.stats.current_hp
+		#indicator.mp_bar.value = i.stats.current_mp
+		##indicator.text = "v"
+		#indicator.offset_transform_enabled = true
+		#indicator.offset_transform_position = Vector2(80,-50)
+		##indicator.offset_transform_position_ratio = Vector2(1.8, -0.8)
+		#indicator.offset_transform_position = Vector2(125,60)
+		#indicator.name = "SelectionArrow"
+
+func assign_to_slots(combatants : Array[BattleCombatant]):
 	party.clear()
 	enemies.clear()
 	for i in combatants:
@@ -88,23 +166,29 @@ func set_positions(combatants : Array[BattleCombatant]):
 			enemies.append(i)
 	for i in slots["enemy"].size():
 		if i < enemies.size():
-			positions[enemies[i]]=slots["enemy"][i]
+			#positions[enemies[i]]=slots["enemy"][i]
+			visuals[enemies[i]] = CombatantVisuals.new()
+			visuals[enemies[i]].slot = slots["enemy"][i]
 		else:
 			slots["enemy"][i].hide()
 	for i in slots["party"].size():
 		if i < party.size():
-			positions[party[i]]=slots["party"][i]
+			visuals[party[i]] = CombatantVisuals.new()
+			visuals[party[i]].slot = slots["party"][i]
 		else:
 			slots["party"][i].hide()
-	_tweens_remaining = positions.keys().size()
-	for i : BattleCombatant in positions.keys():
+
+func create_visuals(combatants : Array[BattleCombatant]):
+	_tweens_remaining = visuals.keys().size()
+	for i : BattleCombatant in visuals.keys():
 		var sprite = AnimatedSprite2D.new()
 		#sprite.sprite_frames = i.source_resource.sprite_frames
 		if i.source_resource is EnemyResource:
 			sprite.sprite_frames = i.source_resource.sprite_frames
 		elif i.source_resource is PartyMemberResource:
 			sprite.sprite_frames = i.source_resource.battle_sprite_frames
-		positions[i].add_child(sprite)
+		visuals[i].slot.add_child(sprite)
+		visuals[i].sprite = sprite
 		var offset = Vector2(600, 0) if not i.is_player_controlled else Vector2(-600, 0)
 		sprite.position = offset
 		sprite.set_meta("dead", false)
@@ -117,17 +201,24 @@ func set_positions(combatants : Array[BattleCombatant]):
 		#sprite.play("battle_entrance")
 		if sprite.sprite_frames.has_animation("idle"):
 			sprite.play("idle")
-		var target_pos = positions[i].size
+
+func tween_into_battle(combatants : Array[BattleCombatant]):
+	for i : BattleCombatant in visuals.keys():
+		var target_pos = visuals[i].slot.size
 		var tween = create_tween()
-		tween.tween_property(sprite, "position", target_pos, 0.4)
+		tween.tween_property(visuals[i].sprite, "position", target_pos, 0.4)
 		tween.finished.connect(func():
 			_tweens_remaining -= 1
 			if _tweens_remaining <= 0:
 				EventBus.combat_visuals_ready.emit()
-				_tweens_remaining = positions.keys().size())
+				_tweens_remaining = visuals.keys().size())
+
+func attach_indicators(combatants : Array[BattleCombatant]):
+	for i : BattleCombatant in visuals.keys():
 		var indicator : Indicator = preload("res://scenes/ui/indicator.tscn").instantiate()
-		positions[i].add_child(indicator)
-		positions[i].get_child(1).hide()
+		visuals[i].slot.add_child(indicator)
+		visuals[i].indicator = indicator
+		visuals[i].indicator.hide()
 		indicator.hp_bar.min_value = 0
 		indicator.mp_bar.min_value = 0
 		indicator.hp_bar.max_value = i.stats.max_hp()
@@ -137,9 +228,7 @@ func set_positions(combatants : Array[BattleCombatant]):
 		#indicator.text = "v"
 		indicator.offset_transform_enabled = true
 		indicator.offset_transform_position = Vector2(80,-50)
-		##indicator.offset_transform_position_ratio = Vector2(1.8, -0.8)
-		#indicator.offset_transform_position = Vector2(125,60)
-		#indicator.name = "SelectionArrow"
+
 func set_up(prev_node : GridContainer = null): 
 	if prev_node != null:
 		prev_node.hide()
@@ -215,7 +304,7 @@ func target_select(valid_targets : Array[BattleCombatant]):
 	target_array = valid_targets
 	target_index = 0
 	clear_arrows()
-	var arrow = positions[target_array[target_index]].get_child(1)
+	var arrow = visuals[target_array[target_index]].indicator
 	arrow.show()
 	arrow.change_color(Color.RED)
 	update_target_arrow()
@@ -227,19 +316,19 @@ func _on_resolve_started():
 		EventBus.combat_animations_finished.emit()
 
 func _on_combatant_damaged(combatant : BattleCombatant, amount : int):
-	var arrow = positions[combatant].get_child(1)
+	var arrow = visuals[combatant].indicator
 	arrow.show()
 	if combatant.is_player_controlled:
 		arrow.change_color(Color.YELLOW)
 	else:
 		arrow.change_color(Color.RED)
-	var sprite : AnimatedSprite2D = positions[combatant].get_child(0)
+	var sprite : AnimatedSprite2D = visuals[combatant].sprite
 	if sprite.sprite_frames.has_animation("hurt"):
 		sprite.play("hurt")
 	_animations_pending += 1
 	var tween = create_tween()
 	tween.tween_property(sprite, "modulate", Color.RED, 0.3)
-	var indicator : Indicator = positions[combatant].get_child(1)
+	var indicator : Indicator = visuals[combatant].indicator
 	indicator.update_hp(combatant.stats.current_hp)
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.3)
 	tween.finished.connect(func():
@@ -249,15 +338,15 @@ func _on_combatant_damaged(combatant : BattleCombatant, amount : int):
 	
 	
 func _on_combatant_died(combatant : BattleCombatant):
-	var sprite : AnimatedSprite2D = positions[combatant].get_child(0)
+	var sprite : AnimatedSprite2D = visuals[combatant].sprite
 	if sprite.sprite_frames.has_animation("died"):
 		sprite.play("died")
 	sprite.set_meta("dead",true)
 	sprite.animation_finished.connect(func():
 		_animations_pending += 1
 		var tween = create_tween()
-		tween.tween_property(positions[combatant], "custom_minimum_size.x", 0, 0.3)
-		tween.tween_callback(positions[combatant].hide)
+		tween.tween_property(visuals[combatant].slot, "size.x", 0, 0.3)
+		tween.tween_callback(visuals[combatant].hide)
 		tween.finished.connect(func():
 			_animations_pending -= 1
 			if _animations_pending <= 0:
@@ -265,13 +354,13 @@ func _on_combatant_died(combatant : BattleCombatant):
 		)
 	
 func _on_combatant_healed(combatant : BattleCombatant, amount : int):
-	var sprite : AnimatedSprite2D = positions[combatant].get_child(0)
+	var sprite : AnimatedSprite2D = visuals[combatant].sprite
 	if sprite.sprite_frames.has_animation("healed"):
 		sprite.play("healed")
 	_animations_pending += 1
 	var tween = create_tween()
 	tween.tween_property(sprite, "modulate", Color.GREEN, 0.3)
-	var indicator : Indicator = positions[combatant].get_child(1)
+	var indicator : Indicator = visuals[combatant].indicator
 	indicator.update_hp(combatant.stats.current_hp)
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.3)
 	tween.finished.connect(func():
@@ -279,15 +368,30 @@ func _on_combatant_healed(combatant : BattleCombatant, amount : int):
 		if _animations_pending <= 0:
 			EventBus.combat_animations_finished.emit())
 
+#func animation_helper(combatant : BattleCombatant, animation_name : String, flash_color : Color, what_else : Callable = null):
+	#var sprite : AnimatedSprite2D = visuals[combatant].sprite
+	#if sprite.sprite_frames.has_animation(animation_name):
+		#sprite.play(animation_name)
+	#_animations_pending += 1
+	#var tween = create_tween()
+	#tween.tween_property(sprite, "modulate", flash_color, 0.3)
+	#if what_else != null:
+		#tween.tween_callback(what_else)
+	#tween.tween_property(sprite, "modulate", Color.WHITE, 0.3)
+	#tween.finished.connect(func():
+		#_animations_pending -= 1
+		#if _animations_pending <= 0:
+			#EventBus.combat_animations_finished.emit())
+
 func _on_turn_started(combatant : BattleCombatant):
 	clear_arrows()
-	var arrow = positions[combatant].get_child(1)
+	var arrow = visuals[combatant].indicator
 	arrow.show()
 	arrow.change_color(Color.YELLOW)
 
 func clear_arrows():
 	for i : BattleCombatant in enemies + party:
-		var node : Indicator = positions[i].get_child(1)
+		var node : Indicator = visuals[i].indicator
 		#node.modulate = Color.WHITE
 		node.hide()
 
@@ -347,12 +451,12 @@ func _unhandled_input(event: InputEvent) -> void:
 func update_target_arrow():
 	if !all_targets:
 		clear_arrows()
-		var arrow = positions[target_array[target_index]].get_child(1)
+		var arrow = visuals[target_array[target_index]].indicator
 		arrow.show()
 		arrow.change_color(Color.RED)
 	else:
 		clear_arrows()
 		for i in target_array.size():
-			var arrow = positions[target_array[i]].get_child(1)
+			var arrow = visuals[target_array[i]].indicator
 			arrow.show()
 			arrow.change_color(Color.RED)
