@@ -46,6 +46,13 @@ signal item_acquired(item: Resource)
 signal item_used(item: Resource)
 signal item_dropped(item: Resource)
 
+# Shop signals
+signal shop_interaction_requested(shop: ShopResource)
+signal shop_opened(shop: ShopResource)
+signal shop_closed()
+signal item_purchased(item: ItemResource, quantity: int)
+signal item_sold(item: ItemResource, quantity: int)
+
 # Game state signals
 signal flag_changed(flag_name: String, value: Variant)
 signal gold_changed(new_amount: int)

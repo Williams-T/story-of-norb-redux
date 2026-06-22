@@ -1,4 +1,5 @@
 extends HBoxContainer
+class_name DebugGold
 
 @onready var gold_spin : SpinBox = $VBoxContainer/HBoxContainer/SpinBox
 

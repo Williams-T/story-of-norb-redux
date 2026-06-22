@@ -1,0 +1,226 @@
+[gd_scene format=3 uid="uid://btypq2de35r27"]
+
+[ext_resource type="Script" uid="uid://cqpa7vgtxxar4" path="res://addons/rpg_editors/shop_editor/shop_editor.gd" id="1_q21v7"]
+[ext_resource type="Texture2D" uid="uid://06qhkbpxdkln" path="res://art/NULL.png" id="2_3tl11"]
+
+[node name="ShopEditor" type="PanelContainer" unique_id=1636093252]
+anchors_preset = -1
+anchor_top = 0.38500002
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -0.2000122
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_q21v7")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=928112933]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=313740873]
+layout_mode = 2
+text = "Shop Editor"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1297248903]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ShopList" type="VBoxContainer" parent="VBoxContainer/HBoxContainer" unique_id=1711691404]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ShopsLabel" type="Label" parent="VBoxContainer/HBoxContainer/ShopList" unique_id=1217658526]
+layout_mode = 2
+text = "Shops:"
+horizontal_alignment = 1
+
+[node name="MainFields" type="GridContainer" parent="VBoxContainer/HBoxContainer" unique_id=1956418837]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="Control2" type="Control" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=757416414]
+layout_mode = 2
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=2028586108]
+layout_mode = 2
+
+[node name="NewButton" type="Button" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer3" unique_id=679209665]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "NEW"
+
+[node name="SaveButton" type="Button" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer3" unique_id=955614967]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SAVE"
+
+[node name="ShopNameLabel" type="Label" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=1380228393]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 0
+text = "Shop Name:"
+horizontal_alignment = 2
+
+[node name="NameEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=468065698]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="TexturesLabel" type="Label" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=2062705818]
+layout_mode = 2
+size_flags_horizontal = 5
+text = "Textures:"
+horizontal_alignment = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=789513685]
+layout_mode = 2
+alignment = 1
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer" unique_id=1255008463]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer3" unique_id=1968645506]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "BG"
+horizontal_alignment = 1
+
+[node name="BGButton" type="TextureButton" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer3" unique_id=1045571484]
+custom_maximum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+texture_normal = ExtResource("2_3tl11")
+stretch_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer" unique_id=885841622]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer" unique_id=292279530]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "FG: Closed Mouth"
+horizontal_alignment = 1
+
+[node name="FGClosedButton" type="TextureButton" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer" unique_id=253314086]
+custom_maximum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_stretch_ratio = 2.0
+texture_normal = ExtResource("2_3tl11")
+stretch_mode = 0
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer" unique_id=1740075748]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer2" unique_id=502348742]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "FG: Open Mouth"
+horizontal_alignment = 1
+
+[node name="FGOpenButton" type="TextureButton" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer2" unique_id=971770556]
+custom_maximum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_stretch_ratio = 2.0
+texture_normal = ExtResource("2_3tl11")
+stretch_mode = 0
+
+[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=1757875517]
+layout_mode = 2
+size_flags_horizontal = 5
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=360125205]
+layout_mode = 2
+theme_override_constants/separation = 17
+
+[node name="BuyModifierLabel" type="Label" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer2" unique_id=1472465711]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Buy Modifier:"
+horizontal_alignment = 2
+
+[node name="BuyModSpin" type="SpinBox" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer2" unique_id=764799377]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+size_flags_stretch_ratio = 2.0
+max_value = 10.0
+step = 0.1
+value = 1.0
+alignment = 1
+
+[node name="SellModifierLabel" type="Label" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer2" unique_id=293483636]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Sell Modifier:"
+horizontal_alignment = 2
+
+[node name="SellModSpin" type="SpinBox" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer2" unique_id=957292524]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+size_flags_stretch_ratio = 2.0
+max_value = 10.0
+step = 0.1
+value = 1.0
+alignment = 1
+
+[node name="DialogueLabel" type="Label" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=865764186]
+layout_mode = 2
+size_flags_horizontal = 5
+text = "Dialogue:"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=628479968]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="WelcomeEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields/VBoxContainer" unique_id=138568658]
+layout_mode = 2
+placeholder_text = "Welcome Dialogue"
+alignment = 1
+
+[node name="BuyEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields/VBoxContainer" unique_id=723143747]
+layout_mode = 2
+placeholder_text = "Buy Menu into"
+alignment = 1
+
+[node name="SellEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields/VBoxContainer" unique_id=374230834]
+layout_mode = 2
+placeholder_text = "Sell Menu intro"
+alignment = 1
+
+[node name="ReturnEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields/VBoxContainer" unique_id=1159640261]
+layout_mode = 2
+placeholder_text = "Return to main"
+alignment = 1
+
+[node name="ExitEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields/VBoxContainer" unique_id=2087730411]
+layout_mode = 2
+placeholder_text = "Exit Dialogue"
+alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/HBoxContainer" unique_id=1383469948]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.5
+theme_override_constants/scrollbar_h_separation = 5
+theme_override_constants/scrollbar_v_separation = 5
+
+[node name="StockContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/ScrollContainer" unique_id=1634647215]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="StockLabel" type="Label" parent="VBoxContainer/HBoxContainer/ScrollContainer/StockContainer" unique_id=1761146314]
+layout_mode = 2
+text = "Stock"
+horizontal_alignment = 1

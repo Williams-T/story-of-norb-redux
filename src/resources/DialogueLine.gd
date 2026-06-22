@@ -7,3 +7,5 @@ extends Resource
 
 # Empty array = linear advance. Populated = show choice menu.
 @export var choices: Array[DialogueChoice] = []
+@export var function : String = ""
+@export var arguments : String = ""

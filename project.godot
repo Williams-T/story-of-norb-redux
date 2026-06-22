@@ -25,6 +25,7 @@ DialogueManager="*uid://drd42r3odtlk5"
 Codebase="*uid://c67q6k2f20o06"
 WorldMenu="*uid://db43riu704qe1"
 DebugMenu="*uid://bqf6iadrv1hr8"
+ShopManager="*uid://brhbbgcvjr2g6"
 
 [display]
 

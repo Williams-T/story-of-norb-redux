@@ -4,7 +4,14 @@ extends CanvasLayer
 @onready var start_combat : DebugStartCombat = $"PanelContainer/VBoxContainer/TabContainer/Start Combat"
 @onready var edit_combat : DebugEditCombat = $"PanelContainer/VBoxContainer/TabContainer/Edit Combat"
 @onready var edit_items : DebugItems = $PanelContainer/VBoxContainer/TabContainer/Items
+@onready var edit_flags : DebugFlag = $PanelContainer/VBoxContainer/TabContainer/Flags
+@onready var edit_party : DebugParty = $PanelContainer/VBoxContainer/TabContainer/Party
+@onready var edit_teleport : DebugTeleport = $PanelContainer/VBoxContainer/TabContainer/Teleport
+@onready var edit_gold : DebugGold = $PanelContainer/VBoxContainer/TabContainer/Gold
+@onready var edit_shops : DebugShops = $PanelContainer/VBoxContainer/TabContainer/Shops
+
 func _ready() -> void:
+	edit_shops.parent = self
 	hide()
 
 func _unhandled_input(event: InputEvent) -> void:

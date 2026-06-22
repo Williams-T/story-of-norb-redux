@@ -1,4 +1,5 @@
 extends HBoxContainer
+class_name DebugParty
 
 @onready var entities_container : VBoxContainer = $EntitiesContainer
 @onready var add_button : Button = $ButtonContainer/AddButton

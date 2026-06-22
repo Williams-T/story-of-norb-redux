@@ -1,7 +1,7 @@
 class_name ItemResource
 extends Resource
 
-enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM }
+enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM, SERVICE }
 enum ConsumableEffect {NONE, HEAL_HP, HEAL_MP, REVIVE, CURE_STATUS, CUSTOM}
 enum EquipSlot {NONE, HEAD, TORSO, LEGS, HAND, FOOT, RING, TOE_RING}
 

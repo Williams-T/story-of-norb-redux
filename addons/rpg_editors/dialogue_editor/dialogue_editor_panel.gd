@@ -8,6 +8,11 @@ extends PanelContainer
 @onready var speaker_edit := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer/SpeakerEdit
 @onready var text_edit := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer2/TextEdit
 @onready var portrait_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer3/PortraitButton
+@onready var function_edit := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5/FunctionEdit
+@onready var args_edit := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5/ArgsEdit
+@onready var shop_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5/ShopButton
+@onready var item_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5/ItemButton
+@onready var combat_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5/CombatButton
 @onready var choices_container := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoicesContainer
 @onready var add_choice_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoicesContainer/AddChoiceButton
 @onready var add_line_button := $VBoxContainer/MainContent/LineList/ScrollContainer/LineContainer/AddLineButton
@@ -25,6 +30,7 @@ var selected_choice_node : LineEdit
 var plugin : EditorPlugin
 var _portrait_dialog : EditorFileDialog
 var _confirmation_dialog : ConfirmationDialog
+var _func_dialog : EditorFileDialog
 var sequence_edit : LineEdit
 
 func _enter_tree() -> void:
@@ -40,6 +46,10 @@ func _enter_tree() -> void:
 	sequence_edit.placeholder_text = "Sequence ID"
 	_confirmation_dialog.add_child(sequence_edit)
 	_confirmation_dialog.confirmed.connect(save_dialogue)
+	_func_dialog = EditorFileDialog.new()
+	_func_dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_FILE
+	_func_dialog.access = EditorFileDialog.ACCESS_RESOURCES
+	add_child(_func_dialog)
 	#portrait_button.pressed.connect(change_portrait)
 	#add_choice_button.pressed.connect(add_choice)
 
@@ -48,6 +58,9 @@ func _ready() -> void:
 	save_button.pressed.connect(save_prompt)
 	add_line_button.pressed.connect(add_line)
 	sequence_name_label.text_changed.connect(update_sequence_id)
+	shop_button.pressed.connect(function_dialogue_opened.bind("shop", 0))
+	item_button.pressed.connect(function_dialogue_opened.bind("item", 0))
+	combat_button.pressed.connect(function_dialogue_opened.bind("combat", 0))
 	new_dialogue()
 
 func refresh(sequence : DialogueSequence):
@@ -111,6 +124,20 @@ func refresh_detail(index : int):
 	if portrait_button.pressed.is_connected(change_portrait):
 		portrait_button.pressed.disconnect(change_portrait)
 	portrait_button.pressed.connect(change_portrait.bind(index))
+	shop_button.pressed.disconnect(function_dialogue_opened)
+	item_button.pressed.disconnect(function_dialogue_opened)
+	combat_button.pressed.disconnect(function_dialogue_opened)
+	shop_button.pressed.connect(function_dialogue_opened.bind("shop", index))
+	item_button.pressed.connect(function_dialogue_opened.bind("item", index))
+	combat_button.pressed.connect(function_dialogue_opened.bind("combat", index))
+	if line.function != "":
+		function_edit.text = line.function
+	if line.arguments != "":
+		args_edit.text = line.function
+	function_edit.text_changed.disconnect(change_function)
+	args_edit.text_changed.disconnect(change_arguments)
+	function_edit.text_changed.connect(change_function.bind(index))
+	args_edit.text_changed.connect(change_arguments.bind(index))
 	for child in choices_container.get_children():
 		if child.name != "AddChoiceButton":
 			choices_container.remove_child(child)
@@ -136,9 +163,42 @@ func refresh_detail(index : int):
 		add_choice_button.pressed.disconnect(add_choice)
 	add_choice_button.pressed.connect(add_choice.bind(index))
 
+func change_function(text : String, line_index : int) -> void:
+	current_sequence.lines[line_index].function = text
+	
+func change_arguments(text : String, line_index : int) -> void:
+	current_sequence.lines[line_index].arguments = text
+	
 func new_dialogue():
 	current_sequence = DialogueSequence.new()
 	refresh(current_sequence)
+
+func function_dialogue_opened(mode : String, index):
+	for i in _func_dialog.file_selected.get_connections():
+		_func_dialog.file_selected.disconnect(i["callable"])
+	match mode:
+		"shop":
+			_func_dialog.current_dir = "res://data/shops/"
+		"item":
+			_func_dialog.current_dir = "res://data/items/"
+		"combat":
+			_func_dialog.current_dir = "res://data/enemy_groups/"
+	_func_dialog.popup()
+	_func_dialog.file_selected.connect(func(file : String): populate_func(mode, file, index))
+
+func populate_func(mode:String, file:String, index):
+	match mode:
+		"shop":
+			function_edit.text = "ShopManager.open_shop"
+			args_edit.text = file
+		"item":
+			function_edit.text = "GameState.give_item"
+			args_edit.text = file
+		"combat":
+			function_edit.text = "SceneManager.start_combat"
+			args_edit.text = file
+	current_sequence.lines[index].function = function_edit.text
+	current_sequence.lines[index].arguments = args_edit.text
 
 func save_prompt():
 	if !current_sequence:
@@ -220,6 +280,8 @@ func clear_details():
 	speaker_edit.text = ""
 	text_edit.text = ""
 	portrait_button.texture_normal = preload("res://art/NULL.png")
+	function_edit.text = ""
+	args_edit.text = ""
 	for child in choices_container.get_children():
 		if child.name != "AddChoiceButton":
 			choices_container.remove_child(child)

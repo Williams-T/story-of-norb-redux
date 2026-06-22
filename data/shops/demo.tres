@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="ShopResource" format=3 uid="uid://u725lkpr1tf6"]
+
+[ext_resource type="Texture2D" uid="uid://wh7wypydkqg1" path="res://art/shops/demobg.png" id="1_x0p0j"]
+[ext_resource type="Texture2D" uid="uid://dyqyuarjr27yx" path="res://art/shops/demofg.png" id="2_sdlxs"]
+[ext_resource type="Texture2D" uid="uid://brouj0oe65eee" path="res://art/shops/demofgopen.png" id="3_dlyaq"]
+[ext_resource type="Script" uid="uid://b51ije8t5d4v7" path="res://src/resources/ShopResource.gd" id="4_stiqc"]
+[ext_resource type="Script" uid="uid://c5rosmfabv7fs" path="res://src/resources/ItemResource.gd" id="5_lctj4"]
+[ext_resource type="Resource" uid="uid://vsf8mgmcd1l0" path="res://data/items/chest_armor.tres" id="6_pq6a3"]
+[ext_resource type="Resource" uid="uid://di203ko22okt0" path="res://data/items/cosmic_ring.tres" id="7_fkac0"]
+[ext_resource type="Resource" uid="uid://ds4p8csu53vc6" path="res://data/items/elixer.tres" id="8_oadlr"]
+[ext_resource type="Resource" uid="uid://nd6rf64wt7mg" path="res://data/items/golden_trinket.tres" id="9_x83x8"]
+[ext_resource type="Resource" uid="uid://re7a3c664djr" path="res://data/items/greatsword.tres" id="10_rilpu"]
+[ext_resource type="Resource" uid="uid://bnokt8m3a3wdo" path="res://data/items/ibuprofin.tres" id="11_jchql"]
+[ext_resource type="Resource" uid="uid://hn8eopjip8rc" path="res://data/items/magicrestore.tres" id="12_c146b"]
+[ext_resource type="Resource" uid="uid://bj2r5vxg8x3hm" path="res://data/items/potion.tres" id="13_skdbr"]
+[ext_resource type="Resource" uid="uid://bsgr2xqivp1gn" path="res://data/items/sword.tres" id="14_ae71i"]
+[ext_resource type="Resource" uid="uid://dvgrhcifhmdaq" path="res://data/items/toe_ring_of_knowing.tres" id="15_owf5o"]
+[ext_resource type="Resource" uid="uid://1ux326n4vr5t" path="res://data/items/wizard_hat.tres" id="16_olj2b"]
+
+[resource]
+script = ExtResource("4_stiqc")
+shop_id = "demo"
+shop_name = "demo"
+stock = Array[ExtResource("5_lctj4")]([ExtResource("6_pq6a3"), ExtResource("7_fkac0"), ExtResource("8_oadlr"), ExtResource("9_x83x8"), ExtResource("10_rilpu"), ExtResource("11_jchql"), ExtResource("12_c146b"), ExtResource("13_skdbr"), ExtResource("14_ae71i"), ExtResource("15_owf5o"), ExtResource("16_olj2b")])
+sell_modifier = 1.0
+item_quantities = {
+"Chest Armor": 1.0,
+"Elixer": 1.0,
+"Golden Trinket": 1.0,
+"Greatsword": 1.0,
+"Ibuprofin": 1.0,
+"Magic Pills": 1.0,
+"Potion": 1.0,
+"Sword": 1.0,
+"Toe Ring of Knowing": 1.0,
+"Wizard Hat": 1.0,
+"cosmic ring": 1.0
+}
+bg_texture = ExtResource("1_x0p0j")
+fg_closed_texture = ExtResource("2_sdlxs")
+fg_open_texture = ExtResource("3_dlyaq")

@@ -1,4 +1,5 @@
 extends HBoxContainer
+class_name DebugTeleport
 
 @onready var scenes_container : VBoxContainer = $ScenesContainer
 @onready var warps_container : VBoxContainer = $WarpsContainer

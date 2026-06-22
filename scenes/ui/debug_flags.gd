@@ -1,4 +1,5 @@
 extends HBoxContainer
+class_name DebugFlag
 
 @onready var flag_container : VBoxContainer = $Container/FlagsContainer
 @onready var key_field : LineEdit = $VBoxContainer/KeyLine

@@ -87,7 +87,8 @@ func _ready() -> void:
 	print(party_member.stats.current_hp)
 	EventBus.player_movement_unlocked.connect(func():GameState.movement_locks -= 1; if GameState.movement_locks <= 0: set_physics_process(true))
 	EventBus.player_movement_locked.connect(func(): set_physics_process(false); GameState.movement_locks += 1)
-	
+	await get_tree().process_frame
+	#ShopManager.test_shop()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed('interact'):
@@ -182,6 +183,7 @@ DialogueManager="*uid://drd42r3odtlk5"
 Codebase="*uid://c67q6k2f20o06"
 WorldMenu="*uid://db43riu704qe1"
 DebugMenu="*uid://bqf6iadrv1hr8"
+ShopManager="*uid://brhbbgcvjr2g6"
 
 [display]
 
@@ -325,6 +327,7 @@ _______________
     var _dialogue_panel
     var _combat_editor_dock
     var _item_editor_dock
+    var _shop_editor_dock
     func _enter_tree() -> void:
     	scene_changed.connect(_on_scene_changed)
     	# Called when the plugin is enabled.
@@ -334,11 +337,13 @@ _______________
     	_dialogue_panel =  preload("res://addons/rpg_editors/dialogue_editor/dialogue_editor_panel.tscn").instantiate()
     	_combat_editor_dock = preload("res://addons/rpg_editors/combat_editor/combat_editor.tscn").instantiate()
     	_item_editor_dock = preload("res://addons/rpg_editors/item_editor/item_editor.tscn").instantiate()
+    	_shop_editor_dock = preload("res://addons/rpg_editors/shop_editor/shop_editor.tscn").instantiate()
     	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, _sprite_importer_dock)
     	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, _warp_editor_dock)
     	add_control_to_bottom_panel(_dialogue_panel, "Dialogue Editor")
     	add_control_to_bottom_panel(_combat_editor_dock, "Combat Editor")
     	add_control_to_bottom_panel(_item_editor_dock, "Item Editor")
+    	add_control_to_bottom_panel(_shop_editor_dock, "Shop Editor")
     	_dialogue_panel.plugin = self
     	
     	print("RPG Editors: loaded")
@@ -351,11 +356,13 @@ _______________
     	remove_control_from_bottom_panel(_dialogue_panel)
     	remove_control_from_bottom_panel(_combat_editor_dock)
     	remove_control_from_bottom_panel(_item_editor_dock)
+    	remove_control_from_bottom_panel(_shop_editor_dock)
     	_dialogue_panel.queue_free()
     	_sprite_importer_dock.queue_free()
     	_warp_editor_dock.queue_free()
     	_combat_editor_dock.queue_free()
     	_item_editor_dock.queue_free()
+    	_shop_editor_dock.queue_free()
     	
     	print("RPG Editors: unloaded")
     
@@ -1396,6 +1403,11 @@ _______________
       @onready var speaker_edit := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer/SpeakerEdit
       @onready var text_edit := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer2/TextEdit
       @onready var portrait_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer3/PortraitButton
+      @onready var function_edit := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5/FunctionEdit
+      @onready var args_edit := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5/ArgsEdit
+      @onready var shop_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5/ShopButton
+      @onready var item_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5/ItemButton
+      @onready var combat_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5/CombatButton
       @onready var choices_container := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoicesContainer
       @onready var add_choice_button := $VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer4/ChoicesContainer/AddChoiceButton
       @onready var add_line_button := $VBoxContainer/MainContent/LineList/ScrollContainer/LineContainer/AddLineButton
@@ -1413,6 +1425,7 @@ _______________
       var plugin : EditorPlugin
       var _portrait_dialog : EditorFileDialog
       var _confirmation_dialog : ConfirmationDialog
+      var _func_dialog : EditorFileDialog
       var sequence_edit : LineEdit
       
       func _enter_tree() -> void:
@@ -1428,6 +1441,10 @@ _______________
       	sequence_edit.placeholder_text = "Sequence ID"
       	_confirmation_dialog.add_child(sequence_edit)
       	_confirmation_dialog.confirmed.connect(save_dialogue)
+      	_func_dialog = EditorFileDialog.new()
+      	_func_dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_FILE
+      	_func_dialog.access = EditorFileDialog.ACCESS_RESOURCES
+      	add_child(_func_dialog)
       	#portrait_button.pressed.connect(change_portrait)
       	#add_choice_button.pressed.connect(add_choice)
       
@@ -1436,6 +1453,9 @@ _______________
       	save_button.pressed.connect(save_prompt)
       	add_line_button.pressed.connect(add_line)
       	sequence_name_label.text_changed.connect(update_sequence_id)
+      	shop_button.pressed.connect(function_dialogue_opened.bind("shop", 0))
+      	item_button.pressed.connect(function_dialogue_opened.bind("item", 0))
+      	combat_button.pressed.connect(function_dialogue_opened.bind("combat", 0))
       	new_dialogue()
       
       func refresh(sequence : DialogueSequence):
@@ -1499,6 +1519,20 @@ _______________
       	if portrait_button.pressed.is_connected(change_portrait):
       		portrait_button.pressed.disconnect(change_portrait)
       	portrait_button.pressed.connect(change_portrait.bind(index))
+      	shop_button.pressed.disconnect(function_dialogue_opened)
+      	item_button.pressed.disconnect(function_dialogue_opened)
+      	combat_button.pressed.disconnect(function_dialogue_opened)
+      	shop_button.pressed.connect(function_dialogue_opened.bind("shop", index))
+      	item_button.pressed.connect(function_dialogue_opened.bind("item", index))
+      	combat_button.pressed.connect(function_dialogue_opened.bind("combat", index))
+      	if line.function != "":
+      		function_edit.text = line.function
+      	if line.arguments != "":
+      		args_edit.text = line.function
+      	function_edit.text_changed.disconnect(change_function)
+      	args_edit.text_changed.disconnect(change_arguments)
+      	function_edit.text_changed.connect(change_function.bind(index))
+      	args_edit.text_changed.connect(change_arguments.bind(index))
       	for child in choices_container.get_children():
       		if child.name != "AddChoiceButton":
       			choices_container.remove_child(child)
@@ -1524,9 +1558,42 @@ _______________
       		add_choice_button.pressed.disconnect(add_choice)
       	add_choice_button.pressed.connect(add_choice.bind(index))
       
+      func change_function(text : String, line_index : int) -> void:
+      	current_sequence.lines[line_index].function = text
+      	
+      func change_arguments(text : String, line_index : int) -> void:
+      	current_sequence.lines[line_index].arguments = text
+      	
       func new_dialogue():
       	current_sequence = DialogueSequence.new()
       	refresh(current_sequence)
+      
+      func function_dialogue_opened(mode : String, index):
+      	for i in _func_dialog.file_selected.get_connections():
+      		_func_dialog.file_selected.disconnect(i["callable"])
+      	match mode:
+      		"shop":
+      			_func_dialog.current_dir = "res://data/shops/"
+      		"item":
+      			_func_dialog.current_dir = "res://data/items/"
+      		"combat":
+      			_func_dialog.current_dir = "res://data/enemy_groups/"
+      	_func_dialog.popup()
+      	_func_dialog.file_selected.connect(func(file : String): populate_func(mode, file, index))
+      
+      func populate_func(mode:String, file:String, index):
+      	match mode:
+      		"shop":
+      			function_edit.text = "ShopManager.open_shop"
+      			args_edit.text = file
+      		"item":
+      			function_edit.text = "GameState.give_item"
+      			args_edit.text = file
+      		"combat":
+      			function_edit.text = "SceneManager.start_combat"
+      			args_edit.text = file
+      	current_sequence.lines[index].function = function_edit.text
+      	current_sequence.lines[index].arguments = args_edit.text
       
       func save_prompt():
       	if !current_sequence:
@@ -1608,6 +1675,8 @@ _______________
       	speaker_edit.text = ""
       	text_edit.text = ""
       	portrait_button.texture_normal = preload("res://art/NULL.png")
+      	function_edit.text = ""
+      	args_edit.text = ""
       	for child in choices_container.get_children():
       		if child.name != "AddChoiceButton":
       			choices_container.remove_child(child)
@@ -1780,6 +1849,38 @@ _______________
       [node name="Control" type="Control" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer3" unique_id=1837393030]
       layout_mode = 2
       size_flags_horizontal = 3
+      
+      [node name="HBoxContainer5" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=1029400389]
+      layout_mode = 2
+      
+      [node name="FunctionLabel" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=212612420]
+      layout_mode = 2
+      size_flags_stretch_ratio = 0.5
+      text = "           Function:"
+      
+      [node name="FunctionEdit" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=90720276]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      placeholder_text = "Function Name"
+      alignment = 1
+      
+      [node name="ArgsEdit" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=123160826]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      placeholder_text = "Arg1, Arg2, etc..."
+      alignment = 1
+      
+      [node name="ShopButton" type="Button" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=662515678]
+      layout_mode = 2
+      text = "Shop"
+      
+      [node name="ItemButton" type="Button" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=77295087]
+      layout_mode = 2
+      text = "Item"
+      
+      [node name="CombatButton" type="Button" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=732706040]
+      layout_mode = 2
+      text = "Battle"
       
       [node name="HBoxContainer4" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=1069664076]
       layout_mode = 2
@@ -2579,6 +2680,532 @@ _______________
       offset_transform_visual_only = false
       
       _______________
+      SHOP_EDITOR:
+      _______________
+      (add_item_row.gd):
+      # Add Item Row
+      @tool
+      extends GridContainer
+      class_name ShopEditAddItemRow
+      
+      signal item_added(item : ItemResource, quantity)
+      #signal items_selected(items : PackedStringArray)
+      
+      var current_item : ItemResource
+      @onready var item_picker_button : Button =  $ItemPickerButton
+      @onready var quantity_spin : SpinBox = $QuantitySpin
+      @onready var add_button : Button = $AddItemButton
+      @onready var cancel_button : Button = $CancelItemButton
+      var item_popup : EditorFileDialog
+      
+      func _ready() -> void:
+      	item_popup = EditorFileDialog.new()
+      	item_popup.file_mode = FileDialog.FILE_MODE_OPEN_FILES
+      	item_popup.access =FileDialog.ACCESS_RESOURCES
+      	item_popup.current_dir = "res://data/items/"
+      	add_child(item_popup)
+      	item_picker_button.pressed.connect(func():item_popup.popup())
+      	item_popup.file_selected.connect(item_selected)
+      	item_popup.files_selected.connect(func(items : PackedStringArray): for i in items: item_added.emit(load(i), 1))
+      	add_button.pressed.connect(func():item_added.emit(current_item, quantity_spin.value))
+      	cancel_button.pressed.connect(func(): add_button.disabled = true; item_picker_button.text = "Pick Item")
+      
+      func item_selected(file : String):
+      	var loaded = load(file)
+      	if loaded is ItemResource:
+      		current_item = loaded
+      		item_picker_button.text = loaded.item_name
+      		add_button.disabled = false
+      
+      _______________
+      _______________
+      (add_item_row.tscn):
+      [gd_scene format=3 uid="uid://c854nlrdu5ud0"]
+      
+      [ext_resource type="Script" uid="uid://dxtqmowjjexne" path="res://addons/rpg_editors/shop_editor/add_item_row.gd" id="1_aorga"]
+      
+      [node name="AddItemRow" type="GridContainer" unique_id=1366492977]
+      columns = 2
+      script = ExtResource("1_aorga")
+      
+      [node name="ItemPickerButton" type="Button" parent="." unique_id=1759642757]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      text = "Pick Item"
+      
+      [node name="QuantitySpin" type="SpinBox" parent="." unique_id=2094402542]
+      layout_mode = 2
+      min_value = 1.0
+      value = 1.0
+      rounded = true
+      alignment = 1
+      
+      [node name="AddItemButton" type="Button" parent="." unique_id=1587207546]
+      layout_mode = 2
+      size_flags_horizontal = 4
+      theme_override_font_sizes/font_size = 12
+      text = "     ADD    "
+      
+      [node name="CancelItemButton" type="Button" parent="." unique_id=1595702013]
+      layout_mode = 2
+      theme_override_font_sizes/font_size = 12
+      text = "CANCEL"
+      
+      _______________
+      _______________
+      (item_row.gd):
+      # Item Row
+      @tool
+      extends HBoxContainer
+      class_name ShopEditItemRow
+      
+      @onready var label : Label =$ItemLabel
+      @onready var quantity_spin : SpinBox =$QuantitySpin
+      @onready var delete_button : Button =$DeleteButton
+      
+      _______________
+      _______________
+      (item_row.tscn):
+      [gd_scene format=3 uid="uid://bci0hnkgkrixe"]
+      
+      [ext_resource type="Script" uid="uid://wsrviws7e1f2" path="res://addons/rpg_editors/shop_editor/item_row.gd" id="1_7cipj"]
+      
+      [node name="ItemRow" type="HBoxContainer" unique_id=2068597205]
+      script = ExtResource("1_7cipj")
+      
+      [node name="ItemLabel" type="Label" parent="." unique_id=108206332]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      text = "Item Name"
+      horizontal_alignment = 1
+      
+      [node name="QuantitySpin" type="SpinBox" parent="." unique_id=885718457]
+      layout_mode = 2
+      alignment = 1
+      
+      [node name="DeleteButton" type="Button" parent="." unique_id=867232376]
+      layout_mode = 2
+      text = " x "
+      
+      _______________
+      _______________
+      (shop_editor.gd):
+      #Shop Editor
+      @tool
+      extends Control
+      
+      @onready var shops_list : VBoxContainer = $VBoxContainer/HBoxContainer/ShopList
+      @onready var new_button : Button = $VBoxContainer/HBoxContainer/MainFields/HBoxContainer3/NewButton
+      @onready var save_button : Button = $VBoxContainer/HBoxContainer/MainFields/HBoxContainer3/SaveButton
+      @onready var shop_name : LineEdit = $VBoxContainer/HBoxContainer/MainFields/NameEdit
+      @onready var bg_button : TextureButton = $VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer3/BGButton
+      @onready var fg_closed_button : TextureButton = $VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer/FGClosedButton
+      @onready var fg_open_button : TextureButton = $VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer2/FGOpenButton
+      @onready var buy_mod_spin : SpinBox = $VBoxContainer/HBoxContainer/MainFields/HBoxContainer2/BuyModSpin
+      @onready var sell_mod_spin : SpinBox = $VBoxContainer/HBoxContainer/MainFields/HBoxContainer2/SellModSpin
+      @onready var welcome_edit : LineEdit = $VBoxContainer/HBoxContainer/MainFields/VBoxContainer/WelcomeEdit
+      @onready var buy_edit : LineEdit = $VBoxContainer/HBoxContainer/MainFields/VBoxContainer/BuyEdit
+      @onready var sell_edit : LineEdit = $VBoxContainer/HBoxContainer/MainFields/VBoxContainer/SellEdit
+      @onready var return_edit : LineEdit = $VBoxContainer/HBoxContainer/MainFields/VBoxContainer/ReturnEdit
+      @onready var exit_edit : LineEdit = $VBoxContainer/HBoxContainer/MainFields/VBoxContainer/ExitEdit
+      @onready var stock_container : VBoxContainer = $VBoxContainer/HBoxContainer/ScrollContainer/StockContainer
+      #@onready var add_item_row : ShopEditAddItemRow = $VBoxContainer/HBoxContainer/ScrollContainer/StockContainer/AddItemRow
+      var _item_row = load("res://addons/rpg_editors/shop_editor/item_row.tscn")
+      var _add_item_row = load("res://addons/rpg_editors/shop_editor/add_item_row.tscn")
+      var add_item_row : ShopEditAddItemRow
+      var item_row : ShopEditItemRow
+      
+      var current_shop_id: String # used as the cache key in GameState
+      var current_shop_name: String
+      var current_stock: Array[ItemResource]
+      var current_buy_modifier: float = 1.0
+      var current_sell_modifier: float = 0.8
+      var current_item_quantities: Dictionary = {}
+      var current_path = ""
+      
+      # dialogue
+      var intro_text = "Welcome to the shop\nHow can I help you?"
+      var bought_item_text = "Would you like to buy anything else?"
+      var sold_item_text = "Would you like to sell anything else?"
+      var main_menu_text = "Anything else I can help you with?"
+      var exit_text = "Alright, see you next time!"
+      
+      var current_shop : ShopResource
+      var texture_popup : EditorFileDialog
+      var current_texture_button : NodePath
+      
+      func _ready() -> void:
+      	texture_popup = EditorFileDialog.new()
+      	texture_popup.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+      	texture_popup.access =FileDialog.ACCESS_RESOURCES
+      	texture_popup.current_dir = "res://art/shops/"
+      	add_child(texture_popup)
+      	bg_button.pressed.connect(popup_texture.bind(bg_button))
+      	fg_closed_button.pressed.connect(popup_texture.bind(fg_closed_button))
+      	fg_open_button.pressed.connect(popup_texture.bind(fg_open_button))
+      	texture_popup.file_selected.connect(_on_texture_selected)
+      	new_button.pressed.connect(new_shop)
+      	save_button.pressed.connect(save_shop)
+      	new_shop()
+      	refresh_shops()
+      	#refresh_fields()
+      
+      func refresh_shops() -> void:
+      	for child in shops_list.get_children():
+      		if child.name != "ShopsLabel":
+      			child.queue_free()
+      	var shops = DirAccess.get_files_at("res://data/shops/")
+      	for file : String in shops:
+      		var loaded = load("res://data/shops/%s" % file)
+      		if loaded is ShopResource:
+      			var button := Button.new()
+      			button.text = loaded.shop_name
+      			button.pressed.connect(func():refresh_fields(loaded); current_path = loaded.resource_path)
+      			shops_list.add_child(button)
+      
+      func refresh_fields(shop : ShopResource = null):
+      	if shop != null:
+      		current_shop = shop
+      		current_stock = current_shop.stock
+      		shop_name.text = current_shop.shop_name
+      		if current_shop.bg_texture != null:
+      			bg_button.texture_normal = current_shop.bg_texture
+      		if current_shop.fg_closed_texture != null:
+      			fg_closed_button.texture_normal = current_shop.fg_closed_texture
+      		if current_shop.fg_open_texture != null:
+      			fg_open_button.texture_normal = current_shop.fg_open_texture
+      		buy_mod_spin.value = current_shop.buy_modifier
+      		sell_mod_spin.value = current_shop.sell_modifier
+      		welcome_edit.text = current_shop.intro_text
+      		buy_edit.text = current_shop.bought_item_text
+      		sell_edit.text = current_shop.sold_item_text
+      		return_edit.text = current_shop.main_menu_text
+      		exit_edit.text = current_shop.exit_text
+      		for node in stock_container.get_children():
+      			if !node.name in ["StockLabel"]:
+      				node.queue_free()
+      		for item : ItemResource in current_stock:
+      			var quantity = 1
+      			if item.item_name in current_shop.item_quantities.keys():
+      				quantity = current_shop.item_quantities[item.item_name]
+      			else:
+      				current_shop.item_quantities[item.item_name] = 1
+      			add_item(item, quantity)
+      	add_item_row = _add_item_row.instantiate()
+      	stock_container.add_child(add_item_row)
+      	add_item_row.item_added.connect(add_item)
+      
+      func add_item(item : ItemResource, quantity):
+      	item_row = _item_row.instantiate()
+      	stock_container.add_child(item_row)
+      	item_row.label.text = item.item_name
+      	item_row.quantity_spin.value = quantity
+      	if item.item_name in current_shop.item_quantities.keys():
+      		item_row.quantity_spin.value = current_shop.item_quantities[item.item_name]
+      	item_row.delete_button.pressed.connect(func():item_row.queue_free())
+      	item_row.set_meta("item", item)
+      	stock_container.move_child(add_item_row, -1)
+      	add_item_row.cancel_button.pressed.emit()
+      
+      func new_shop():
+      	current_shop = ShopResource.new()
+      	shop_name.clear()
+      	bg_button.texture_normal = preload("res://art/NULL.png")
+      	fg_closed_button.texture_normal = preload("res://art/NULL.png")
+      	fg_open_button.texture_normal = preload("res://art/NULL.png")
+      	buy_mod_spin.value = 1.0
+      	sell_mod_spin.value = 1.0
+      	welcome_edit.clear()
+      	buy_edit.clear()
+      	sell_edit.clear()
+      	return_edit.clear()
+      	exit_edit.clear()
+      	for child in stock_container.get_children():
+      		if child.name != "StockLabel":
+      			child.queue_free()
+      	refresh_fields()
+      
+      func save_shop():
+      	
+      	current_shop.shop_name = shop_name.text
+      	current_shop.bg_texture = bg_button.texture_normal
+      	current_shop.fg_closed_texture = fg_closed_button.texture_normal
+      	current_shop.fg_open_texture = fg_open_button.texture_normal
+      	current_shop.buy_modifier = buy_mod_spin.value
+      	current_shop.sell_modifier = sell_mod_spin.value
+      	if welcome_edit.text != "":
+      		current_shop.intro_text = welcome_edit.text
+      	else:
+      		current_shop.intro_text = intro_text
+      	if buy_edit.text != "":
+      		current_shop.bought_item_text = buy_edit.text
+      	else:
+      		current_shop.bought_item_text = bought_item_text
+      	if sell_edit.text != "":
+      		current_shop.sold_item_text = sell_edit.text
+      	else:
+      		current_shop.sold_item_text = sold_item_text
+      	if return_edit.text != "":
+      		current_shop.main_menu_text = return_edit.text
+      	else:
+      		current_shop.main_menu_text = main_menu_text
+      	if exit_edit.text != "":
+      		current_shop.exit_text = exit_edit.text
+      	else:
+      		current_shop.exit_text = exit_text
+      	current_shop.stock.clear()
+      	current_shop.item_quantities.clear()
+      	for row in stock_container.get_children():
+      		if row is ShopEditItemRow:
+      			var item : ItemResource = row.get_meta("item")
+      			current_shop.stock.append(item)
+      			current_shop.item_quantities[item.item_name] = row.quantity_spin.value
+      	current_shop.shop_id = current_shop.shop_name.replace(" ", "_")
+      	if current_path == "":
+      		current_path = "res://data/shops/%s.tres" % current_shop.shop_id
+      	ResourceSaver.save(current_shop, current_path)
+      	refresh_shops()
+      
+      func popup_texture(current_node : Node):
+      	current_texture_button = current_node.get_path()
+      	texture_popup.popup()
+      
+      func _on_texture_selected(file_path):
+      	var button : TextureButton = get_node(current_texture_button)
+      	var texture : Texture = load(file_path)
+      	button.texture_normal = texture
+      
+      _______________
+      _______________
+      (shop_editor.tscn):
+      [gd_scene format=3 uid="uid://btypq2de35r27"]
+      
+      [ext_resource type="Script" uid="uid://cqpa7vgtxxar4" path="res://addons/rpg_editors/shop_editor/shop_editor.gd" id="1_q21v7"]
+      [ext_resource type="Texture2D" uid="uid://06qhkbpxdkln" path="res://art/NULL.png" id="2_3tl11"]
+      
+      [node name="ShopEditor" type="PanelContainer" unique_id=1636093252]
+      anchors_preset = -1
+      anchor_top = 0.38500002
+      anchor_right = 1.0
+      anchor_bottom = 1.0
+      offset_top = -0.2000122
+      grow_horizontal = 2
+      grow_vertical = 2
+      script = ExtResource("1_q21v7")
+      
+      [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=928112933]
+      layout_mode = 2
+      
+      [node name="Label" type="Label" parent="VBoxContainer" unique_id=313740873]
+      layout_mode = 2
+      text = "Shop Editor"
+      horizontal_alignment = 1
+      vertical_alignment = 1
+      
+      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1297248903]
+      layout_mode = 2
+      size_flags_vertical = 3
+      
+      [node name="ShopList" type="VBoxContainer" parent="VBoxContainer/HBoxContainer" unique_id=1711691404]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="ShopsLabel" type="Label" parent="VBoxContainer/HBoxContainer/ShopList" unique_id=1217658526]
+      layout_mode = 2
+      text = "Shops:"
+      horizontal_alignment = 1
+      
+      [node name="MainFields" type="GridContainer" parent="VBoxContainer/HBoxContainer" unique_id=1956418837]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_stretch_ratio = 3.0
+      theme_override_constants/v_separation = 8
+      columns = 2
+      
+      [node name="Control2" type="Control" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=757416414]
+      layout_mode = 2
+      
+      [node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=2028586108]
+      layout_mode = 2
+      
+      [node name="NewButton" type="Button" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer3" unique_id=679209665]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      text = "NEW"
+      
+      [node name="SaveButton" type="Button" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer3" unique_id=955614967]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      text = "SAVE"
+      
+      [node name="ShopNameLabel" type="Label" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=1380228393]
+      layout_mode = 2
+      size_flags_horizontal = 5
+      size_flags_vertical = 0
+      text = "Shop Name:"
+      horizontal_alignment = 2
+      
+      [node name="NameEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=468065698]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_stretch_ratio = 2.0
+      
+      [node name="TexturesLabel" type="Label" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=2062705818]
+      layout_mode = 2
+      size_flags_horizontal = 5
+      text = "Textures:"
+      horizontal_alignment = 2
+      
+      [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=789513685]
+      layout_mode = 2
+      alignment = 1
+      
+      [node name="VBoxContainer3" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer" unique_id=1255008463]
+      layout_mode = 2
+      theme_override_constants/separation = 1
+      
+      [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer3" unique_id=1968645506]
+      layout_mode = 2
+      theme_override_font_sizes/font_size = 12
+      text = "BG"
+      horizontal_alignment = 1
+      
+      [node name="BGButton" type="TextureButton" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer3" unique_id=1045571484]
+      custom_maximum_size = Vector2(128, 128)
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_stretch_ratio = 2.0
+      texture_normal = ExtResource("2_3tl11")
+      stretch_mode = 0
+      
+      [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer" unique_id=885841622]
+      layout_mode = 2
+      theme_override_constants/separation = 1
+      
+      [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer" unique_id=292279530]
+      layout_mode = 2
+      theme_override_font_sizes/font_size = 12
+      text = "FG: Closed Mouth"
+      horizontal_alignment = 1
+      
+      [node name="FGClosedButton" type="TextureButton" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer" unique_id=253314086]
+      custom_maximum_size = Vector2(128, 128)
+      layout_mode = 2
+      size_flags_stretch_ratio = 2.0
+      texture_normal = ExtResource("2_3tl11")
+      stretch_mode = 0
+      
+      [node name="VBoxContainer2" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer" unique_id=1740075748]
+      layout_mode = 2
+      theme_override_constants/separation = 1
+      
+      [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer2" unique_id=502348742]
+      layout_mode = 2
+      theme_override_font_sizes/font_size = 12
+      text = "FG: Open Mouth"
+      horizontal_alignment = 1
+      
+      [node name="FGOpenButton" type="TextureButton" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer/VBoxContainer2" unique_id=971770556]
+      custom_maximum_size = Vector2(128, 128)
+      layout_mode = 2
+      size_flags_stretch_ratio = 2.0
+      texture_normal = ExtResource("2_3tl11")
+      stretch_mode = 0
+      
+      [node name="Control" type="Control" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=1757875517]
+      layout_mode = 2
+      size_flags_horizontal = 5
+      
+      [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=360125205]
+      layout_mode = 2
+      theme_override_constants/separation = 17
+      
+      [node name="BuyModifierLabel" type="Label" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer2" unique_id=1472465711]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      text = "Buy Modifier:"
+      horizontal_alignment = 2
+      
+      [node name="BuyModSpin" type="SpinBox" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer2" unique_id=764799377]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 4
+      size_flags_stretch_ratio = 2.0
+      max_value = 10.0
+      step = 0.1
+      value = 1.0
+      alignment = 1
+      
+      [node name="SellModifierLabel" type="Label" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer2" unique_id=293483636]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      text = "Sell Modifier:"
+      horizontal_alignment = 2
+      
+      [node name="SellModSpin" type="SpinBox" parent="VBoxContainer/HBoxContainer/MainFields/HBoxContainer2" unique_id=957292524]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 4
+      size_flags_stretch_ratio = 2.0
+      max_value = 10.0
+      step = 0.1
+      value = 1.0
+      alignment = 1
+      
+      [node name="DialogueLabel" type="Label" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=865764186]
+      layout_mode = 2
+      size_flags_horizontal = 5
+      text = "Dialogue:"
+      horizontal_alignment = 2
+      vertical_alignment = 1
+      
+      [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/MainFields" unique_id=628479968]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      
+      [node name="WelcomeEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields/VBoxContainer" unique_id=138568658]
+      layout_mode = 2
+      placeholder_text = "Welcome Dialogue"
+      alignment = 1
+      
+      [node name="BuyEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields/VBoxContainer" unique_id=723143747]
+      layout_mode = 2
+      placeholder_text = "Buy Menu into"
+      alignment = 1
+      
+      [node name="SellEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields/VBoxContainer" unique_id=374230834]
+      layout_mode = 2
+      placeholder_text = "Sell Menu intro"
+      alignment = 1
+      
+      [node name="ReturnEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields/VBoxContainer" unique_id=1159640261]
+      layout_mode = 2
+      placeholder_text = "Return to main"
+      alignment = 1
+      
+      [node name="ExitEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/MainFields/VBoxContainer" unique_id=2087730411]
+      layout_mode = 2
+      placeholder_text = "Exit Dialogue"
+      alignment = 1
+      
+      [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/HBoxContainer" unique_id=1383469948]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_stretch_ratio = 1.5
+      theme_override_constants/scrollbar_h_separation = 5
+      theme_override_constants/scrollbar_v_separation = 5
+      
+      [node name="StockContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/ScrollContainer" unique_id=1634647215]
+      layout_mode = 2
+      size_flags_horizontal = 3
+      size_flags_vertical = 3
+      
+      [node name="StockLabel" type="Label" parent="VBoxContainer/HBoxContainer/ScrollContainer/StockContainer" unique_id=1761146314]
+      layout_mode = 2
+      text = "Stock"
+      horizontal_alignment = 1
+      
+      _______________
       SPRITE_IMPORTER:
       _______________
       (SpriteImporterDock.tscn):
@@ -3048,6 +3675,11 @@ _______________
               player_walk_up_02.png
     EFFECTS:
     ITEMS:
+    SHOPS:
+        demo2.png
+        demobg.png
+        demofg.png
+        demofgopen.png
     UI:
         indicator_stylebox.tres
     WORLD:
@@ -3080,6 +3712,7 @@ _______________
     DIALOGUE:
         flag test.tres
         index test.tres
+        open_shop.tres
         test1.tres
         test_dialogue.tres
     ENEMIES:
@@ -3121,6 +3754,7 @@ _______________
         wizard_hat.tres
     MAPS:
     SHOPS:
+        demo.tres
     STATUSES:
         asleep.tres
         blind.tres
@@ -5252,6 +5886,7 @@ _______________
     [ext_resource type="Script" uid="uid://drag68vt7goeq" path="res://src/resources/WarpDefinition.gd" id="4_3jy7c"]
     [ext_resource type="Script" uid="uid://3jhcfyj08wdl" path="res://scenes/world/map_controller.gd" id="4_r720c"]
     [ext_resource type="PackedScene" uid="uid://dv8dvat866384" path="res://scenes/NPC.tscn" id="5_7vg7e"]
+    [ext_resource type="Resource" uid="uid://dk1pccqm7blw3" path="res://data/dialogue/open_shop.tres" id="6_at1v2"]
     
     [sub_resource type="TileSet" id="TileSet_4jb3m"]
     tile_size = Vector2i(64, 64)
@@ -5299,6 +5934,7 @@ _______________
     [node name="Npc" parent="YSort/NPCs" unique_id=1190844843 instance=ExtResource("5_7vg7e")]
     y_sort_enabled = true
     position = Vector2(1056, 597)
+    queued_dialogue = ExtResource("6_at1v2")
     wander_radius = 300.0
     
     [node name="Entities" type="Node2D" parent="YSort" unique_id=561890850]
@@ -5324,6 +5960,7 @@ _______________
     [ext_resource type="Script" uid="uid://bbyfwomqhogyr" path="res://scenes/ui/debug_party.gd" id="6_tclvd"]
     [ext_resource type="Script" uid="uid://b3us5iauqhbop" path="res://scenes/ui/debug_teleport.gd" id="7_b5u4c"]
     [ext_resource type="Script" uid="uid://bbedyee4gausj" path="res://scenes/ui/debug_gold.gd" id="7_ceyro"]
+    [ext_resource type="Script" uid="uid://bsh4fcid3occj" path="res://scenes/ui/debug_shops.gd" id="9_jqd5m"]
     
     [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hh07i"]
     bg_color = Color(0.27058825, 0.6, 0.6, 0.24705882)
@@ -5361,7 +5998,7 @@ _______________
     layout_mode = 2
     size_flags_vertical = 3
     theme_override_styles/panel = SubResource("StyleBoxFlat_hh07i")
-    current_tab = 1
+    current_tab = 7
     
     [node name="Start Combat" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=240798581]
     visible = false
@@ -5378,6 +6015,7 @@ _______________
     text = "Fight"
     
     [node name="Edit Combat" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1928381547]
+    visible = false
     layout_mode = 2
     script = ExtResource("3_5dagh")
     metadata/_tab_index = 1
@@ -5842,6 +6480,38 @@ _______________
     layout_mode = 2
     size_flags_horizontal = 3
     
+    [node name="Shops" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1186420709]
+    layout_mode = 2
+    script = ExtResource("9_jqd5m")
+    metadata/_tab_index = 7
+    
+    [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Shops" unique_id=1476426740]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    
+    [node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Shops/VBoxContainer" unique_id=1266888103]
+    layout_mode = 2
+    text = "Shops"
+    horizontal_alignment = 1
+    vertical_alignment = 1
+    
+    [node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer/VBoxContainer/TabContainer/Shops/VBoxContainer" unique_id=714275366]
+    layout_mode = 2
+    size_flags_vertical = 3
+    
+    [node name="ShopsContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Shops/VBoxContainer/ScrollContainer" unique_id=1366360266]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    
+    [node name="OpenButton" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Shops" unique_id=1742162178]
+    layout_mode = 2
+    size_flags_horizontal = 6
+    size_flags_vertical = 4
+    size_flags_stretch_ratio = 0.5
+    disabled = true
+    text = "              Open Shop              "
+    
     _______________
     _______________
     (debug_edit_combat.gd):
@@ -5971,6 +6641,7 @@ _______________
     _______________
     (debug_flags.gd):
     extends HBoxContainer
+    class_name DebugFlag
     
     @onready var flag_container : VBoxContainer = $Container/FlagsContainer
     @onready var key_field : LineEdit = $VBoxContainer/KeyLine
@@ -6052,6 +6723,7 @@ _______________
     _______________
     (debug_gold.gd):
     extends HBoxContainer
+    class_name DebugGold
     
     @onready var gold_spin : SpinBox = $VBoxContainer/HBoxContainer/SpinBox
     
@@ -6180,7 +6852,14 @@ _______________
     @onready var start_combat : DebugStartCombat = $"PanelContainer/VBoxContainer/TabContainer/Start Combat"
     @onready var edit_combat : DebugEditCombat = $"PanelContainer/VBoxContainer/TabContainer/Edit Combat"
     @onready var edit_items : DebugItems = $PanelContainer/VBoxContainer/TabContainer/Items
+    @onready var edit_flags : DebugFlag = $PanelContainer/VBoxContainer/TabContainer/Flags
+    @onready var edit_party : DebugParty = $PanelContainer/VBoxContainer/TabContainer/Party
+    @onready var edit_teleport : DebugTeleport = $PanelContainer/VBoxContainer/TabContainer/Teleport
+    @onready var edit_gold : DebugGold = $PanelContainer/VBoxContainer/TabContainer/Gold
+    @onready var edit_shops : DebugShops = $PanelContainer/VBoxContainer/TabContainer/Shops
+    
     func _ready() -> void:
+    	edit_shops.parent = self
     	hide()
     
     func _unhandled_input(event: InputEvent) -> void:
@@ -6208,6 +6887,7 @@ _______________
     _______________
     (debug_party.gd):
     extends HBoxContainer
+    class_name DebugParty
     
     @onready var entities_container : VBoxContainer = $EntitiesContainer
     @onready var add_button : Button = $ButtonContainer/AddButton
@@ -6335,6 +7015,46 @@ _______________
     
     _______________
     _______________
+    (debug_shops.gd):
+    extends HBoxContainer
+    class_name DebugShops
+    
+    @onready var shops_container : VBoxContainer = $VBoxContainer/ScrollContainer/ShopsContainer
+    @onready var open_button : Button = $OpenButton
+    
+    var current_shop : ShopResource
+    var parent 
+    
+    func _ready() -> void:
+    	refresh_shops()
+    	open_button.pressed.connect(open_shop)
+    
+    func refresh_shops():
+    	for i in shops_container.get_children():
+    		shops_container.remove_child(i)
+    		i.queue_free()
+    	var shops = DirAccess.get_files_at("res://data/shops/")
+    	for shop in shops:
+    		var loaded : ShopResource = load("res://data/shops/%s" % shop)
+    		var button := Button.new()
+    		button.text = shop
+    		button.pressed.connect(func(): current_shop = loaded; shop_selected(button))
+    		shops_container.add_child(button)
+    
+    func shop_selected(button : Button):
+    	for i : Button in shops_container.get_children():
+    		i.remove_theme_color_override("font_color")
+    	button.add_theme_color_override("font_color", Color.GOLD)
+    	if open_button.disabled:
+    		open_button.disabled = false
+    
+    func open_shop():
+    	ShopManager.open_shop(current_shop)
+    	parent.hide()
+    	
+    
+    _______________
+    _______________
     (debug_start_combat.gd):
     extends VBoxContainer
     class_name DebugStartCombat
@@ -6372,6 +7092,7 @@ _______________
     _______________
     (debug_teleport.gd):
     extends HBoxContainer
+    class_name DebugTeleport
     
     @onready var scenes_container : VBoxContainer = $ScenesContainer
     @onready var warps_container : VBoxContainer = $WarpsContainer
@@ -6671,6 +7392,447 @@ _______________
     offset_transform_scale = Vector2(1.75, 1.75)
     text = "⛛"
     horizontal_alignment = 1
+    
+    _______________
+    _______________
+    (ShopUI.tscn):
+    [gd_scene format=3 uid="uid://cxqo3kadwq4nd"]
+    
+    [ext_resource type="Script" uid="uid://cmf6tfa7gablm" path="res://scenes/ui/shop_ui.gd" id="1_1u5rt"]
+    [ext_resource type="Texture2D" uid="uid://06qhkbpxdkln" path="res://art/NULL.png" id="1_ivylx"]
+    
+    [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ivylx"]
+    content_margin_left = 16.0
+    content_margin_top = 8.0
+    content_margin_right = 16.0
+    content_margin_bottom = 8.0
+    bg_color = Color(0.6, 0.6, 0.6, 0.5411765)
+    corner_radius_top_left = 32
+    corner_radius_top_right = 32
+    corner_radius_bottom_right = 32
+    corner_radius_bottom_left = 32
+    corner_detail = 3
+    
+    [node name="ShopUi" type="CanvasLayer" unique_id=1017415340]
+    script = ExtResource("1_1u5rt")
+    
+    [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=772427998]
+    anchors_preset = 15
+    anchor_right = 1.0
+    anchor_bottom = 1.0
+    grow_horizontal = 2
+    grow_vertical = 2
+    
+    [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer" unique_id=828831973]
+    layout_mode = 2
+    size_flags_vertical = 3
+    theme_override_constants/margin_left = 80
+    theme_override_constants/margin_top = 20
+    theme_override_constants/margin_right = 80
+    theme_override_constants/margin_bottom = 20
+    
+    [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MarginContainer" unique_id=222719217]
+    layout_mode = 2
+    
+    [node name="TopLeft" type="VBoxContainer" parent="VBoxContainer/MarginContainer/HBoxContainer" unique_id=233193582]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    offset_transform_enabled = true
+    offset_transform_position_ratio = Vector2(-1.5, 0)
+    offset_transform_visual_only = false
+    
+    [node name="CategoryTabs" type="HBoxContainer" parent="VBoxContainer/MarginContainer/HBoxContainer/TopLeft" unique_id=1874741786]
+    layout_mode = 2
+    offset_transform_enabled = true
+    
+    [node name="ConsumablesButton" type="Button" parent="VBoxContainer/MarginContainer/HBoxContainer/TopLeft/CategoryTabs" unique_id=931591325]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    text = "Consumables"
+    
+    [node name="EquipmentButton" type="Button" parent="VBoxContainer/MarginContainer/HBoxContainer/TopLeft/CategoryTabs" unique_id=846612875]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    text = "Equipment"
+    
+    [node name="KeyItemButton" type="Button" parent="VBoxContainer/MarginContainer/HBoxContainer/TopLeft/CategoryTabs" unique_id=52180840]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    text = "Key Items"
+    
+    [node name="ServicesButton" type="Button" parent="VBoxContainer/MarginContainer/HBoxContainer/TopLeft/CategoryTabs" unique_id=485181611]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    text = "Services"
+    
+    [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/MarginContainer/HBoxContainer/TopLeft" unique_id=706223156]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    
+    [node name="ItemContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer/HBoxContainer/TopLeft/ScrollContainer" unique_id=1692928806]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    offset_transform_enabled = true
+    
+    [node name="MarginContainer4" type="MarginContainer" parent="VBoxContainer/MarginContainer/HBoxContainer" unique_id=357486789]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    size_flags_stretch_ratio = 2.0
+    theme_override_constants/margin_left = 20
+    theme_override_constants/margin_top = 35
+    theme_override_constants/margin_right = 20
+    theme_override_constants/margin_bottom = 0
+    
+    [node name="BGTexture" type="TextureRect" parent="VBoxContainer/MarginContainer/HBoxContainer/MarginContainer4" unique_id=796870547]
+    layout_mode = 2
+    size_flags_vertical = 3
+    size_flags_stretch_ratio = 3.0
+    texture = ExtResource("1_ivylx")
+    stretch_mode = 5
+    
+    [node name="FGTexture" type="TextureRect" parent="VBoxContainer/MarginContainer/HBoxContainer/MarginContainer4" unique_id=769419089]
+    layout_mode = 2
+    size_flags_vertical = 3
+    size_flags_stretch_ratio = 3.0
+    texture = ExtResource("1_ivylx")
+    stretch_mode = 5
+    
+    [node name="ExitButton" type="Button" parent="VBoxContainer/MarginContainer" unique_id=1157945605]
+    layout_mode = 2
+    size_flags_horizontal = 4
+    size_flags_vertical = 0
+    offset_transform_enabled = true
+    offset_transform_position_ratio = Vector2(7.5, 0)
+    offset_transform_visual_only = false
+    theme_override_font_sizes/font_size = 43
+    text = "  x  "
+    
+    [node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer" unique_id=1264030146]
+    layout_mode = 2
+    size_flags_vertical = 3
+    size_flags_stretch_ratio = 0.2
+    theme_override_constants/margin_left = 80
+    theme_override_constants/margin_top = 20
+    theme_override_constants/margin_right = 80
+    theme_override_constants/margin_bottom = 20
+    
+    [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer2" unique_id=1648250941]
+    layout_mode = 2
+    
+    [node name="GoldLabel" type="Label" parent="VBoxContainer/MarginContainer2/VBoxContainer" unique_id=106857802]
+    layout_mode = 2
+    size_flags_horizontal = 4
+    offset_transform_enabled = true
+    theme_override_colors/font_color = Color(1, 1, 0, 1)
+    theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5176471)
+    theme_override_constants/shadow_offset_x = 2
+    theme_override_constants/shadow_offset_y = 2
+    theme_override_font_sizes/font_size = 28
+    text = "Gold: $"
+    horizontal_alignment = 1
+    
+    [node name="ButtonsContainer" type="GridContainer" parent="VBoxContainer/MarginContainer2/VBoxContainer" unique_id=1011052667]
+    layout_mode = 2
+    size_flags_vertical = 3
+    offset_transform_enabled = true
+    offset_transform_position_ratio = Vector2(0, 1.5)
+    theme_override_constants/h_separation = 4
+    theme_override_constants/v_separation = 4
+    columns = 2
+    
+    [node name="BuyButton" type="Button" parent="VBoxContainer/MarginContainer2/VBoxContainer/ButtonsContainer" unique_id=494660468]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_font_sizes/font_size = 29
+    text = "BUY"
+    
+    [node name="SellButton" type="Button" parent="VBoxContainer/MarginContainer2/VBoxContainer/ButtonsContainer" unique_id=1786589686]
+    layout_mode = 2
+    size_flags_horizontal = 3
+    size_flags_vertical = 3
+    theme_override_font_sizes/font_size = 29
+    text = "SELL"
+    
+    [node name="PopupPanel" type="PanelContainer" parent="." unique_id=1440152708]
+    offset_left = 581.0
+    offset_top = 424.0
+    offset_right = 1085.0
+    offset_bottom = 570.0
+    offset_transform_enabled = true
+    theme_override_styles/panel = SubResource("StyleBoxFlat_ivylx")
+    
+    [node name="Label" type="Label" parent="PopupPanel" unique_id=334058142]
+    layout_mode = 2
+    theme_override_font_sizes/font_size = 21
+    text = "test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test"
+    horizontal_alignment = 1
+    vertical_alignment = 1
+    autowrap_mode = 2
+    visible_characters_behavior = 1
+    
+    _______________
+    _______________
+    (shop_ui.gd):
+    extends CanvasLayer
+    class_name ShopUI
+    
+    @onready var category_tabs : HBoxContainer = $VBoxContainer/MarginContainer/HBoxContainer/TopLeft/CategoryTabs
+    @onready var consumables_button : Button = $VBoxContainer/MarginContainer/HBoxContainer/TopLeft/CategoryTabs/ConsumablesButton
+    @onready var equipment_button : Button = $VBoxContainer/MarginContainer/HBoxContainer/TopLeft/CategoryTabs/EquipmentButton
+    @onready var key_item_button : Button = $VBoxContainer/MarginContainer/HBoxContainer/TopLeft/CategoryTabs/KeyItemButton
+    @onready var services_button : Button = $VBoxContainer/MarginContainer/HBoxContainer/TopLeft/CategoryTabs/ServicesButton
+    #@onready var top_layout : HBoxContainer = $VBoxContainer/MarginContainer/HBoxContainer
+    @onready var topleft_layout : VBoxContainer = $VBoxContainer/MarginContainer/HBoxContainer/TopLeft
+    @onready var item_container : VBoxContainer = $VBoxContainer/MarginContainer/HBoxContainer/TopLeft/ScrollContainer/ItemContainer
+    @onready var bg_texture : TextureRect = $VBoxContainer/MarginContainer/HBoxContainer/MarginContainer4/BGTexture
+    @onready var fg_texture : TextureRect = $VBoxContainer/MarginContainer/HBoxContainer/MarginContainer4/FGTexture
+    @onready var dialogue_popup : PanelContainer = $PopupPanel
+    @onready var dialogue_label : Label = $PopupPanel/Label
+    @onready var buttons_container : GridContainer = $VBoxContainer/MarginContainer2/VBoxContainer/ButtonsContainer
+    @onready var buy_button : Button = $VBoxContainer/MarginContainer2/VBoxContainer/ButtonsContainer/BuyButton
+    @onready var sell_button : Button = $VBoxContainer/MarginContainer2/VBoxContainer/ButtonsContainer/SellButton
+    @onready var exit_button : Button = $VBoxContainer/MarginContainer/ExitButton
+    @onready var gold_label : Label = $VBoxContainer/MarginContainer2/VBoxContainer/GoldLabel
+    
+    # dialogues
+    var intro_text = "Welcome to the shop\nHow can I help you?"
+    var bought_item_text = "Would you like to buy anything else?"
+    var sold_item_text = "Would you like to sell anything else?"
+    var main_menu_text = "Anything else I can help you with?"
+    var exit_text = "Alright, see you next time!"
+    
+    
+    var current_shop : ShopResource
+    var current_item : ItemResource
+    var inventory : Array[ItemResource] = []
+    var selling := false
+    
+    var current_array = []
+    var consumables_array : Array[ItemResource] = []
+    var equipment_array : Array[ItemResource] = []
+    var key_item_array : Array[ItemResource] = []
+    var services_array : Array[ItemResource] = []
+    
+    # Called when the node enters the scene tree for the first time.
+    func _ready() -> void:
+    	#for i in item_container.get_children():
+    		#i.queue_free()
+    	#hide()
+    	#tween_out()
+    	topleft_layout.offset_transform_position_ratio = Vector2(-1.5, 0)
+    	buttons_container.offset_transform_position_ratio = Vector2(0, 1.5)
+    	EventBus.shop_opened.connect(open_shop)
+    	exit_button.pressed.connect(func():dialogue(exit_text); await get_tree().create_timer(1.0).timeout; ShopManager.close_shop())
+    	button_mode()
+    	refresh_gold()
+    
+    func refresh_gold():
+    	gold_label.text = "Gold: %s" % GameState.gold
+    
+    func refresh_inventory():
+    	inventory = GameState.inventory
+    
+    func open_shop(shop : ShopResource):
+    	current_shop = shop
+    	bg_texture.texture = shop.bg_texture
+    	fg_texture.texture = shop.fg_closed_texture
+    	intro_text = shop.intro_text
+    	bought_item_text = shop.bought_item_text
+    	sold_item_text = shop.sold_item_text
+    	main_menu_text = shop.main_menu_text
+    	exit_text = shop.exit_text
+    	#buy_button.pressed.connect(func():repopulate_arrays(current_shop.stock); selling = false; button_mode("buy"))
+    	#sell_button.pressed.connect(func():refresh_inventory(); repopulate_arrays(inventory); selling = true; button_mode("sell"))
+    	button_mode()
+    	tween_in()
+    	topleft_layout.hide()
+    	topleft_layout.offset_transform_position_ratio = Vector2(-1.5, 0)
+    	dialogue(intro_text, Vector2(-0.38,0))
+    	#repopulate_arrays(shop.stock)
+    
+    func close_shop():
+    	#buy_button.pressed.disconnect(func():repopulate_arrays(current_shop.stock); selling = false; button_mode("buy"))
+    	for i in buy_button.get_signal_connection_list("pressed"):
+    		buy_button.pressed.disconnect(i.callable)
+    	#sell_button.pressed.disconnect(func():repopulate_arrays(GameState.inventory); selling = true; button_mode("sell"))
+    	for ii in sell_button.get_signal_connection_list("pressed"):
+    		sell_button.pressed.disconnect(ii.callable)
+    
+    func repopulate_arrays(stock : Array[ItemResource]):
+    	consumables_array.clear()
+    	equipment_array.clear()
+    	key_item_array.clear()
+    	services_array.clear()
+    	for i in stock:
+    		match i.item_type:
+    			ItemResource.ItemType.CONSUMABLE:
+    				consumables_array.append(i)
+    			ItemResource.ItemType.EQUIPMENT:
+    				equipment_array.append(i)
+    			ItemResource.ItemType.KEY_ITEM:
+    				key_item_array.append(i)
+    			ItemResource.ItemType.SERVICE:
+    				services_array.append(i)
+    	if consumables_array.size() > 0:
+    		consumables_button.show()
+    		if consumables_button.pressed.is_connected(repopulate_list):
+    			consumables_button.pressed.disconnect(repopulate_list)
+    		consumables_button.pressed.connect(repopulate_list.bind(consumables_array))
+    	else:
+    		consumables_button.hide()
+    	if equipment_array.size() > 0:
+    		equipment_button.show()
+    		if equipment_button.pressed.is_connected(repopulate_list):
+    			equipment_button.pressed.disconnect(repopulate_list)
+    		equipment_button.pressed.connect(repopulate_list.bind(equipment_array))
+    	else:
+    		equipment_button.hide()
+    	if key_item_array.size() > 0:
+    		key_item_button.show()
+    		if key_item_button.pressed.is_connected(repopulate_list):
+    			key_item_button.pressed.disconnect(repopulate_list)
+    		key_item_button.pressed.connect(repopulate_list.bind(key_item_array))
+    	else:
+    		key_item_button.hide()
+    	if services_array.size() > 0:
+    		services_button.show()
+    		if services_button.pressed.is_connected(repopulate_list):
+    			services_button.pressed.disconnect(repopulate_list)
+    		services_button.pressed.connect(repopulate_list.bind(services_array))
+    	else:
+    		services_button.hide()
+    	repopulate_list(consumables_array)
+    
+    func repopulate_list(items : Array):
+    	current_array = items
+    	var names_array = []
+    	for i in item_container.get_children(true):
+    		item_container.remove_child(i)
+    		i.queue_free()
+    	for item : ItemResource in items:
+    		if (!selling and GameState.shop_states[current_shop.shop_id][item.item_name] <= 0) or item.item_name in names_array:
+    			continue
+    		var button := Button.new()
+    		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    		button.custom_minimum_size = Vector2(0, 65)
+    		#button.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    		button.text = item.item_name
+    		button.pressed.connect(select_item.bind(item))
+    		item_container.add_child(button)
+    		names_array.append(item.item_name)
+    	if !topleft_layout.visible:
+    		topleft_layout.offset_transform_position_ratio = Vector2(-1.5, 0)
+    		topleft_layout.show()
+    	tween_in("left")
+    		
+    func intro_dialogue(text : String):
+    	dialogue_label.text = text
+    	dialogue_popup.show()
+    	await get_tree().create_timer(2.0).timeout
+    	dialogue_popup.hide()
+    	tween_in()
+    
+    func dialogue(text : String = "", shift : Vector2 = Vector2(-0.01, 0)):
+    	dialogue_popup.hide()
+    	var tween = create_tween()
+    	#await get_tree().create_timer(0.5).timeout
+    	tween.tween_property(dialogue_popup, "offset_transform_position_ratio", shift, 0.5)
+    	#dialogue_popup.offset_transform_position_ratio = shift
+    	if text != "":
+    		dialogue_label.text = text
+    		dialogue_popup.show()
+    
+    func select_item(item : ItemResource):
+    	current_item = item
+    	var cost
+    	if !selling:
+    		cost = roundi(current_item.value * current_shop.buy_modifier)
+    		print("Gold: %s, Cost: %s" % [GameState.gold, cost])
+    		if cost > GameState.gold:
+    			buy_button.disabled = true
+    		else:
+    			buy_button.disabled = false
+    	else:
+    		cost = roundi(current_item.value * current_shop.sell_modifier)
+    	var output = "%s: %s \n$%s" % [item.item_name, item.description, cost]
+    	dialogue(output)
+    
+    func tween_in(which = "both"):
+    	if which in ["left", "both"]:
+    		var tween = create_tween()
+    		if !topleft_layout.visible:
+    			topleft_layout.show()
+    		tween.tween_property(topleft_layout, "offset_transform_position_ratio", Vector2(0,0), 0.5)
+    		tween.tween_property(topleft_layout, "offset_transform_scale", Vector2(1,1), 0.5)
+    	if which in ["bottom", "both"]: 
+    		var tween2 = create_tween()
+    		tween2.tween_property(buttons_container, "offset_transform_position_ratio", Vector2(0,0), 0.5)
+    
+    func tween_out(which = "both"):
+    	if which in ["left", "both"]:
+    		var tween = create_tween()
+    		tween.tween_property(topleft_layout, "offset_transform_position_ratio", Vector2(-1.5,0), 0.5)
+    		tween.tween_property(topleft_layout, "offset_transform_scale", Vector2(0,1), 0.5)
+    		tween.finished.connect(func(): topleft_layout.hide())
+    	if which in ["bottom", "both"]: 
+    		var tween2 = create_tween()
+    		tween2.tween_property(buttons_container, "offset_transform_position_ratio", Vector2(0, 1.5), 0.5)
+    
+    func button_mode(mode = "main"):
+    	buy_button.disabled = false
+    	sell_button.disabled = false
+    	for x in buy_button.pressed.get_connections():
+    		buy_button.pressed.disconnect(x.callable)
+    	for y in sell_button.pressed.get_connections():
+    		sell_button.pressed.disconnect(y.callable)
+    	match mode:
+    		"main":
+    			selling = false
+    			buy_button.text = "BUY"
+    			sell_button.text = "SELL"
+    			buy_button.pressed.connect(func():
+    				selling = false
+    				repopulate_arrays(current_shop.stock)
+    				button_mode("buy")
+    				dialogue()
+    				)
+    			sell_button.pressed.connect(func():
+    				selling = true
+    				repopulate_arrays(GameState.inventory)
+    				button_mode("sell")
+    				dialogue()
+    				)
+    		"buy":
+    			selling = false
+    			buy_button.text = "BUY"
+    			sell_button.text = "BACK"
+    			buy_button.pressed.connect(func(): 
+    				ShopManager.purchase_item(current_item)
+    				dialogue(bought_item_text)
+    				)
+    			sell_button.pressed.connect(func():
+    				button_mode("main")
+    				tween_out("left")
+    				dialogue(main_menu_text, Vector2(-0.38,0))
+    				)
+    		"sell":
+    			selling = true
+    			buy_button.text = "SELL"
+    			sell_button.text = "BACK"
+    			buy_button.pressed.connect(func():
+    				ShopManager.sell_item(current_item)
+    				repopulate_arrays(GameState.inventory)
+    				
+    				dialogue(sold_item_text)
+    				)
+    			sell_button.pressed.connect(func():
+    				button_mode("main")
+    				tween_out("left")
+    				dialogue(main_menu_text, Vector2(-0.38,0))
+    				)
     
     _______________
     _______________
@@ -7637,6 +8799,8 @@ _______________
     
     func _unhandled_input(event: InputEvent) -> void:
     	if event.is_action_pressed("ui_accept"):
+    		if GameState.shopping:
+    			return
     		var group = load("res://data/enemy_groups/Slime_Slime_Slime.tres")
     		GameState.previous_player_location = player.global_position
     		SceneManager.start_combat(group)
@@ -7782,7 +8946,14 @@ _______________
     var _current_index : int
     var _awaiting_choices : bool = false
     
+    var parse_dict
+    
     func _ready() -> void:
+    	parse_dict = {
+    	"SceneManager" : get_node("/root/SceneManager"),
+    	"GameState" : get_node("/root/GameState"),
+    	"ShopManager" : get_node("/root/ShopManager"),
+    }
     	EventBus.dialogue_choice_selected.connect(choice_selected)
     	EventBus.advance_dialogue_requested.connect(advance_dialogue)
     	_dialogue_ui = DIALOGUE_UI_SCENE.instantiate()
@@ -7803,6 +8974,14 @@ _______________
     		end_dialogue()
     	else:
     		var current_line : DialogueLine = _current_lines[_current_index]
+    		if current_line.function != "":
+    			if current_line.arguments.is_empty():
+    				var function : Callable = parse_function(current_line.function)
+    				function.call()
+    			else:
+    				var function : Callable = parse_function(current_line.function)
+    				function.callv(parse_arguments(current_line.arguments))
+    			end_dialogue()
     		if current_line.choices.is_empty():
     			EventBus.dialogue_line_advanced.emit(current_line)
     			_current_index += 1
@@ -7844,6 +9023,40 @@ _______________
     	_awaiting_choices = false
     	EventBus.player_movement_unlocked.emit()
     	EventBus.dialogue_finished.emit()
+    
+    func parse_function(function_string : String):
+    	var tokens = function_string.split(".")
+    	var _object
+    	var _function
+    	if tokens.size() > 1:
+    		if tokens[0] in parse_dict.keys():
+    			_object = parse_dict[tokens[0]]
+    			_function = Callable(_object, tokens[1])
+    			print("%s, %s" % [tokens[0], tokens[1]])
+    	else:
+    		_function = Callable(tokens[0])
+    		print(tokens[0])
+    	if _function:
+    		return _function
+    
+    func parse_arguments(arguments_string : String, ):
+    	var _args = []
+    	var tokens = arguments_string.replace(" ", "").split(",")
+    	#print(arguments_string)
+    	#print(tokens)
+    	for i : String in tokens:
+    		var arg
+    		if i.is_valid_int():
+    			arg = i.to_int()
+    		elif i.is_valid_float():
+    			arg = i.to_float()
+    		elif i.contains("res://"):
+    			arg = load(i)
+    		else:
+    			arg = i
+    		_args.append(arg)
+    	#print(_args)
+    	return _args
     
     _______________
     _______________
@@ -7896,6 +9109,13 @@ _______________
 	signal item_used(item: Resource)
 	signal item_dropped(item: Resource)
 	
+	# Shop signals
+	signal shop_interaction_requested(shop: ShopResource)
+	signal shop_opened(shop: ShopResource)
+	signal shop_closed()
+	signal item_purchased(item: ItemResource, quantity: int)
+	signal item_sold(item: ItemResource, quantity: int)
+	
 	# Game state signals
 	signal flag_changed(flag_name: String, value: Variant)
 	signal gold_changed(new_amount: int)
@@ -7937,6 +9157,13 @@ _______________
 	var previous_player_location : Vector2 = Vector2(-1, -1)
 	var previous_safe_zone : Array = [] # Scene, Warp_ID
 	
+	var current_shop_id : String = ""
+	var shop_stock_cache: Dictionary = {}
+	var shopping = false
+	const MAX_RECENT_SHOPS := 2
+	var recent_shops: Array[String] = []
+	var shop_states: Dictionary = {}
+	
 	var pending_enemy_group : EnemyGroupResource = null
 	var in_combat := false
 	var movement_locks := 0
@@ -7944,6 +9171,8 @@ _______________
 	func _ready() -> void:
 		EventBus.combat_started.connect(func(enemy_group):in_combat=true)
 		EventBus.combat_ended.connect(func(result):in_combat=false)
+		EventBus.shop_opened.connect(func(_shop): shopping = true)
+		EventBus.shop_closed.connect(func(): shopping = false)
 		party.append(load("res://data/characters/norb_party_member.tres").duplicate(true))
 		party.append(load("res://data/characters/dog_party_member.tres").duplicate(true))
 		inventory.append_array([load("res://data/items/elixer.tres"), load("res://data/items/magicrestore.tres"), load("res://data/items/potion.tres"), load("res://data/items/sword.tres")])
@@ -7986,6 +9215,21 @@ _______________
 			EventBus.item_acquired.emit(i)
 			print("Item aquired: %s" % i.item_name)
 		pending_inventory = []
+	
+	func get_shop_stock(shop: ShopResource) -> Dictionary:
+		#if !(shop.shop_id in shop_stock_cache.keys()):
+			#shop_stock_cache[shop.shop_id] = shop.stock
+		#return shop_stock_cache[shop.shop_id]
+		if (!shop.shop_id in shop_states.keys()):
+			shop_states[shop.shop_id] = shop.item_quantities.duplicate()
+		if shop.shop_id in recent_shops:
+			recent_shops.erase(shop.shop_id)
+		recent_shops.insert(0, shop.shop_id)
+		if recent_shops.size() > MAX_RECENT_SHOPS:
+			var shop_id = recent_shops.pop_back()
+			var _shop : ShopResource = load("res://data/shops/%s.tres" % shop_id)
+			shop_states[shop_id] = _shop.item_quantities.duplicate()
+		return shop_states[shop.shop_id]
 	
 	_______________
 	_______________
@@ -8047,6 +9291,76 @@ _______________
 			travel_to(GameState.previous_safe_zone[0], GameState.previous_safe_zone[1], "fade")
 		else:
 			travel_to(GameState.current_map_path, "", "fade")
+	
+	_______________
+	_______________
+	(ShopManager.gd):
+	extends Node
+	
+	const SHOP_UI_SCENE = preload("res://scenes/ui/ShopUI.tscn")
+	var _shop_ui : ShopUI
+	var current_shop : ShopResource
+	
+	func _ready() -> void:
+		EventBus.shop_interaction_requested.connect(open_shop)
+		_shop_ui = SHOP_UI_SCENE.instantiate()
+		get_tree().root.add_child.call_deferred(_shop_ui)
+		_shop_ui.hide()
+	
+	func open_shop(shop : ShopResource):
+		if !_shop_ui.visible:
+			_shop_ui.show()
+		current_shop = shop
+		EventBus.player_movement_locked.emit()
+		var stock = GameState.get_shop_stock(shop)
+		EventBus.shop_opened.emit(shop)
+	
+	func close_shop():
+		EventBus.shop_closed.emit()
+		_shop_ui.hide()
+		_shop_ui.close_shop()
+		EventBus.player_movement_unlocked.emit()
+	
+	func purchase_item(item : ItemResource, quantity : int = 1):
+		if GameState.spend_gold(roundi((item.value * quantity)*current_shop.buy_modifier)):
+			_shop_ui.refresh_gold()
+			if item.item_type != ItemResource.ItemType.SERVICE:
+				for i in quantity:
+					GameState.give_item(item.duplicate(true))
+					if item.item_name in GameState.shop_states[current_shop.shop_id].keys():
+						GameState.shop_states[current_shop.shop_id][item.item_name] -= 1
+				EventBus.item_purchased.emit(item, quantity)
+				GameState.inventory_transfer()
+				_shop_ui.refresh_inventory()
+				_shop_ui.repopulate_list(_shop_ui.current_array)
+			else:
+				pass # TODO: Implement service logic in purchase_service
+			#print(GameState.shop_states[current_shop.shop_id])
+			#print(_shop_ui.inventory)
+	
+	func sell_item(item : ItemResource, quantity : int = 1):
+		EventBus.item_sold.emit(item, quantity)
+		for i in quantity:
+			if GameState.inventory.find(item) == -1:
+				continue
+			var _item : ItemResource = GameState.inventory[GameState.inventory.find(item)]
+			_item.quantity -= 1
+			if _item.quantity <= 0:
+				GameState.inventory.erase(_item)
+			GameState.add_gold(roundi(item.value * current_shop.sell_modifier))
+			_shop_ui.refresh_gold()
+			if item.item_name in GameState.shop_states[current_shop.shop_id].keys():
+				GameState.shop_states[current_shop.shop_id][item.item_name] += 1
+			else:
+				GameState.shop_states[current_shop.shop_id][item.item_name] = 1
+				current_shop.stock.append(item)
+		#print(GameState.shop_states[current_shop.shop_id])
+	
+	func test_shop():
+		var new_shop := load("res://data/shops/demo.tres")
+		open_shop(new_shop)
+		#current_shop = new_shop
+		#EventBus.shop_opened.emit(new_shop)
 	
 	_______________
 	COMBAT:
@@ -8624,6 +9938,8 @@ _______________
 	
 	# Empty array = linear advance. Populated = show choice menu.
 	@export var choices: Array[DialogueChoice] = []
+	@export var function : String = ""
+	@export var arguments : String = ""
 	
 	_______________
 	_______________
@@ -8795,7 +10111,7 @@ _______________
 	class_name ItemResource
 	extends Resource
 	
-	enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM }
+	enum ItemType { CONSUMABLE, EQUIPMENT, KEY_ITEM, SERVICE }
 	enum ConsumableEffect {NONE, HEAL_HP, HEAL_MP, REVIVE, CURE_STATUS, CUSTOM}
 	enum EquipSlot {NONE, HEAD, TORSO, LEGS, HAND, FOOT, RING, TOE_RING}
 	
@@ -8941,6 +10257,27 @@ _______________
 					EventBus.stat_increased.emit(self, i, stats.get(i))
 					print("%s %s raised to %s" % [stats.character_name, i, stats.get(i)])
 		
+	
+	_______________
+	_______________
+	(ShopResource.gd):
+	class_name ShopResource
+	extends Resource
+	
+	@export var shop_id: String # used as the cache key in GameState
+	@export var shop_name: String
+	@export var stock: Array[ItemResource]
+	@export var buy_modifier: float = 1.0
+	@export var sell_modifier: float = 0.8
+	@export var item_quantities: Dictionary = {}
+	@export var bg_texture : Texture
+	@export var fg_closed_texture : Texture
+	@export var fg_open_texture : Texture
+	@export var intro_text = "Welcome to the shop\nHow can I help you?"
+	@export var bought_item_text = "Would you like to buy anything else?"
+	@export var sold_item_text = "Would you like to sell anything else?"
+	@export var main_menu_text = "Anything else I can help you with?"
+	@export var exit_text = "Alright, see you next time!"
 	
 	_______________
 	_______________

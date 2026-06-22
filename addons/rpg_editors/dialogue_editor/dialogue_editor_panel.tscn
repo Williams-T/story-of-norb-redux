@@ -134,6 +134,38 @@ texture_normal = ExtResource("2_esd1h")
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="HBoxContainer5" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=1029400389]
+layout_mode = 2
+
+[node name="FunctionLabel" type="Label" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=212612420]
+layout_mode = 2
+size_flags_stretch_ratio = 0.5
+text = "           Function:"
+
+[node name="FunctionEdit" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=90720276]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Function Name"
+alignment = 1
+
+[node name="ArgsEdit" type="LineEdit" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=123160826]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Arg1, Arg2, etc..."
+alignment = 1
+
+[node name="ShopButton" type="Button" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=662515678]
+layout_mode = 2
+text = "Shop"
+
+[node name="ItemButton" type="Button" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=77295087]
+layout_mode = 2
+text = "Item"
+
+[node name="CombatButton" type="Button" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer/HBoxContainer5" unique_id=732706040]
+layout_mode = 2
+text = "Battle"
+
 [node name="HBoxContainer4" type="HBoxContainer" parent="VBoxContainer/MainContent/LineDetail/MarginContainer/VBoxContainer" unique_id=1069664076]
 layout_mode = 2
 alignment = 2

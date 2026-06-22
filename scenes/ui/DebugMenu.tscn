@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://bbyfwomqhogyr" path="res://scenes/ui/debug_party.gd" id="6_tclvd"]
 [ext_resource type="Script" uid="uid://b3us5iauqhbop" path="res://scenes/ui/debug_teleport.gd" id="7_b5u4c"]
 [ext_resource type="Script" uid="uid://bbedyee4gausj" path="res://scenes/ui/debug_gold.gd" id="7_ceyro"]
+[ext_resource type="Script" uid="uid://bsh4fcid3occj" path="res://scenes/ui/debug_shops.gd" id="9_jqd5m"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hh07i"]
 bg_color = Color(0.27058825, 0.6, 0.6, 0.24705882)
@@ -45,7 +46,7 @@ custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_hh07i")
-current_tab = 1
+current_tab = 7
 
 [node name="Start Combat" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=240798581]
 visible = false
@@ -62,6 +63,7 @@ layout_mode = 2
 text = "Fight"
 
 [node name="Edit Combat" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1928381547]
+visible = false
 layout_mode = 2
 script = ExtResource("3_5dagh")
 metadata/_tab_index = 1
@@ -525,3 +527,35 @@ alignment = 1
 [node name="Control2" type="Control" parent="PanelContainer/VBoxContainer/TabContainer/Gold" unique_id=667804748]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="Shops" type="HBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer" unique_id=1186420709]
+layout_mode = 2
+script = ExtResource("9_jqd5m")
+metadata/_tab_index = 7
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Shops" unique_id=1476426740]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/TabContainer/Shops/VBoxContainer" unique_id=1266888103]
+layout_mode = 2
+text = "Shops"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer/VBoxContainer/TabContainer/Shops/VBoxContainer" unique_id=714275366]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ShopsContainer" type="VBoxContainer" parent="PanelContainer/VBoxContainer/TabContainer/Shops/VBoxContainer/ScrollContainer" unique_id=1366360266]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="OpenButton" type="Button" parent="PanelContainer/VBoxContainer/TabContainer/Shops" unique_id=1742162178]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.5
+disabled = true
+text = "              Open Shop              "

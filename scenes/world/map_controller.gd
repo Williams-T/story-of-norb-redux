@@ -31,6 +31,8 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
+		if GameState.shopping:
+			return
 		var group = load("res://data/enemy_groups/Slime_Slime_Slime.tres")
 		GameState.previous_player_location = player.global_position
 		SceneManager.start_combat(group)

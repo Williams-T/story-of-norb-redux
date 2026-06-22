@@ -8,7 +8,14 @@ var _current_lines : Array[DialogueLine]
 var _current_index : int
 var _awaiting_choices : bool = false
 
+var parse_dict
+
 func _ready() -> void:
+	parse_dict = {
+	"SceneManager" : get_node("/root/SceneManager"),
+	"GameState" : get_node("/root/GameState"),
+	"ShopManager" : get_node("/root/ShopManager"),
+}
 	EventBus.dialogue_choice_selected.connect(choice_selected)
 	EventBus.advance_dialogue_requested.connect(advance_dialogue)
 	_dialogue_ui = DIALOGUE_UI_SCENE.instantiate()
@@ -29,6 +36,14 @@ func advance_dialogue():
 		end_dialogue()
 	else:
 		var current_line : DialogueLine = _current_lines[_current_index]
+		if current_line.function != "":
+			if current_line.arguments.is_empty():
+				var function : Callable = parse_function(current_line.function)
+				function.call()
+			else:
+				var function : Callable = parse_function(current_line.function)
+				function.callv(parse_arguments(current_line.arguments))
+			end_dialogue()
 		if current_line.choices.is_empty():
 			EventBus.dialogue_line_advanced.emit(current_line)
 			_current_index += 1
@@ -70,3 +85,37 @@ func end_dialogue():
 	_awaiting_choices = false
 	EventBus.player_movement_unlocked.emit()
 	EventBus.dialogue_finished.emit()
+
+func parse_function(function_string : String):
+	var tokens = function_string.split(".")
+	var _object
+	var _function
+	if tokens.size() > 1:
+		if tokens[0] in parse_dict.keys():
+			_object = parse_dict[tokens[0]]
+			_function = Callable(_object, tokens[1])
+			print("%s, %s" % [tokens[0], tokens[1]])
+	else:
+		_function = Callable(tokens[0])
+		print(tokens[0])
+	if _function:
+		return _function
+
+func parse_arguments(arguments_string : String, ):
+	var _args = []
+	var tokens = arguments_string.replace(" ", "").split(",")
+	#print(arguments_string)
+	#print(tokens)
+	for i : String in tokens:
+		var arg
+		if i.is_valid_int():
+			arg = i.to_int()
+		elif i.is_valid_float():
+			arg = i.to_float()
+		elif i.contains("res://"):
+			arg = load(i)
+		else:
+			arg = i
+		_args.append(arg)
+	#print(_args)
+	return _args

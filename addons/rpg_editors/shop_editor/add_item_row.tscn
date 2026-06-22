@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://c854nlrdu5ud0"]
+
+[ext_resource type="Script" uid="uid://dxtqmowjjexne" path="res://addons/rpg_editors/shop_editor/add_item_row.gd" id="1_aorga"]
+
+[node name="AddItemRow" type="GridContainer" unique_id=1366492977]
+columns = 2
+script = ExtResource("1_aorga")
+
+[node name="ItemPickerButton" type="Button" parent="." unique_id=1759642757]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pick Item"
+
+[node name="QuantitySpin" type="SpinBox" parent="." unique_id=2094402542]
+layout_mode = 2
+min_value = 1.0
+value = 1.0
+rounded = true
+alignment = 1
+
+[node name="AddItemButton" type="Button" parent="." unique_id=1587207546]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 12
+text = "     ADD    "
+
+[node name="CancelItemButton" type="Button" parent="." unique_id=1595702013]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "CANCEL"
