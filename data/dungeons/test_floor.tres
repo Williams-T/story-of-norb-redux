@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DungeonResource" format=3 uid="uid://kk2itk7cnj4f"]
+
+[ext_resource type="Script" uid="uid://bolrxefn8gyhc" path="res://src/resources/EnemyGroupResource.gd" id="1_mlukv"]
+[ext_resource type="Resource" uid="uid://wtrhtstaknae" path="res://data/enemy_groups/brokenberserker.tres" id="2_ipqic"]
+[ext_resource type="Script" uid="uid://bp86u0k1ysqy1" path="res://src/resources/DungeonResource.gd" id="4_is5ci"]
+
+[resource]
+script = ExtResource("4_is5ci")
+floor_name = "test floor"
+encounter_rate = 0.5
+encounter_groups = Array[ExtResource("1_mlukv")]([ExtResource("2_ipqic")])
+encounter_weights = Array[float]([0.6])

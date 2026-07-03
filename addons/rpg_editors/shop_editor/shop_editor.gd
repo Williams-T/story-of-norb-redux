@@ -90,7 +90,7 @@ func refresh_fields(shop : ShopResource = null):
 		return_edit.text = current_shop.main_menu_text
 		exit_edit.text = current_shop.exit_text
 		for node in stock_container.get_children():
-			if !node.name in ["StockLabel"]:
+			if node.name not in ["StockLabel"]:
 				node.queue_free()
 		for item : ItemResource in current_stock:
 			var quantity = 1

@@ -1,5 +1,10 @@
+# world_menu.gd
 extends CanvasLayer
 
+@warning_ignore_start("unused_variable")
+@warning_ignore_start("unused_parameter")
+@warning_ignore_start("narrowing_conversion")
+@warning_ignore_start("confusable_local_declaration")
 
 var current_party_member : PartyMemberResource = null
 var current_slot
@@ -115,25 +120,32 @@ func _on_slot_pressed(slot_key : String, index : int):
 		node.queue_free()
 	await get_tree().process_frame
 	var current_inventory
+	var current_quantities
 	if !current_party_member.is_player:
 		current_inventory = current_party_member.inventory.duplicate()
+		current_quantities = current_party_member.item_quantities.duplicate()
 	else:
 		current_inventory = GameState.inventory.duplicate()
+		current_quantities = GameState.item_quantities.duplicate()
 	for item : ItemResource in current_inventory:
 		if current_party_member.locate_equip_slot(item) == slot_key or slot_key in ["rings", "main"]:
-			var item_button := Button.new()
-			item_button.text = "%s  |  %s" % [item.item_name, item.stats_to_text()]
-			item_button.icon = item.icon
-			item_button.custom_minimum_size = Vector2(0, 128)
-			item_button.pressed.connect(func(): 
-				current_party_member.equip_item(item)
-				if current_party_member.is_player:
-					GameState.inventory.erase(item)
-				else:
-					current_party_member.inventory.erase(item)
-				_on_slot_pressed(slot_key, index)
-				)
-			_list.add_child(item_button)
+			if item.item_name not in current_quantities.keys():
+				current_quantities[item.item_name] = 1
+			for i in current_quantities[item.item_name]:
+				var item_button := Button.new()
+				item_button.text = "%s  |  %s" % [item.item_name, item.stats_to_text()]
+				item_button.icon = item.icon
+				item_button.custom_minimum_size = Vector2(0, 128)
+				item_button.pressed.connect(func(): 
+					current_party_member.equip_item(item)
+					current_party_member.remove_item(item)
+					#if current_party_member.is_player:
+						#GameState.inventory.erase(item)
+					#else:
+						#current_party_member.inventory.erase(item)
+					_on_slot_pressed(slot_key, index)
+					)
+				_list.add_child(item_button)
 
 func _update_equipped_display(slot_key: String, index: int) -> void:
 	var main_keys = ["head", "torso", "hand", "legs", "foot"]
@@ -156,8 +168,8 @@ func _update_equipped_display(slot_key: String, index: int) -> void:
 		_label.text = "Empty"
 
 func _on_unequip_pressed():
-	if current_slot != null:
-		pass
+	if current_slot == null:
+		return
 	var item
 	if current_slot[1] == -1:
 		item = current_party_member.equipped[current_slot[0]]
@@ -255,13 +267,19 @@ func refresh_item_list():
 	if current_party_member.is_player:
 		for item : ItemResource in GameState.inventory:
 			if item.item_type != ItemResource.ItemType.EQUIPMENT:
-				item_list.add_item(item.item_name + " | " + item.stats_to_text())
-				item_list.set_item_metadata(item_list.item_count - 1, item)
+				if item.item_name not in GameState.item_quantities.keys():
+					GameState.item_quantities[item.item_name] = 1
+				for i in GameState.item_quantities[item.item_name]:
+					item_list.add_item(item.item_name + " | " + item.stats_to_text())
+					item_list.set_item_metadata(item_list.item_count - 1, item)
 	else:
 		for item : ItemResource in current_party_member.inventory:
 			if item.item_type != ItemResource.ItemType.EQUIPMENT:
-				item_list.add_item(item.item_name)
-				item_list.set_item_metadata(item_list.item_count - 1, item)
+				if item.item_name not in current_party_member.item_quantities.keys():
+					current_party_member.item_quantities[item.item_name] = 1
+				for i in current_party_member.item_quantities[item.item_name]:
+					item_list.add_item(item.item_name)
+					item_list.set_item_metadata(item_list.item_count - 1, item)
 	item_list.item_selected.connect(_on_item_selected.bind(item_list))
 
 func set_button_color(button : Button):
@@ -291,13 +309,12 @@ func _populate_member_picker(item : ItemResource, index : int, item_list : ItemL
 			member_button.text = member.stats.character_name
 		member_button.pressed.connect(func(): 
 			if item.apply_to(member.stats) == true:
-				#item_list.remove_item(index)
-				item.quantity -= 1
-				if item.quantity <= 0:
-					if current_party_member.is_player:
-						GameState.inventory.erase(item)
-					else:
-						current_party_member.inventory.erase(item)
+				if current_party_member.is_player:
+					#GameState.inventory.erase(item)
+					GameState.remove_item(item)
+				else:
+					#current_party_member.inventory.erase(item)
+					current_party_member.remove_item(item)
 				refresh_item_list()
 			member_picker.hide()
 			)

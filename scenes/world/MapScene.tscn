@@ -16,11 +16,17 @@ texture_filter = 1
 [node name="GroundLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=1731891896]
 tile_set = ExtResource("1_lq374")
 
-[node name="DetailLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=414661615]
+[node name="DetailLayerBack" type="TileMapLayer" parent="TileMapLayers" unique_id=414661615]
+tile_set = SubResource("TileSet_4jb3m")
+
+[node name="DetailLayerFront" type="TileMapLayer" parent="TileMapLayers" unique_id=784410489]
 tile_set = SubResource("TileSet_4jb3m")
 
 [node name="WallLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=582539627]
 tile_set = ExtResource("2_oocq6")
+
+[node name="BlockingLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=2058172167]
+tile_set = SubResource("TileSet_4jb3m")
 
 [node name="Warps" type="Node2D" parent="." unique_id=1008206038]
 

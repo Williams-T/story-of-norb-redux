@@ -56,7 +56,6 @@ y_sort_enabled = true
 y_sort_enabled = true
 position = Vector2(1056, 597)
 queued_dialogue = ExtResource("6_at1v2")
-wander_radius = 300.0
 
 [node name="Entities" type="Node2D" parent="YSort" unique_id=561890850]
 

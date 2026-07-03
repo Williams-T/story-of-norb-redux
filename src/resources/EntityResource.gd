@@ -4,6 +4,7 @@ extends Resource
 @export var stats: CharacterStatBlock
 @export var actions: Array[BattleAction]
 @export var inventory: Array[ItemResource]
+@export var item_quantities := {}
 @export var is_player := false
 var active_statuses: Array[Dictionary] = []
 var equipped: Dictionary
@@ -28,6 +29,18 @@ func _init() -> void:
 		"toe_ring": [null, null, null, null, null, null, null, null, null, null],
 	}
 
+func scan_quantities():
+	if !is_player and item_quantities.keys().is_empty():
+		item_quantities.clear()
+		var temp_inventory = inventory.duplicate(true)
+		for i : ItemResource in inventory:
+			if i.item_name in item_quantities.keys():
+				temp_inventory.erase(i)
+				item_quantities[i.item_name] += 1
+			else:
+				item_quantities[i.item_name] = 1
+		inventory = temp_inventory
+
 func get_bonus(stat_name: String) -> int:
 	var amount = 0
 	for key in equipped.keys():
@@ -51,57 +64,106 @@ func equip_item(item:ItemResource) -> bool:
 	if slot_key not in equipped.keys():
 		return false
 	var current_equip = equipped[slot_key]
-	if !(current_equip is Array):
-		if current_equip == null:
-			equipped[slot_key] = item
-			return true
-		else:
+	if not (current_equip is Array): # (Head / Torso / Legs)
+		if current_equip is ItemResource:
 			unequip_item(current_equip)
-			equipped[slot_key] = item
-			return true
-	else:
-		var index = 0
-		for i : int in current_equip.size():
-			index = i
-			if current_equip[index] == null:
-				equipped[slot_key][index] = item
-				return true
-		unequip_item(current_equip[-1])
-		(current_equip as Array).remove_at(-1)
-		(current_equip as Array).insert(0, item)
+		equipped[slot_key] = item
+		return true
+	else: # Array
 		if item.two_handed:
-			current_equip[0] = item
+			if current_equip[0] is ItemResource:
+				unequip_item(current_equip[0])
 			if current_equip[1] is ItemResource:
 				unequip_item(current_equip[1])
-			equipped[slot_key][1] = BLOCKED_SLOT
+			current_equip[0] = item
+			current_equip[1] = BLOCKED_SLOT
+			return true
+		for i in current_equip.size():
+			if current_equip[i] == null:
+				current_equip[i] = item
+				return true
+		if current_equip[0] is ItemResource and current_equip[0].two_handed:
+			unequip_item(current_equip[0])
+			current_equip[0] = item
+			return true
+		unequip_item(current_equip[-1])
+		current_equip[-1] = item
 		return true
 
-func unequip_item(item:ItemResource):
+func unequip_item(item: ItemResource) -> void:
 	var _inventory
+	var _quantities
 	if is_player:
 		_inventory = GameState.inventory.duplicate()
+		_quantities = GameState.item_quantities.duplicate()
 	else:
 		_inventory = inventory.duplicate()
+		_quantities = item_quantities.duplicate()
 	var slot = locate_equip_slot(item)
 	var current_equip = equipped[slot]
 	if current_equip is Array:
 		if current_equip.has(item):
-			_inventory.append(item)
-			equipped[slot][current_equip.find(item)] = null
-			#return true
-		#else:
-			#return false
+			if item.item_name in _quantities.keys():
+				_quantities[item.item_name] += 1
+			else:
+				_inventory.append(item)
+				_quantities[item.item_name] = 1
+			current_equip[current_equip.find(item)] = null
+			if item.two_handed:
+				if current_equip[1] == BLOCKED_SLOT:
+					current_equip[1] = null
 	else:
 		if current_equip == item:
-			_inventory.append(current_equip)
+			if item.item_name in _quantities.keys():
+				_quantities[item.item_name] += 1
+			else:
+				_inventory.append(current_equip)
+				_quantities[item.item_name] = 1
 			equipped[slot] = null
-			#return true
-		#else:
-			#return false
 	if is_player:
 		GameState.inventory = _inventory
+		GameState.item_quantities = _quantities
 	else:
 		inventory = _inventory
+		item_quantities = _quantities
+
+func add_item(item : ItemResource):
+	if is_player:
+		if !(GameState.item_quantities.has(item.item_name)):
+			GameState.inventory.append(item)
+			GameState.item_quantities[item.item_name] = 1
+		else:
+			GameState.item_quantities[item.item_name] += 1
+	else:
+		if !(item_quantities.has(item.item_name)):
+			inventory.append(item)
+			item_quantities[item.item_name] = 1
+		else:
+			item_quantities[item.item_name] += 1
+
+func remove_item(item : ItemResource):
+	if is_player:
+		if !(GameState.item_quantities.has(item.item_name)):
+			return
+		if GameState.item_quantities[item.item_name] > 1:
+			GameState.item_quantities[item.item_name] -= 1
+		else:
+			for i : ItemResource in GameState.inventory:
+				if i.item_name == item.item_name:
+					GameState.inventory.erase(i)
+					break
+			GameState.item_quantities.erase(item.item_name)
+	else:
+		if !(item_quantities.has(item.item_name)):
+			return
+		if item_quantities[item.item_name] > 1:
+			item_quantities[item.item_name] -= 1
+		else:
+			for i : ItemResource in inventory:
+				if i.item_name == item.item_name:
+					inventory.erase(i)
+					break
+			item_quantities.erase(item.item_name)
 
 func locate_equip_slot(item : ItemResource) -> String:
 	if item.item_type != ItemResource.ItemType.EQUIPMENT:

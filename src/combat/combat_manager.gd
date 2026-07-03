@@ -2,6 +2,10 @@ extends Node
 class_name CombatManager
 
 @warning_ignore_start("integer_division")
+@warning_ignore_start("unused_variable")
+@warning_ignore_start("unused_parameter")
+@warning_ignore_start("narrowing_conversion")
+
 
 enum State {
 	IDLE          , # waiting for something to happen (brief, between states)
@@ -39,9 +43,11 @@ func _ready() -> void:
 		GameState.pending_enemy_group = null
 
 func start_battle(enemy_group : EnemyGroupResource):
-	_enemy_group = enemy_group
+	_enemy_group = enemy_group.duplicate(true)
 	_party_members = GameState.party
-	for entity in _party_members + _enemy_group.enemies:
+	for entity : EntityResource in _party_members + _enemy_group.enemies:
+		if !entity.is_player:
+			entity.scan_quantities()
 		var combatant : BattleCombatant
 		if entity is PartyMemberResource:
 			combatant = BattleCombatant.create_party_member(entity)
@@ -93,10 +99,10 @@ func _handle_victory():
 		GameState.add_gold(i.gold_reward)
 		for ii : PartyMemberResource in _party_members:
 			ii.pending_xp += i.experience_reward 
-		GameState.inventory_drop(i.drop_table)
+		GameState.inventory_drop(i.drop_table.duplicate(true))
 		for equipment : ItemResource in i.get_all_equipped_items():
 			if randf() < i.equip_drop_chance:
-				GameState.give_item(equipment)
+				GameState.give_item(equipment.duplicate(true))
 		#for equipment in i.equipped.keys():
 			#if !(i.equipped[equipment] is Array):
 				#if i.equipped[equipment] != null:
@@ -133,23 +139,34 @@ func _run_enemy_turn():
 		var enemies = living_entities(_enemy_combatants)
 		enemies.sort_custom(func(a : BattleCombatant, b : BattleCombatant): return a.stats.current_hp>b.stats.current_hp)
 		var targets : Array[BattleCombatant] = []
-		var action : BattleAction
+		var action : BattleAction = null
+		var available : Array
 		match enemy_data.behavior:
 			EnemyResource.AIBehavior.RANDOM: 
 				targets.append(party.pick_random())
-				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				available = (current_combatant.physical_actions + current_combatant.return_available_magic_actions())
+				if available.size()>0:
+					action = available.pick_random()
 			EnemyResource.AIBehavior.AGGRESSIVE:
 				targets.append(party[0])
-				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				available = (current_combatant.physical_actions + current_combatant.return_available_magic_actions())
+				if available.size()>0:
+					action = available.pick_random()
 			EnemyResource.AIBehavior.DEFENSIVE:
 				targets.append(party[-1])
-				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				available = (current_combatant.physical_actions + current_combatant.return_available_magic_actions())
+				if available.size()>0:
+					action = available.pick_random()
 			EnemyResource.AIBehavior.HEALER:
 				targets.append(enemies[-1])
-				action = current_combatant.return_available_healing_actions().pick_random()
+				available = current_combatant.return_available_healing_actions()
+				if available.size() > 0:
+					action = current_combatant.return_available_healing_actions().pick_random()
 			EnemyResource.AIBehavior.BERSERKER:
 				targets.append(party[0])
-				action = (current_combatant.physical_actions + current_combatant.return_available_magic_actions()).pick_random()
+				available = (current_combatant.physical_actions + current_combatant.return_available_magic_actions())
+				if available.size() > 0:
+					action = available.pick_random()
 		if action == null:
 			EventBus.combat_log_updated.emit("%s does nothing" % current_combatant.stats.character_name)
 			start_next_turn()
@@ -276,12 +293,13 @@ func _resolve_item(attacker : BattleCombatant, targets : Array[BattleCombatant],
 							if combatant.source_resource.active_statuses.size() > 0:
 								combatant.source_resource.active_statuses = []
 	if item_used:
-		item.quantity -= 1
-		if item.quantity <= 0:
-			if attacker.is_player_controlled:
-				GameState.inventory.erase(item)
-			else:
-				attacker.source_resource.inventory.erase(item)
+		attacker.source_resource.remove_item(item)
+		#item.quantity -= 1
+		#if item.quantity <= 0:
+			#if attacker.is_player_controlled:
+				#GameState.inventory.erase(item)
+			#else:
+				#attacker.source_resource.inventory.erase(item)
 		EventBus.item_used.emit(item)
 	attacker.tick_statuses()
 	EventBus.combat_animations_finished.connect(start_next_turn, CONNECT_ONE_SHOT)

@@ -1,4 +1,5 @@
 extends Node
+class_name MapController
 
 @export var zone_name := ""
 @export var safe_zone_scene := ""
@@ -29,10 +30,10 @@ func _ready() -> void:
 		player.global_position = GameState.previous_player_location
 		player.party_member.previous_location = null
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_accept"):
-		if GameState.shopping:
-			return
-		var group = load("res://data/enemy_groups/Slime_Slime_Slime.tres")
-		GameState.previous_player_location = player.global_position
-		SceneManager.start_combat(group)
+#func _unhandled_input(event: InputEvent) -> void:
+	#if event.is_action_pressed("ui_accept"):
+		#if GameState.shopping:
+			#return
+		##var group = load("res://data/enemy_groups/Slime_Slime_Slime.tres")
+		##GameState.previous_player_location = player.global_position
+		##SceneManager.start_combat(group)

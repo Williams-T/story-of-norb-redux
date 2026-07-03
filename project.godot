@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="StoryOfNorbRedux"
+config/name="TheStoryOfNorb"
 run/main_scene="uid://dk6ijwufw6ny0"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
@@ -26,11 +26,17 @@ Codebase="*uid://c67q6k2f20o06"
 WorldMenu="*uid://db43riu704qe1"
 DebugMenu="*uid://bqf6iadrv1hr8"
 ShopManager="*uid://brhbbgcvjr2g6"
+EncounterManager="*uid://cv21rngij2bua"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
+window/size/mode=2
+window/size/resizable=false
+window/size/always_on_top=true
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep_height"
 
 [editor_plugins]
 

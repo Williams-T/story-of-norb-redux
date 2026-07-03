@@ -34,6 +34,7 @@ func start_dialogue(dialogue : DialogueSequence):
 func advance_dialogue():
 	if _current_index >= _current_lines.size():
 		end_dialogue()
+		return
 	else:
 		var current_line : DialogueLine = _current_lines[_current_index]
 		if current_line.function != "":
@@ -44,6 +45,7 @@ func advance_dialogue():
 				var function : Callable = parse_function(current_line.function)
 				function.callv(parse_arguments(current_line.arguments))
 			end_dialogue()
+			return
 		if current_line.choices.is_empty():
 			EventBus.dialogue_line_advanced.emit(current_line)
 			_current_index += 1

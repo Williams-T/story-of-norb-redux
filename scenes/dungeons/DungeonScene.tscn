@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://dg7axmsof8xok"]
+
+[ext_resource type="TileSet" uid="uid://c4ud3h5ggwebv" path="res://ground_tiles.tres" id="1_fasru"]
+[ext_resource type="TileSet" uid="uid://cwyyum82v6v2w" path="res://wall_tiles.tres" id="2_v5r5s"]
+[ext_resource type="PackedScene" uid="uid://d3o28qbr54rdd" path="res://scenes/player.tscn" id="3_22kox"]
+[ext_resource type="PackedScene" uid="uid://c7tt3p7vs0h73" path="res://scenes/touch_enemy.tscn" id="3_sk18a"]
+[ext_resource type="Resource" uid="uid://cysbrbiqte0nq" path="res://data/enemy_groups/wolf_wolf.tres" id="4_1bck4"]
+[ext_resource type="Script" uid="uid://br6sm523sm7m3" path="res://scenes/dungeons/dungeon_controller.gd" id="4_fasru"]
+[ext_resource type="Script" uid="uid://bolrxefn8gyhc" path="res://src/resources/EnemyGroupResource.gd" id="5_22kox"]
+[ext_resource type="Script" uid="uid://dtjevhceewfsc" path="res://src/resources/DialogueLine.gd" id="5_oriw1"]
+[ext_resource type="Script" uid="uid://6tgeb37pkkm" path="res://src/resources/DialogueChoice.gd" id="6_celj4"]
+[ext_resource type="Script" uid="uid://bp86u0k1ysqy1" path="res://src/resources/DungeonResource.gd" id="6_rm8fu"]
+[ext_resource type="Script" uid="uid://dff5q2m8wjs4f" path="res://src/resources/DialogueSequence.gd" id="7_6gn1j"]
+[ext_resource type="Resource" uid="uid://wtrhtstaknae" path="res://data/enemy_groups/brokenberserker.tres" id="11_6gn1j"]
+[ext_resource type="Resource" uid="uid://8870b28cdd55" path="res://data/enemy_groups/lootguy_lootguy.tres" id="12_bgnnj"]
+
+[sub_resource type="TileSet" id="TileSet_4jb3m"]
+tile_size = Vector2i(64, 64)
+
+[sub_resource type="Resource" id="Resource_bgnnj"]
+script = ExtResource("5_oriw1")
+speaker_name = "touch enemy"
+text = "Let's fight"
+metadata/_custom_type_script = "uid://dtjevhceewfsc"
+
+[sub_resource type="Resource" id="Resource_yerry"]
+script = ExtResource("7_6gn1j")
+sequence_id = "test_touch_enemy"
+lines = Array[ExtResource("5_oriw1")]([SubResource("Resource_bgnnj")])
+metadata/_custom_type_script = "uid://dff5q2m8wjs4f"
+
+[sub_resource type="Resource" id="Resource_sk18a"]
+script = ExtResource("6_rm8fu")
+encounter_rate = 0.3
+encounter_groups = Array[ExtResource("5_22kox")]([ExtResource("4_1bck4"), ExtResource("11_6gn1j"), ExtResource("12_bgnnj")])
+encounter_weights = Array[float]([0.2, 0.3, 0.5])
+metadata/_custom_type_script = "uid://bp86u0k1ysqy1"
+
+[node name="DungeonScene" type="Node2D" unique_id=1952397873]
+texture_filter = 1
+
+[node name="TileMapLayers" type="Node2D" parent="." unique_id=103524705]
+
+[node name="GroundLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=1731891896]
+tile_set = ExtResource("1_fasru")
+
+[node name="DetailLayerBack" type="TileMapLayer" parent="TileMapLayers" unique_id=414661615]
+tile_set = SubResource("TileSet_4jb3m")
+
+[node name="DetailLayerFront" type="TileMapLayer" parent="TileMapLayers" unique_id=784410489]
+tile_set = SubResource("TileSet_4jb3m")
+
+[node name="WallLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=582539627]
+tile_set = ExtResource("2_v5r5s")
+
+[node name="BlockingLayer" type="TileMapLayer" parent="TileMapLayers" unique_id=2058172167]
+tile_set = SubResource("TileSet_4jb3m")
+
+[node name="Warps" type="Node2D" parent="." unique_id=1008206038]
+
+[node name="YSort" type="Node2D" parent="." unique_id=719166860]
+y_sort_enabled = true
+
+[node name="NPCs" type="Node2D" parent="YSort" unique_id=1354959080]
+
+[node name="Entities" type="Node2D" parent="YSort" unique_id=561890850]
+
+[node name="TouchEnemies" type="Node2D" parent="YSort" unique_id=765843711]
+
+[node name="TouchEnemy" parent="YSort/TouchEnemies" unique_id=1190844843 instance=ExtResource("3_sk18a")]
+position = Vector2(706, 395)
+group = ExtResource("4_1bck4")
+queued_dialogue = SubResource("Resource_yerry")
+
+[node name="Player" parent="YSort" unique_id=1122482979 instance=ExtResource("3_22kox")]
+
+[node name="Interactables" type="Node2D" parent="." unique_id=2005370615]
+
+[node name="DungeonController" type="Node" parent="." unique_id=690899599]
+script = ExtResource("4_fasru")
+dungeon_resource = SubResource("Resource_sk18a")

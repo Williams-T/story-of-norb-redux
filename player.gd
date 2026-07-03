@@ -18,7 +18,6 @@ func _ready() -> void:
 	EventBus.player_movement_unlocked.connect(func():GameState.movement_locks -= 1; if GameState.movement_locks <= 0: set_physics_process(true))
 	EventBus.player_movement_locked.connect(func(): set_physics_process(false); GameState.movement_locks += 1)
 	await get_tree().process_frame
-	#ShopManager.test_shop()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed('interact'):

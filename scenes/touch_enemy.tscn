@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://c7tt3p7vs0h73"]
+
+[ext_resource type="PackedScene" uid="uid://dv8dvat866384" path="res://scenes/NPC.tscn" id="1_unrsb"]
+[ext_resource type="Script" uid="uid://6323iptmyhlb" path="res://scenes/TouchEnemy.gd" id="2_ukc2q"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_unrsb"]
+radius = 67.2
+
+[node name="TouchEnemy" unique_id=1190844843 instance=ExtResource("1_unrsb")]
+script = ExtResource("2_ukc2q")
+group = null
+
+[node name="CollisionShape2D" parent="InteractionArea" parent_id_path=PackedInt32Array(489352828) index="0" unique_id=171826875]
+shape = SubResource("CircleShape2D_unrsb")

@@ -1,6 +1,10 @@
 extends HBoxContainer
 class_name DebugItems
 
+@warning_ignore_start("unused_variable")
+@warning_ignore_start("unused_parameter")
+@warning_ignore_start("narrowing_conversion")
+
 @onready var item_list : ItemList = $Items/ItemList
 @onready var character_container : VBoxContainer = $Characters
 @onready var inventory : ItemList = $Inventory/ItemList
@@ -71,12 +75,16 @@ func remove_item():
 	refresh_inventory(current_entity)
 
 func clear_inventory():
+	if !current_entity:
+		return
 	if current_entity.is_player:
 		GameState.inventory.clear()
 	else:
 		current_entity.inventory.clear()
 
 func random_loadout():
+	if !current_entity:
+		return
 	clear_inventory()
 	var current_inv
 	if current_entity.is_player:

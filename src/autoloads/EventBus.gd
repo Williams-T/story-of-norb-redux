@@ -32,6 +32,8 @@ signal player_flee_attempted()
 signal target_select_requested(targets: Array[BattleCombatant])
 signal all_targets()
 
+# Dungeon signals
+signal encounter_triggered(group: EnemyGroupResource)
 
 # Dialogue signals
 signal dialogue_started(sequence: DialogueSequence)

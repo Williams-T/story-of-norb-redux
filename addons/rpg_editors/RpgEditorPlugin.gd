@@ -7,6 +7,7 @@ var _dialogue_panel
 var _combat_editor_dock
 var _item_editor_dock
 var _shop_editor_dock
+var _dungeon_resource_dock
 func _enter_tree() -> void:
 	scene_changed.connect(_on_scene_changed)
 	# Called when the plugin is enabled.
@@ -17,12 +18,14 @@ func _enter_tree() -> void:
 	_combat_editor_dock = preload("res://addons/rpg_editors/combat_editor/combat_editor.tscn").instantiate()
 	_item_editor_dock = preload("res://addons/rpg_editors/item_editor/item_editor.tscn").instantiate()
 	_shop_editor_dock = preload("res://addons/rpg_editors/shop_editor/shop_editor.tscn").instantiate()
+	_dungeon_resource_dock = preload("res://addons/rpg_editors/dungeon_resource_editor/DungeonResourceEditor.tscn").instantiate()
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, _sprite_importer_dock)
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_BR, _warp_editor_dock)
 	add_control_to_bottom_panel(_dialogue_panel, "Dialogue Editor")
 	add_control_to_bottom_panel(_combat_editor_dock, "Combat Editor")
 	add_control_to_bottom_panel(_item_editor_dock, "Item Editor")
 	add_control_to_bottom_panel(_shop_editor_dock, "Shop Editor")
+	add_control_to_bottom_panel(_dungeon_resource_dock, "Dungeon Resource Editor")
 	_dialogue_panel.plugin = self
 	
 	print("RPG Editors: loaded")
@@ -36,13 +39,14 @@ func _exit_tree() -> void:
 	remove_control_from_bottom_panel(_combat_editor_dock)
 	remove_control_from_bottom_panel(_item_editor_dock)
 	remove_control_from_bottom_panel(_shop_editor_dock)
+	remove_control_from_bottom_panel(_dungeon_resource_dock)
 	_dialogue_panel.queue_free()
 	_sprite_importer_dock.queue_free()
 	_warp_editor_dock.queue_free()
 	_combat_editor_dock.queue_free()
 	_item_editor_dock.queue_free()
 	_shop_editor_dock.queue_free()
-	
+	_dungeon_resource_dock.queue_free()
 	print("RPG Editors: unloaded")
 
 func _handles(object: Object) -> bool:

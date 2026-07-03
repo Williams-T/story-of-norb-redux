@@ -1,0 +1,145 @@
+[gd_scene format=3 uid="uid://bvid4ee8ldwvf"]
+
+[ext_resource type="Script" uid="uid://djevnd6ikr4jc" path="res://addons/rpg_editors/dungeon_resource_editor/dungeon_resource_editor.gd" id="1_6ubcg"]
+
+[node name="DungeonResourceEditor" type="PanelContainer" unique_id=1543764228]
+custom_maximum_size = Vector2(-1, 300)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6ubcg")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=310156909]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=526305900]
+layout_mode = 2
+text = "Dungeon Resource Editor"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=778512232]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="ScrollContainer" parent="VBoxContainer/HBoxContainer" unique_id=278878186]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="DungeonResourceList" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1433476087]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VBoxContainer/HBoxContainer" unique_id=860415841]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer2" unique_id=1081740699]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 2
+
+[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer" unique_id=829309949]
+layout_mode = 2
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer" unique_id=966899093]
+layout_mode = 2
+
+[node name="NewButton" type="Button" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer/HBoxContainer4" unique_id=106471450]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "NEW"
+
+[node name="SaveButton" type="Button" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer/HBoxContainer4" unique_id=339950064]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SAVE"
+
+[node name="FloorNameLabel" type="Label" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer" unique_id=871148855]
+layout_mode = 2
+text = "Floor Name:"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer" unique_id=984533312]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FloorNameEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer/HBoxContainer" unique_id=1330308766]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EncounterRateLabel" type="Label" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer" unique_id=604944193]
+layout_mode = 2
+text = "Encounter Rate:"
+
+[node name="EncounterRateSpinbox" type="SpinBox" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer" unique_id=502095736]
+layout_mode = 2
+max_value = 1.0
+step = 0.1
+alignment = 1
+
+[node name="EncounterMusicLabel" type="Label" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer" unique_id=1882216683]
+layout_mode = 2
+text = "Encounter Music:"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer" unique_id=676099002]
+layout_mode = 2
+
+[node name="MusicBrowse" type="Button" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer/HBoxContainer3" unique_id=459378662]
+layout_mode = 2
+text = "Browse"
+
+[node name="EncounterMusicEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer/HBoxContainer3" unique_id=15258947]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EncounterLabel" type="Label" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer" unique_id=1144163117]
+layout_mode = 2
+text = "Encounters:"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer" unique_id=734552079]
+layout_mode = 2
+
+[node name="EncounterBrowse" type="Button" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer/HBoxContainer2" unique_id=1061009285]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Browse"
+
+[node name="EncounterWeightSpin" type="SpinBox" parent="VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer/HBoxContainer2" unique_id=673668087]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.1
+max_value = 1.0
+step = 0.1
+value = 0.5
+alignment = 1
+suffix = "   encounter chance"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer2" unique_id=486863170]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer" unique_id=818421527]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.19
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/HBoxContainer" unique_id=835454900]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+offset_transform_enabled = true
+
+[node name="EncountersContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/ScrollContainer" unique_id=357969859]
+propagate_maximum_size = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer" unique_id=418201371]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2

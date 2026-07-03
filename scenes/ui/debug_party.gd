@@ -1,6 +1,10 @@
 extends HBoxContainer
 class_name DebugParty
 
+@warning_ignore_start("unused_variable")
+@warning_ignore_start("unused_parameter")
+@warning_ignore_start("narrowing_conversion")
+
 @onready var entities_container : VBoxContainer = $EntitiesContainer
 @onready var add_button : Button = $ButtonContainer/AddButton
 @onready var remove_button : Button = $ButtonContainer/RemoveButton
@@ -116,11 +120,11 @@ func populate_fields():
 func save_fields(val):
 	if current_party_member and populating == false:
 		current_party_member.stats.character_name = name_edit.text
-		current_party_member.stats.level = level_spin.value
-		current_party_member.stats.current_hp = hp_spin.value
-		current_party_member.stats.current_mp = mp_spin.value
-		current_party_member.stats.str = str_spin.value
-		current_party_member.stats.vit = vit_spin.value
-		current_party_member.stats.agi = agi_spin.value
-		current_party_member.stats.intelligence = int_spin.value
-		current_party_member.stats.wil = wil_spin.value
+		current_party_member.stats.level = roundi(level_spin.value)
+		current_party_member.stats.current_hp = roundi(hp_spin.value)
+		current_party_member.stats.current_mp = roundi(mp_spin.value)
+		current_party_member.stats.str = roundi(str_spin.value)
+		current_party_member.stats.vit = roundi(vit_spin.value)
+		current_party_member.stats.agi = roundi(agi_spin.value)
+		current_party_member.stats.intelligence = roundi(int_spin.value)
+		current_party_member.stats.wil = roundi(wil_spin.value)

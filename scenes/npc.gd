@@ -27,8 +27,8 @@ func _ready() -> void:
 	EventBus.dialogue_started.connect(_on_dialogue_started)
 	EventBus.dialogue_finished.connect(_on_dialogue_finished)
 	EventBus.interact_pressed.connect(try_interact)
-	EventBus.world_menu_closed.connect(func():set_physics_process(true))
-	EventBus.world_menu_opened.connect(func():set_physics_process(false))
+	EventBus.player_movement_unlocked.connect(func():set_physics_process(true))
+	EventBus.player_movement_locked.connect(func():set_physics_process(false))
 	_wander_origin = global_position
 	orient_facing(Vector2.DOWN)
 	if wander_radius > 0.0:

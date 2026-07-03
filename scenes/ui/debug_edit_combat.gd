@@ -1,6 +1,10 @@
 extends HBoxContainer
 class_name DebugEditCombat
 
+@warning_ignore_start("unused_variable")
+@warning_ignore_start("unused_parameter")
+@warning_ignore_start("narrowing_conversion")
+
 var current_combatant : BattleCombatant
 
 @onready var combatants_container : VBoxContainer = $Combatants

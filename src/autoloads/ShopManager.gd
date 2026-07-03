@@ -1,4 +1,8 @@
+# shop_manager.gd
 extends Node
+@warning_ignore_start("unused_variable")
+@warning_ignore_start("unused_parameter")
+@warning_ignore_start("narrowing_conversion")
 
 const SHOP_UI_SCENE = preload("res://scenes/ui/ShopUI.tscn")
 var _shop_ui : ShopUI
@@ -34,6 +38,7 @@ func purchase_item(item : ItemResource, quantity : int = 1):
 					GameState.shop_states[current_shop.shop_id][item.item_name] -= 1
 			EventBus.item_purchased.emit(item, quantity)
 			GameState.inventory_transfer()
+			#GameState.rescan_quantities()
 			_shop_ui.refresh_inventory()
 			_shop_ui.repopulate_list(_shop_ui.current_array)
 		else:
@@ -44,12 +49,14 @@ func purchase_item(item : ItemResource, quantity : int = 1):
 func sell_item(item : ItemResource, quantity : int = 1):
 	EventBus.item_sold.emit(item, quantity)
 	for i in quantity:
-		if GameState.inventory.find(item) == -1:
+		var _item : ItemResource = search_for_item(item)
+		if _item == null:
 			continue
-		var _item : ItemResource = GameState.inventory[GameState.inventory.find(item)]
-		_item.quantity -= 1
-		if _item.quantity <= 0:
-			GameState.inventory.erase(_item)
+		#_item.quantity -= 1
+		#if _item.quantity <= 0:
+		#GameState.inventory.erase(_item)
+		GameState.remove_item(_item)
+		#GameState.rescan_quantities()
 		GameState.add_gold(roundi(item.value * current_shop.sell_modifier))
 		_shop_ui.refresh_gold()
 		if item.item_name in GameState.shop_states[current_shop.shop_id].keys():
@@ -58,6 +65,12 @@ func sell_item(item : ItemResource, quantity : int = 1):
 			GameState.shop_states[current_shop.shop_id][item.item_name] = 1
 			current_shop.stock.append(item)
 	#print(GameState.shop_states[current_shop.shop_id])
+
+func search_for_item(item : ItemResource):
+	for i : ItemResource in GameState.inventory:
+		if i.item_name == item.item_name:
+			return i
+	return null
 
 func test_shop():
 	var new_shop := load("res://data/shops/demo.tres")

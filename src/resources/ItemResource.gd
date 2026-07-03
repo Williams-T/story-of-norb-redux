@@ -13,7 +13,7 @@ enum EquipSlot {NONE, HEAD, TORSO, LEGS, HAND, FOOT, RING, TOE_RING}
 @export var value: int = 0       # Gold value for shops
 @export var stackable: bool = true
 @export var max_stack: int = 99
-@export var quantity: int = 1
+#@export var quantity: int = 1
 @export_group("Consumable Effect")
 @export var effect_type: ConsumableEffect = ConsumableEffect.NONE
 @export var effect_value: int

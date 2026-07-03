@@ -1,5 +1,9 @@
 extends Node
 
+@warning_ignore_start("unused_variable")
+@warning_ignore_start("unused_parameter")
+@warning_ignore_start("narrowing_conversion")
+
 # World flags — anything that "happened": doors opened, quests advanced,
 # NPCs talked to. Key is a string, value is bool/int/String.
 var flags: Dictionary = {}
@@ -8,6 +12,7 @@ var flags: Dictionary = {}
 var gold: int = 0
 var pending_inventory: Array[ItemResource] = []
 var inventory: Array[ItemResource] = []
+var item_quantities := {}
 
 # Party
 var party: Array[PartyMemberResource] = []
@@ -37,8 +42,8 @@ func _ready() -> void:
 	EventBus.shop_closed.connect(func(): shopping = false)
 	party.append(load("res://data/characters/norb_party_member.tres").duplicate(true))
 	party.append(load("res://data/characters/dog_party_member.tres").duplicate(true))
-	inventory.append_array([load("res://data/items/elixer.tres"), load("res://data/items/magicrestore.tres"), load("res://data/items/potion.tres"), load("res://data/items/sword.tres")])
-
+	pending_inventory.append_array([load("res://data/items/elixer.tres").duplicate(true), load("res://data/items/magicrestore.tres").duplicate(true), load("res://data/items/potion.tres").duplicate(true), load("res://data/items/sword.tres").duplicate(true)])
+	inventory_transfer()
 func set_flag(flag_name: String, value: Variant) -> void:
 	flags[flag_name] = value
 	EventBus.flag_changed.emit(flag_name, value)
@@ -71,9 +76,25 @@ func give_item(item : ItemResource):
 	EventBus.item_dropped.emit(item)
 	print("Item dropped: %s" % item.item_name)
 
+func remove_item(item : ItemResource):
+	if !(item_quantities.has(item.item_name)):
+		return
+	if item_quantities[item.item_name] > 1:
+		item_quantities[item.item_name] -= 1
+	else:
+		for i : ItemResource in inventory:
+			if i.item_name == item.item_name:
+				inventory.erase(i)
+				break
+		item_quantities.erase(item.item_name)
+
 func inventory_transfer():
-	for i in pending_inventory:
-		inventory.append(i)
+	for i : ItemResource in pending_inventory:
+		if item_quantities.has(i.item_name):
+			item_quantities[i.item_name] += 1
+		else:
+			inventory.append(i)
+			item_quantities[i.item_name] = 1
 		EventBus.item_acquired.emit(i)
 		print("Item aquired: %s" % i.item_name)
 	pending_inventory = []
