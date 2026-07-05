@@ -16,10 +16,10 @@ func _ready() -> void:
 	mp_bar.max_value = 100
 	change_text("")
 
-func visibility(is_visible : bool):
+func visibility(is_true : bool):
 	#visible = is_visible
 	var tween = create_tween()
-	if is_visible:
+	if is_true:
 		if !visible:
 			visible = true
 		tween.tween_property(self, "modulate", Color(1,1,1,1), 0.2)

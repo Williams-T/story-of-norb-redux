@@ -16,8 +16,9 @@ var pre_combat_position = null
 
 func _ready() -> void:
 	set_physics_process(true)
-	EventBus.combat_started.connect(func(group):set_physics_process(false))
-	EventBus.combat_ended.connect(func(result):
+	player_positions.clear()
+	EventBus.combat_started.connect(func(_group):set_physics_process(false))
+	EventBus.combat_ended.connect(func(_result):
 		#print(result)
 		if current_dungeon != null:
 			set_physics_process(true)
@@ -94,3 +95,9 @@ func choose_weighted_group() -> EnemyGroupResource:
 		if roll <= 0.0:
 			return current_dungeon.encounter_groups[idx]
 	return current_dungeon.encounter_groups[-1]
+
+func consume_player_position():
+	if !player_positions.is_empty():
+		return player_positions[0]
+	else:
+		return null

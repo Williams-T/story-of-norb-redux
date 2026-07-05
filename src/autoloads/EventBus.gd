@@ -17,6 +17,7 @@ signal combat_queued(queue: Array[BattleCombatant])
 signal combat_visuals_ready()
 signal combat_animations_finished()
 signal combat_action_resolving()
+signal combat_events_committed()
 signal combat_log_updated(text: String) # anything that happens in battle gets narrated here: "Norb attacks!", "Slime is poisoned!", "Norb takes 14 damage!"
 signal turn_started(combatant: BattleCombatant) # fired when a new combatant's turn begins, UI uses this to highlight whose turn it is
 signal combatant_damaged(combatant: BattleCombatant, amount: int) # fired after damage is applied, HP bar animates in response

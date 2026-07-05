@@ -1,3 +1,4 @@
+#BattleUI
 extends VBoxContainer
 
 var _current_combatant : BattleCombatant
@@ -89,72 +90,6 @@ func prepare_combatants(combatants : Array[BattleCombatant]):
 	create_visuals(combatants)
 	tween_into_battle(combatants)
 	attach_indicators(combatants)
-	#party.clear()
-	#enemies.clear()
-	#for i in combatants:
-		#if i.is_player_controlled:
-			#party.append(i)
-		#else:
-			#enemies.append(i)
-	#for i in slots["enemy"].size():
-		#if i < enemies.size():
-			##positions[enemies[i]]=slots["enemy"][i]
-			#visuals[enemies[i]] = CombatantVisuals.new()
-			#visuals[enemies[i]].slot = slots["enemy"][i]
-		#else:
-			#slots["enemy"][i].hide()
-	#for i in slots["party"].size():
-		#if i < party.size():
-			#visuals[party[i]] = CombatantVisuals.new()
-			#visuals[party[i]].slot = slots["party"][i]
-		#else:
-			#slots["party"][i].hide()
-	#_tweens_remaining = visuals.keys().size()
-	#for i : BattleCombatant in visuals.keys():
-		#var sprite = AnimatedSprite2D.new()
-		##sprite.sprite_frames = i.source_resource.sprite_frames
-		#if i.source_resource is EnemyResource:
-			#sprite.sprite_frames = i.source_resource.sprite_frames
-		#elif i.source_resource is PartyMemberResource:
-			#sprite.sprite_frames = i.source_resource.battle_sprite_frames
-		#visuals[i].slot.add_child(sprite)
-		#visuals[i].sprite = sprite
-		#var offset = Vector2(600, 0) if not i.is_player_controlled else Vector2(-600, 0)
-		#sprite.position = offset
-		#sprite.set_meta("dead", false)
-		#sprite.animation_finished.connect(func():
-			#if not sprite.get_meta("dead"):
-				#if sprite.sprite_frames.has_animation("idle"):
-					#sprite.play("idle")
-			#else:
-				#sprite.stop())
-		##sprite.play("battle_entrance")
-		#if sprite.sprite_frames.has_animation("idle"):
-			#sprite.play("idle")
-		#var target_pos = visuals[i].slot.size
-		#var tween = create_tween()
-		#tween.tween_property(sprite, "position", target_pos, 0.4)
-		#tween.finished.connect(func():
-			#_tweens_remaining -= 1
-			#if _tweens_remaining <= 0:
-				#EventBus.combat_visuals_ready.emit()
-				#_tweens_remaining = visuals.keys().size())
-		#var indicator : Indicator = preload("res://scenes/ui/indicator.tscn").instantiate()
-		#visuals[i].slot.add_child(indicator)
-		#visuals[i].indicator = indicator
-		#visuals[i].indicator.hide()
-		#indicator.hp_bar.min_value = 0
-		#indicator.mp_bar.min_value = 0
-		#indicator.hp_bar.max_value = i.stats.max_hp()
-		#indicator.mp_bar.max_value = i.stats.max_mp()
-		#indicator.hp_bar.value = i.stats.current_hp
-		#indicator.mp_bar.value = i.stats.current_mp
-		##indicator.text = "v"
-		#indicator.offset_transform_enabled = true
-		#indicator.offset_transform_position = Vector2(80,-50)
-		##indicator.offset_transform_position_ratio = Vector2(1.8, -0.8)
-		#indicator.offset_transform_position = Vector2(125,60)
-		#indicator.name = "SelectionArrow"
 
 func assign_to_slots(combatants : Array[BattleCombatant]):
 	party.clear()
@@ -255,14 +190,16 @@ func paginate(action_array : Array, base_node : GridContainer, page : int = 0):
 	var button_3 : Button = base_node.find_child("Button3")
 	var buttons = [button_1, button_2, button_3]
 	var back : Button = base_node.find_child("Back")
-	if back.pressed.is_connected(set_up):
-		back.pressed.disconnect(set_up)
+	#if back.pressed.is_connected(set_up):
+		#back.pressed.disconnect(set_up)
+	for connection in back.pressed.get_connections():
+		back.pressed.disconnect(connection.callable)
 	back.pressed.connect(set_up.bind(base_node))
 	var navigation := base_node.find_child("Navigation")
 	var nav_next : Button = base_node.find_child("NavNext")
 	var nav_back : Button = base_node.find_child("NavBack")
-	if nav_back.pressed.is_connected(set_up):
-		nav_back.pressed.disconnect(set_up)
+	for connection in nav_back.pressed.get_connections():
+		nav_back.pressed.disconnect(connection.callable)
 	nav_back.pressed.connect(set_up.bind(base_node))
 	if action_array.size() > 3:
 		back.hide()
@@ -279,17 +216,17 @@ func paginate(action_array : Array, base_node : GridContainer, page : int = 0):
 				button.text = action_array[action_index].action_name
 			elif action_array[action_index] is ItemResource:
 				button.text = action_array[action_index].item_name
-			if button.pressed.is_connected(send_action):
-				button.pressed.disconnect(send_action)
+			for connection in button.pressed.get_connections():
+				button.pressed.disconnect(connection.callable)
 			button.pressed.connect(send_action.bind(action_array[action_index]))
-			if nav_next.pressed.is_connected(paginate):
-				nav_next.pressed.disconnect(paginate)
+			for connection in nav_next.pressed.get_connections():
+				nav_next.pressed.disconnect(connection.callable)
 			nav_next.pressed.connect(paginate.bind(action_array, base_node, page + 1))
 		else:
 			button.disabled = true
 			button.text = ""
-			if nav_next.pressed.is_connected(paginate):
-				nav_next.pressed.disconnect(paginate)
+			for connection in nav_next.pressed.get_connections():
+				nav_next.pressed.disconnect(connection.callable)
 			nav_next.pressed.connect(paginate.bind(action_array, base_node, 0))
 
 func send_action(action):
@@ -339,19 +276,24 @@ func _on_combatant_damaged(combatant : BattleCombatant, amount : int):
 	
 func _on_combatant_died(combatant : BattleCombatant):
 	var sprite : AnimatedSprite2D = visuals[combatant].sprite
+	var no_death_anim = false
 	if sprite.sprite_frames.has_animation("died"):
 		sprite.play("died")
+	else:
+		no_death_anim = true
 	sprite.set_meta("dead",true)
 	sprite.animation_finished.connect(func():
 		_animations_pending += 1
 		var tween = create_tween()
-		tween.tween_property(visuals[combatant].slot, "size.x", 0, 0.3)
-		tween.tween_callback(visuals[combatant].hide)
+		tween.tween_property(visuals[combatant].slot, "size:x", 0, 0.3)
+		tween.tween_callback(visuals[combatant].slot.hide)
 		tween.finished.connect(func():
 			_animations_pending -= 1
 			if _animations_pending <= 0:
 				EventBus.combat_animations_finished.emit())
 		)
+	if no_death_anim:
+		sprite.animation_finished.emit()
 	
 func _on_combatant_healed(combatant : BattleCombatant, amount : int):
 	var sprite : AnimatedSprite2D = visuals[combatant].sprite
@@ -368,21 +310,6 @@ func _on_combatant_healed(combatant : BattleCombatant, amount : int):
 		if _animations_pending <= 0:
 			EventBus.combat_animations_finished.emit())
 
-#func animation_helper(combatant : BattleCombatant, animation_name : String, flash_color : Color, what_else : Callable = null):
-	#var sprite : AnimatedSprite2D = visuals[combatant].sprite
-	#if sprite.sprite_frames.has_animation(animation_name):
-		#sprite.play(animation_name)
-	#_animations_pending += 1
-	#var tween = create_tween()
-	#tween.tween_property(sprite, "modulate", flash_color, 0.3)
-	#if what_else != null:
-		#tween.tween_callback(what_else)
-	#tween.tween_property(sprite, "modulate", Color.WHITE, 0.3)
-	#tween.finished.connect(func():
-		#_animations_pending -= 1
-		#if _animations_pending <= 0:
-			#EventBus.combat_animations_finished.emit())
-
 func _on_turn_started(combatant : BattleCombatant):
 	clear_arrows()
 	var arrow = visuals[combatant].indicator
@@ -392,7 +319,6 @@ func _on_turn_started(combatant : BattleCombatant):
 func clear_arrows():
 	for i : BattleCombatant in enemies + party:
 		var node : Indicator = visuals[i].indicator
-		#node.modulate = Color.WHITE
 		node.hide()
 
 func populate_attack_menu():
@@ -418,12 +344,10 @@ func populate_item_menu():
 		var usable = GameState.inventory.filter(
 			func(item): return item.item_type == ItemResource.ItemType.CONSUMABLE)
 		paginate(usable, item_menu, _current_page)
-		#paginate(GameState.inventory, item_menu, _current_page)
 	else:
 		var usable = _current_combatant.source_resource.inventory.filter(
 			func(item): return item.item_type == ItemResource.ItemType.CONSUMABLE)
 		paginate(usable, item_menu, _current_page)
-		#paginate(_current_combatant.source_resource.inventory, item_menu, _current_page)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if selecting_targets and !all_targets:

@@ -1,3 +1,4 @@
+#BattleCombatant
 class_name BattleCombatant
 extends RefCounted
 
@@ -93,7 +94,13 @@ func tick_statuses() -> void: #decrements duration_turns on each status, removes
 	var statuses = source_resource.active_statuses.duplicate()
 	for status in statuses:
 		status["turns_remaining"] -= 1
-		take_damage(status["effect"].damage_per_turn)
+		if status["effect"].damage_per_turn > 0.0:
+			take_damage(status["effect"].damage_per_turn)
+			if !is_alive():
+				EventBus.combatant_died.emit(self)
+				return
+			EventBus.combatant_damaged.emit(self, roundi(status["effect"].damage_per_turn))
+			EventBus.combat_log_updated.emit("%s damaged by %s" % [stats.character_name, status["effect"].status_name])
 		if status["turns_remaining"] <= 0:
 			source_resource.active_statuses.erase(status)
 		print("%s is %s with %s turns left." % [stats.character_name, status["effect"].status_name, status["turns_remaining"]])

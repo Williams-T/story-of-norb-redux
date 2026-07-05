@@ -8,7 +8,8 @@ func _ready() -> void:
 	EncounterManager.register_floor(dungeon_resource, player)
 	if EncounterManager.returned_from_combat == true:
 		EncounterManager.returned_from_combat = false
-		player.global_position = EncounterManager.player_positions[0]
+		if EncounterManager.consume_player_position() != null:
+			player.global_position = EncounterManager.consume_player_position()
 		#print("%s , %s" % [player.global_position, EncounterManager.player_positions])
 
 func _exit_tree() -> void:

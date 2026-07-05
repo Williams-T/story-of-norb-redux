@@ -22,7 +22,7 @@ metadata/_custom_type_script = "uid://d3fdo4ho75i4u"
 script = ExtResource("3_akcyc")
 status_name = "Poison"
 duration_turns = 3
-damage_per_turn = 50
+damage_per_turn = 10
 metadata/_custom_type_script = "uid://drtxpo1ba0lwu"
 
 [sub_resource type="Resource" id="Resource_oehyb"]

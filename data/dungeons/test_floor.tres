@@ -9,4 +9,4 @@ script = ExtResource("4_is5ci")
 floor_name = "test floor"
 encounter_rate = 0.5
 encounter_groups = Array[ExtResource("1_mlukv")]([ExtResource("2_ipqic")])
-encounter_weights = Array[float]([0.6])
+encounter_weights = Array[float]([0.49])

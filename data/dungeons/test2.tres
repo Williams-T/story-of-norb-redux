@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="DungeonResource" format=3 uid="uid://blfdwd5ir3l35"]
+
+[ext_resource type="Script" uid="uid://bolrxefn8gyhc" path="res://src/resources/EnemyGroupResource.gd" id="1_vq08c"]
+[ext_resource type="Resource" uid="uid://wtrhtstaknae" path="res://data/enemy_groups/brokenberserker.tres" id="2_i8kbi"]
+[ext_resource type="Resource" uid="uid://dmlwntxn2j157" path="res://data/enemy_groups/brokenhealer.tres" id="3_a7y8p"]
+[ext_resource type="Resource" uid="uid://8870b28cdd55" path="res://data/enemy_groups/lootguy_lootguy.tres" id="4_ji6v1"]
+[ext_resource type="Resource" uid="uid://xkud6odpnqmb" path="res://data/enemy_groups/orc_orc.tres" id="5_otl2c"]
+[ext_resource type="Script" uid="uid://bp86u0k1ysqy1" path="res://src/resources/DungeonResource.gd" id="6_vi3lt"]
+
+[resource]
+script = ExtResource("6_vi3lt")
+floor_name = "test2"
+encounter_rate = 0.5
+encounter_groups = Array[ExtResource("1_vq08c")]([ExtResource("2_i8kbi"), ExtResource("3_a7y8p"), ExtResource("4_ji6v1"), ExtResource("5_otl2c")])
+encounter_weights = Array[float]([0.2, 0.3, 0.4, 0.5])

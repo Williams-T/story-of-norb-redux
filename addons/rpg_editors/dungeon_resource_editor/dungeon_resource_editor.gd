@@ -9,7 +9,6 @@ class_name DungeonResourceEditor extends PanelContainer
 @onready var encounter_music_edit : LineEdit = $VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer/HBoxContainer3/EncounterMusicEdit
 @onready var encounter_music_browse : Button = $VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer/HBoxContainer3/MusicBrowse
 @onready var encounter_browse : Button = $VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer/HBoxContainer2/EncounterBrowse
-@onready var encounter_weight_spin : SpinBox = $VBoxContainer/HBoxContainer/VBoxContainer2/GridContainer/HBoxContainer2/EncounterWeightSpin
 @onready var encounters_container : VBoxContainer = $VBoxContainer/HBoxContainer/ScrollContainer/EncountersContainer
 
 var current_dungeon_resource : DungeonResource
@@ -40,27 +39,24 @@ func _ready() -> void:
 func scan_files():
 	for i in list.get_children():
 		i.queue_free()
-		list.remove_child(i)
 	for file in DirAccess.get_files_at(dungeon_directory):
 		var loaded = load("%s%s" % [dungeon_directory, file])
 		if loaded is DungeonResource:
-			print(file)
 			var button := Button.new()
-			button.text = file.trim_suffix(".tres")
+			button.text = file.trim_suffix(".tres").replace("_", " ")
 			button.pressed.connect(load_details.bind(loaded))
 			list.add_child(button)
 
 func load_details(dungeon : DungeonResource):
 	current_path = dungeon.resource_path
-	current_dungeon_resource = dungeon
-	floor_name_edit.text = dungeon.floor_name.replace("_", " ")
-	encounter_rate_spinbox.value = dungeon.encounter_rate
-	encounter_music_edit.text = dungeon.encounter_music
-	refresh_encounters(dungeon)
+	current_dungeon_resource = dungeon.duplicate(true)
+	floor_name_edit.text = current_dungeon_resource.floor_name.replace("_", " ")
+	encounter_rate_spinbox.value = current_dungeon_resource.encounter_rate
+	encounter_music_edit.text = current_dungeon_resource.encounter_music
+	refresh_encounters(current_dungeon_resource)
 
 func refresh_encounters(dungeon : DungeonResource):
 	for node in encounters_container.get_children():
-		encounters_container.remove_child(node)
 		node.queue_free()
 	for i in dungeon.encounter_groups.size():
 		var hbox := HBoxContainer.new()
@@ -68,10 +64,11 @@ func refresh_encounters(dungeon : DungeonResource):
 		var current_group : EnemyGroupResource = dungeon.encounter_groups[i]
 		group_name.text = current_group.resource_path.replace("res://data/enemy_groups/", "")
 		group_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		group_name.editable = false
 		var weight_spin := SpinBox.new()
 		weight_spin.min_value = 0.0
 		weight_spin.max_value = 1.0
-		weight_spin.step = 0.1
+		weight_spin.step = 0.01
 		weight_spin.value = dungeon.encounter_weights[i]
 		weight_spin.value_changed.connect(func(value): dungeon.encounter_weights[i] = value)
 		var delete_button := Button.new()
@@ -89,11 +86,9 @@ func add_encounter(group_path : String, group_weight : float = 0.5):
 	refresh_encounters(current_dungeon_resource)
 
 func delete_encounter(index):
-	for child in encounters_container.get_children():
-		if child.name == "hbox%s"%index:
-			encounters_container.remove_child(child)
-			child.queue_free()
-			break
+	current_dungeon_resource.encounter_groups.remove_at(index)
+	current_dungeon_resource.encounter_weights.remove_at(index)
+	refresh_encounters(current_dungeon_resource)
 
 func clear_details():
 	current_path = ""
@@ -102,9 +97,7 @@ func clear_details():
 	floor_name_edit.placeholder_text = ""
 	encounter_rate_spinbox.value = 0.0
 	encounter_music_edit.clear()
-	encounter_weight_spin.value = 0.5
 	for i in encounters_container.get_children():
-		encounters_container.remove_child(i)
 		i.queue_free()
 
 func save_resource():
@@ -112,19 +105,10 @@ func save_resource():
 		floor_name_edit.placeholder_text = "Floor name needed"
 		floor_name_edit.add_theme_color_override("font_placeholder_color", Color.INDIAN_RED)
 		return
-	current_dungeon_resource.floor_name = floor_name_edit.text
+	current_dungeon_resource.floor_name = floor_name_edit.text.replace(" ", "_")
 	current_dungeon_resource.encounter_rate = encounter_rate_spinbox.value
 	current_dungeon_resource.encounter_music = encounter_music_edit.text
-	current_dungeon_resource.encounter_groups.clear()
-	current_dungeon_resource.encounter_weights.clear()
-	for i in encounters_container.get_children():
-		if i is HBoxContainer:
-			for child in i.get_children():
-				if child is LineEdit:
-					current_dungeon_resource.encounter_groups.append(load("res://data/enemy_groups/%s"%child.text))
-				if child is SpinBox:
-					current_dungeon_resource.encounter_weights.append(child.value)
 	if current_path == "":
-		current_path = "res://data/dungeons/%s.tres" % current_dungeon_resource.floor_name.replace(" ", "_")
+		current_path = "res://data/dungeons/%s.tres" % current_dungeon_resource.floor_name
 	ResourceSaver.save(current_dungeon_resource, current_path)
 	scan_files()
